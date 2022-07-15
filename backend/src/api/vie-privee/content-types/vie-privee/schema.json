@@ -1,0 +1,38 @@
+{
+  "kind": "singleType",
+  "collectionName": "vie_privees",
+  "info": {
+    "singularName": "vie-privee",
+    "pluralName": "vie-privees",
+    "displayName": "Vie privee",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "privacy_policy_cover_title": {
+      "type": "string"
+    },
+    "privacy_policy_cover_subtitle": {
+      "type": "string"
+    },
+    "privacy_policy_content_title": {
+      "type": "string"
+    },
+    "privacy_policy_content": {
+      "type": "richtext"
+    },
+    "privacy_policy_cover": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
+    }
+  }
+}
