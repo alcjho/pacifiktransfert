@@ -29,7 +29,7 @@
     "terms_page_cover_subtitle": {
       "type": "string"
     },
-    "termes_content": {
+    "terms_content": {
       "type": "richtext"
     }
   }

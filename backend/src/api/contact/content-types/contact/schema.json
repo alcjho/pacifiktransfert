@@ -4,7 +4,8 @@
   "info": {
     "singularName": "contact",
     "pluralName": "contacts",
-    "displayName": "Contact"
+    "displayName": "Contact",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -15,14 +16,15 @@
       "type": "string"
     },
     "contact_cover": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
       "allowedTypes": [
         "images",
         "files",
         "videos",
         "audios"
-      ],
-      "type": "media",
-      "multiple": false
+      ]
     },
     "contact_cover_subtitle": {
       "type": "string"
@@ -40,34 +42,37 @@
       "type": "string"
     },
     "contact_address_icon": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
       "allowedTypes": [
         "images",
         "files",
         "videos",
         "audios"
-      ],
-      "type": "media",
-      "multiple": false
+      ]
     },
     "contact_email_icon": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
       "allowedTypes": [
         "images",
         "files",
         "videos",
         "audios"
-      ],
-      "type": "media",
-      "multiple": false
+      ]
     },
     "contact_phone_icon": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
       "allowedTypes": [
         "images",
         "files",
         "videos",
         "audios"
-      ],
-      "type": "media",
-      "multiple": false
+      ]
     },
     "contact_address": {
       "type": "string"
@@ -76,6 +81,27 @@
       "type": "string"
     },
     "contact_phone": {
+      "type": "string"
+    },
+    "contact_content_description": {
+      "type": "text"
+    },
+    "name_placeholder": {
+      "type": "string"
+    },
+    "email_placeholder": {
+      "type": "string"
+    },
+    "phone_placeholder": {
+      "type": "string"
+    },
+    "subject_placeholder": {
+      "type": "string"
+    },
+    "message_placeholder": {
+      "type": "string"
+    },
+    "send_message_btn_label": {
       "type": "string"
     }
   }

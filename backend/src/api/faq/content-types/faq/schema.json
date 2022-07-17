@@ -25,6 +25,20 @@
       "type": "richtext"
     },
     "faq_cover": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "questions_list": {
+      "type": "json"
+    },
+    "faq_content_image": {
       "allowedTypes": [
         "images",
         "files",
