@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Layouts/Navbar';
 import PageBannerContent from '../components/Common/PageBannerContent';
 import AboutContent from '../components/AboutUs/AboutContent';
@@ -7,32 +7,45 @@ import PartnerContent from '../components/Common/PartnerContent';
 import AppDownloadContent from '../components/HomeOne/AppDownloadContent';
 import AccountCreateArea from '../components/Common/AccountCreateArea';
 import Footer from '../components/Layouts/Footer';
+import axios from 'axios';
 
-class AboutUs extends Component {
-    render() {
+    export default function AboutUs() {
+        const [aboutUs, setAboutUs] = useState({})
+
+        const getAboutUs = async () => {
+            axios.get('http://99.79.48.57:1337/api/a-propos-de-nous', {params: {populate:'*'}})
+              .then(function (response) {
+                setAboutUs(response.data.data.attributes)
+              })
+              .catch(function (error) {
+                console.log(error);
+              });
+        }
+
+        useEffect(() => {
+            getAboutUs()
+          }, [])
+
         return (
             <>
                 <Navbar />
 
                 <PageBannerContent 
-                    pageTitle="About Us" 
-                    pageCaption="The Haiper story" 
+                    pageTitle={aboutUs.about_us_cover_title}
+                    pageCaption={aboutUs.about_us_cover_subtitle}
                 />
 
-                <AboutContent />
+                <AboutContent aboutUs={aboutUs}/>
 
-                <TeamMember />
+                {/* <TeamMember />
 
                 <PartnerContent />
 
                 <AppDownloadContent />
 
-                <AccountCreateArea />
+                <AccountCreateArea /> */}
 
                 <Footer />
             </>
         );
-    }
 }
-
-export default AboutUs;

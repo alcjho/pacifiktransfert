@@ -1,9 +1,26 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import axios from 'axios';
 
-class Footer extends Component {
-    render() {
+    export default function Footer() {
         let currentYear = new Date().getFullYear();
+
+        const [contact, setContact] = useState({})
+
+        const getContact = async () => {
+            axios.get('http://99.79.48.57:1337/api/contact', {params: {populate:'*'}})
+              .then(function (response) {
+                setContact(response.data.data.attributes)
+              })
+              .catch(function (error) {
+                console.log(error);
+              });
+        } 
+
+        useEffect(() => {
+            getContact()
+          }, [])
+
         return (
             <footer className="footer-area">
                 <div className="container">
@@ -14,10 +31,10 @@ class Footer extends Component {
                                     <Link href="/">
                                         <a><img src="/images/logo.png" alt="logo" /></a>
                                     </Link>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud</p>
+                                    <p>pacifiktransfert.com est un produit de onetransfer money transfer systems inc. l'entreprise est enregistrée au Canada auprès de CANAFE et de l'AMF en tant qu'entreprise de services monétaires.</p>
                                 </div>
                                 
-                                <ul className="social-links">
+                                {/* <ul className="social-links">
                                     <li>
                                         <a href="https://www.facebook.com/" target="_blank">
                                             <i className="fab fa-facebook-f"></i>
@@ -38,45 +55,11 @@ class Footer extends Component {
                                             <i className="fab fa-linkedin-in"></i>
                                         </a> 
                                     </li>
-                                </ul>
+                                </ul> */}
                             </div>
                         </div>
 
-                        <div className="col-lg-3 col-sm-6 col-md-6">
-                            <div className="single-footer-widget pl-5">
-                                <h3>Company</h3>
-                                
-                                <ul className="list">
-                                    <li>
-                                        <Link href="/about-us">
-                                            <a>About Us</a>
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link href="#">
-                                            <a>Services</a>
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link href="/features-one">
-                                            <a>Features</a>
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link href="/pricing">
-                                            <a>Our Pricing</a>
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link href="/blog-one">
-                                            <a>Latest News</a>
-                                        </Link>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div className="col-lg-3 col-sm-6 col-md-6">
+                        <div className="col-lg-3 offset-lg-3 col-sm-6 col-md-6">
                             <div className="single-footer-widget">
                                 <h3>Support</h3>
                                 
@@ -97,11 +80,6 @@ class Footer extends Component {
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link href="#">
-                                            <a>Community</a>
-                                        </Link>
-                                    </li>
-                                    <li>
                                         <Link href="/contact">
                                             <a>Contact Us</a>
                                         </Link>
@@ -116,20 +94,16 @@ class Footer extends Component {
                                 
                                 <ul className="footer-contact-info">
                                     <li>
-                                        <span className="mr-1">Location:</span> 
-                                        27 Division St, New York, <br /> NY 10002, USA
+                                        <span className="mr-1">{contact.contact_address_title}:</span> 
+                                        {contact.contact_address}
                                     </li>
                                     <li>
-                                        <span className="mr-1">Email:</span> 
-                                        info@haiper.com
+                                        <span className="mr-1">{contact.contact_email_title}:</span> 
+                                        {contact.contact_email}
                                     </li>
                                     <li>
-                                        <span className="mr-1">Phone:</span> 
-                                        + (321) 984 754
-                                    </li>
-                                    <li>
-                                        <span className="mr-1">Fax:</span> 
-                                        +1-212-9876543
+                                        <span className="mr-1">{contact.contact_phone_title}:</span> 
+                                        {contact.contact_phone}
                                     </li>
                                 </ul>
                             </div>
@@ -137,12 +111,9 @@ class Footer extends Component {
                     </div>
 
                     <div className="copyright-area">
-                        <p>© {currentYear} Haiper - All rights Reserved <a href="http://envytheme.com/" target="_blank">EnvyTheme.com</a></p>
+                        <p>© {currentYear} pacifiktransfert.com - All rights Reserved </p>
                     </div>
                 </div>
             </footer>
         );
-    }
 }
-
-export default Footer;

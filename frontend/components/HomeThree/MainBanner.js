@@ -2,6 +2,19 @@ import React, { useState } from "react";
 import Link from "next/link";
 
 export default function MainBanner({ homeInfo }) {
+  const [senderValue, setSenderValue] = useState('')
+  const [receiverValue, setReceiverValue] = useState('')
+
+  const updateAmount = (input) => {
+    if (input === 'sender') {
+      setReceiverValue(Number(senderValue) * Number(homeInfo.exchange_rate_value))
+      console.log('(Number(senderValue) * Number(homeInfo.exchange_rate_label)', Number(senderValue) * Number(homeInfo.exchange_rate_label))
+    }
+    else {
+      setSenderValue(Number(receiverValue) / Number(homeInfo.exchange_rate_value))
+      console.log('(Number(senderValue) * Number(homeInfo.exchange_rate_label)', Number(senderValue) / Number(homeInfo.exchange_rate_label))
+    }
+  }
   return (
     <div className="main-banner-section">
       <div className="d-table">
@@ -35,6 +48,9 @@ export default function MainBanner({ homeInfo }) {
                           type="text"
                           className="form-control"
                           placeholder="1,000"
+                          value={Number(senderValue)}
+                          onChange={(e)=> setSenderValue(e.target.value)}
+                          onBlur={()=> updateAmount('sender')}
                         />
                         <div className="amount-currency-select">
                           <div className="amount-currency-select">
@@ -65,6 +81,11 @@ export default function MainBanner({ homeInfo }) {
                           type="text"
                           className="form-control"
                           placeholder="1,000"
+                          value={Number(receiverValue)}
+                          onChange={(e)=> {
+                            setReceiverValue(e.target.value);
+                          }}
+                          onBlur={() => updateAmount('receiver')}
                         />
                         <div className="amount-currency-select">
                           <select readOnly="readonly" tabIndex="-1" aria-disabled="true" style={{pointerEvents: 'none', touchAction: 'none'}}>
@@ -74,12 +95,12 @@ export default function MainBanner({ homeInfo }) {
                       </div>
                     </div>
 
-                    <div className="money-transfer-info">
+                    {/* <div className="money-transfer-info">
                       <span>
                         {homeInfo?.save_label}{" "}
                         <strong>1,010.32 USD {homeInfo?.save_value}</strong>
                       </span>
-                    </div>
+                    </div> */}
 
                     <button type="submit" className="btn btn-primary">
                       {homeInfo?.cta_label}
