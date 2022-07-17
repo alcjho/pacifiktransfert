@@ -1,0 +1,49 @@
+{
+  "kind": "collectionType",
+  "info": {
+    "tableName": "submission",
+    "singularName": "submission",
+    "pluralName": "submissions",
+    "displayName": "Form Submissions",
+    "description": "A Place for all your form submissions",
+    "kind": "collectionType"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {
+    "content-manager": {
+      "visible": true
+    },
+    "content-type-builder": {
+      "visible": false
+    }
+  },
+  "attributes": {
+    "score": {
+      "type": "string",
+      "min": 1,
+      "max": 50,
+      "configurable": false
+    },
+    "data": {
+      "type": "json",
+      "configurable": false
+    },
+    "contact_name_lbl": {
+      "type": "string"
+    },
+    "contact_name": {
+      "type": "json"
+    },
+    "contact_email_lbl": {
+      "type": "string"
+    },
+    "contact_email": {
+      "type": "json"
+    },
+    "contact_content_lbl": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "kind": "singleType",
+  "collectionName": "contacts",
+  "info": {
+    "singularName": "contact",
+    "pluralName": "contacts",
+    "displayName": "Contact",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "contact_cover_title": {
+      "type": "string"
+    },
+    "contact_cover": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "contact_cover_subtitle": {
+      "type": "string"
+    },
+    "contact_content_title": {
+      "type": "string"
+    },
+    "contact_address_title": {
+      "type": "string"
+    },
+    "contact_email_title": {
+      "type": "string"
+    },
+    "contact_phone_title": {
+      "type": "string"
+    },
+    "contact_address_icon": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "contact_email_icon": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "contact_phone_icon": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "contact_address": {
+      "type": "string"
+    },
+    "contact_email": {
+      "type": "string"
+    },
+    "contact_phone": {
+      "type": "string"
+    },
+    "contact_content_description": {
+      "type": "text"
+    },
+    "name_placeholder": {
+      "type": "string"
+    },
+    "email_placeholder": {
+      "type": "string"
+    },
+    "phone_placeholder": {
+      "type": "string"
+    },
+    "subject_placeholder": {
+      "type": "string"
+    },
+    "message_placeholder": {
+      "type": "string"
+    },
+    "send_message_btn_label": {
+      "type": "string"
+    }
+  }
+}
