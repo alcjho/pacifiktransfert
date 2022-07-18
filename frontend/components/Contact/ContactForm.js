@@ -26,7 +26,7 @@ const INITIAL_STATE = {
     text: ""
 };
 
-const ContactForm = () => {
+const ContactForm = ({ contactInfo }) => {
 
     const [contact, setContact] = useState(INITIAL_STATE);
     const { register, handleSubmit, errors } = useForm();
@@ -62,7 +62,7 @@ const ContactForm = () => {
                             <input 
                                 type="text" 
                                 name="name" 
-                                placeholder="Name" 
+                                placeholder={contactInfo.name_placeholder} 
                                 className="form-control" 
                                 value={contact.name}
                                 onChange={handleChange}
@@ -79,7 +79,7 @@ const ContactForm = () => {
                             <input 
                                 type="email" 
                                 name="email" 
-                                placeholder="Email" 
+                                placeholder={contactInfo.email_placeholder}  
                                 className="form-control" 
                                 value={contact.email}
                                 onChange={handleChange}
@@ -96,7 +96,7 @@ const ContactForm = () => {
                             <input 
                                 type="text" 
                                 name="number" 
-                                placeholder="Phone" 
+                                placeholder={contactInfo.phone_placeholder}  
                                 className="form-control" 
                                 value={contact.number}
                                 onChange={handleChange}
@@ -113,7 +113,7 @@ const ContactForm = () => {
                             <input 
                                 type="text" 
                                 name="subject" 
-                                placeholder="Subject" 
+                                placeholder={contactInfo.subject_placeholder}  
                                 className="form-control" 
                                 value={contact.subject}
                                 onChange={handleChange}
@@ -131,7 +131,7 @@ const ContactForm = () => {
                                 name="text" 
                                 cols="30" 
                                 rows="5" 
-                                placeholder="Write your message..." 
+                                placeholder={contactInfo.message_placeholder}
                                 className="form-control" 
                                 value={contact.text}
                                 onChange={handleChange}
@@ -144,7 +144,7 @@ const ContactForm = () => {
                     </div>
 
                     <div className="col-lg-12 col-sm-12">
-                        <button type="submit" className="btn btn-primary">Send Message</button>
+                        <button type="submit" className="btn btn-primary">{contactInfo.send_message_btn_label}</button>
                     </div>
                 </div>
             </form>

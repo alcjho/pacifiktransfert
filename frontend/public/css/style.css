@@ -1715,8 +1715,12 @@ Featured Boxes Area CSS
 .single-featured-box {
   text-align: center;
   position: relative;
-  padding: 115px 25px 40px 25px;
+  padding: 35px 25px 40px 25px;
   overflow: hidden;
+}
+
+.single-featured-box-icon {
+  height: 80px;
 }
 
 .single-featured-box .icon {
@@ -1816,6 +1820,8 @@ Featured Boxes Area CSS
   visibility: visible;
   bottom: 23px;
 }
+
+
 
 @-webkit-keyframes iconTop {
   0% {

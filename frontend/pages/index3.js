@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Layouts/Navbar';
 import MainBanner from '../components/HomeThree/MainBanner';
 import FeaturedCard from '../components/HomeThree/FeaturedCard';
@@ -15,45 +15,42 @@ import AccountCreateArea from '../components/Common/AccountCreateArea';
 import BlogCard from '../components/Common/BlogCard';
 import Footer from '../components/Layouts/Footer';
 import Rates from '../components/Rates/Rates';
+import axios from 'axios';
 
-class Index3 extends Component {
-    render() {
+
+export default function index3() {
+
+    const [homeInfo, setHomeInfo] = useState({})
+    const getHome = async () => {
+        axios.get('http://99.79.48.57:1337/api/home-page', {params: {populate:'*'}})
+          .then(function (response) {
+            console.log('img', response.data.data.attributes.step1_icon?.data.attributes.url);
+            setHomeInfo(response.data.data.attributes)
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+    }
+      
+      useEffect(() => {
+        getHome()
+      }, [])
+      
+
+
         return (
             <>
                 <Navbar />
 
-                <MainBanner />
+                <MainBanner homeInfo={homeInfo} />
 
-                <FeaturedCard />
+                <FeaturedCard homeInfo={homeInfo} />
 
-                <Rates />
 
-                <HowItWorks />
+                <HowItWorks homeInfo={homeInfo}/>
 
-                <ServicesContent />
-
-                <ComparisonsTableTwo />
-
-                <OurFeaturesStyleTwo />
-
-                <EasyPaymentBorrow />
-
-                <FunFacts />
-
-                <CustomersFeedback />
-
-                <PartnerContent />
-
-                <AppDownloadContent />
-
-                <AccountCreateArea />
-
-                <BlogCard />
 
                 <Footer />
             </>
         );
     }
-}
-
-export default Index3;

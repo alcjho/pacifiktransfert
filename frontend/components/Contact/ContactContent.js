@@ -2,25 +2,24 @@ import React, { Component } from 'react';
 import ContactInfoContent from './ContactInfoContent';
 import ContactForm from './ContactForm';
 
-class ContactContent extends Component {
-    render() {
+    export default function ContactContent({ contact }) {
         return (
             <>
                 <div className="contact-area ptb-70">
                     <div className="container">
                         <div className="section-title">
-                            <h2>Drop us a message for any query</h2>
+                            <h2>{contact.contact_content_title}</h2>
                             <div className="bar"></div>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                            <p>{contact.contact_content_description}</p>
                         </div>
 
                         <div className="row">
                             <div className="col-lg-5 col-md-12">
-                                <ContactInfoContent />
+                                <ContactInfoContent contact={contact} />
                             </div>
 
                             <div className="col-lg-7 col-md-12">
-                                <ContactForm />
+                                <ContactForm contactInfo={contact} />
                             </div>
                         </div>
                     </div>
@@ -31,7 +30,4 @@ class ContactContent extends Component {
                 </div>
             </>
         );
-    }
 }
-
-export default ContactContent;
