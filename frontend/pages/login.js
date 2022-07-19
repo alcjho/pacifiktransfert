@@ -26,8 +26,8 @@ class Login extends Component {
                                                 </Link>
                                             </div>
 
-                                            <h3>Welcome back</h3>
-                                            <p>New to Haiper? <Link href="/sign-up"><a>Sign up</a></Link></p>
+                                            <h3>Bienvenue</h3>
+                                            <p>Vous etes nouveau? <Link href="/sign-up"><a>Sign up</a></Link></p>
 
                                             <form>
                                                 <div className="form-group">
@@ -44,14 +44,14 @@ class Login extends Component {
                                                     <Link href="/forgot-password"><a>Forgot Password?</a></Link>
                                                 </div>
 
-                                                <div className="connect-with-social">
+                                                {/* <div className="connect-with-social">
                                                     <button type="submit" className="facebook">
                                                         <i className="fab fa-facebook-square"></i> Connect with Facebook
                                                     </button>
                                                     <button type="submit" className="google">
                                                         <i className="fab fa-google"></i> Connect with Google
                                                     </button>
-                                                </div>
+                                                </div> */}
                                             </form>
                                         </div>
                                     </div>
