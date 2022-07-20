@@ -6,6 +6,8 @@ import { BACKEND_URL } from '../../config/constant';
         let currentYear = new Date().getFullYear();
 
         const [contact, setContact] = useState({})
+        const [aboutUs, setAboutUs] = useState({})
+
 
         const getContact = async () => {
             axios.get(BACKEND_URL+'/api/contact', {params: {populate:'*'}})
@@ -17,7 +19,18 @@ import { BACKEND_URL } from '../../config/constant';
               });
         } 
 
+        const getAboutUs = async () => {
+            axios.get(BACKEND_URL+'/api/a-propos-de-nous', {params: {populate:'*'}})
+              .then(function (response) {
+                setAboutUs(response.data.data.attributes)
+              })
+              .catch(function (error) {
+                console.log(error);
+              });
+        }
+
         useEffect(() => {
+            getAboutUs()
             getContact()
           }, [])
 
@@ -31,7 +44,14 @@ import { BACKEND_URL } from '../../config/constant';
                                     <Link href="/">
                                         <a><img src="/images/logo.png" alt="logo" /></a>
                                     </Link>
-                                    <p>pacifiktransfert.com est un produit de onetransfer money transfer systems inc. l'entreprise est enregistrée au Canada auprès de CANAFE et de l'AMF en tant qu'entreprise de services monétaires.</p>
+                                    <p>
+                                        {aboutUs.about_us_content_desc?.substring(0,200)}...
+                                    </p>
+
+                                    <Link href="/about-us">
+                                        <a style={{color: '#ffffff'}}>Lire plus</a>
+                                    </Link>
+                                    
                                 </div>
                                 
                                 {/* <ul className="social-links">
@@ -61,7 +81,7 @@ import { BACKEND_URL } from '../../config/constant';
 
                         <div className="col-lg-3 offset-lg-3 col-sm-6 col-md-6">
                             <div className="single-footer-widget">
-                                <h3>Support</h3>
+                                <h3>Autres liens</h3>
                                 
                                 <ul className="list">
                                     <li>
@@ -90,15 +110,9 @@ import { BACKEND_URL } from '../../config/constant';
 
                         <div className="col-lg-3 col-sm-6 col-md-6">
                             <div className="single-footer-widget">
-                                <h3>Address</h3>
+                                <h3>Support</h3>
                                 
                                 <ul className="footer-contact-info">
-                                    {contact.contact_address?
-                                        <li>
-                                            <span className="mr-1">{contact.contact_address_title}:</span> 
-                                            {contact.contact_address}
-                                        </li>
-                                    : ''}
                                     
                                     {contact.contact_email?
                                         <li>
@@ -107,7 +121,7 @@ import { BACKEND_URL } from '../../config/constant';
                                         </li>
                                     : ''}
 
-                                    {contact.contact_contact_phone?
+                                    {contact.contact_phone?
                                         <li>
                                             <span className="mr-1">{contact.contact_phone_title}:</span> 
                                             {contact.contact_phone}

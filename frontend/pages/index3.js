@@ -46,10 +46,10 @@ export default function Home() {
                 <FeaturedCard homeInfo={homeInfo} />
 
 
-                <HowItWorks homeInfo={homeInfo}/>
+                <HowItWorks homeInfo={homeInfo} />
 
 
-                <Footer />
+                <Footer homeInfo={homeInfo} />
             </>
         );
     }
