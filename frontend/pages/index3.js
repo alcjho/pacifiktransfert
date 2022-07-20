@@ -17,12 +17,11 @@ import Footer from '../components/Layouts/Footer';
 import Rates from '../components/Rates/Rates';
 import axios from 'axios';
 
-
-export default function index3() {
-
+export default function Home(pageprops) {
+    console.log('pageprops', pageprops)
     const [homeInfo, setHomeInfo] = useState({})
     const getHome = async () => {
-        axios.get('http://99.79.48.57:1337/api/home-page', {params: {populate:'*'}})
+        axios.get(process.env.BACKEND_URL+'/api/home-page', {params: {populate:'*'}})
           .then(function (response) {
             console.log('img', response.data.data.attributes.step1_icon?.data.attributes.url);
             setHomeInfo(response.data.data.attributes)
@@ -54,3 +53,11 @@ export default function index3() {
             </>
         );
     }
+
+Home.getStaticProps((ctx) => {
+  return{
+    props:{
+      pageprops: process.env.BACKEND_URL
+    }
+  }
+})
