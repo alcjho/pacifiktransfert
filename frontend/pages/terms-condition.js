@@ -3,12 +3,13 @@ import Navbar from '../components/Layouts/Navbar';
 import PageBannerContent from '../components/Common/PageBannerContent';
 import Footer from '../components/Layouts/Footer';
 import axios from 'axios';
+import { BACKEND_URL } from '../config/constant';
 
     export default function TermsCondition() {
 
         const [termsAndConditions, setTermsAndConditions] = useState({})
         const getTermsAndConditions = async () => {
-            axios.get('http://99.79.48.57:1337/api/termes-et-conditions', {params: {populate:'*'}})
+            axios.get(BACKEND_URL+'/api/termes-et-conditions', {params: {populate:'*'}})
             .then(function (response) {
                 setTermsAndConditions(response.data.data.attributes)
             })

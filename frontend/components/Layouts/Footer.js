@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
-
+import { BACKEND_URL } from '../../config/constant';
     export default function Footer() {
         let currentYear = new Date().getFullYear();
 
         const [contact, setContact] = useState({})
 
         const getContact = async () => {
-            axios.get('http://99.79.48.57:1337/api/contact', {params: {populate:'*'}})
+            axios.get(BACKEND_URL+'/api/contact', {params: {populate:'*'}})
               .then(function (response) {
                 setContact(response.data.data.attributes)
               })
@@ -93,18 +93,26 @@ import axios from 'axios';
                                 <h3>Address</h3>
                                 
                                 <ul className="footer-contact-info">
-                                    <li>
-                                        <span className="mr-1">{contact.contact_address_title}:</span> 
-                                        {contact.contact_address}
-                                    </li>
-                                    <li>
-                                        <span className="mr-1">{contact.contact_email_title}:</span> 
-                                        {contact.contact_email}
-                                    </li>
-                                    <li>
-                                        <span className="mr-1">{contact.contact_phone_title}:</span> 
-                                        {contact.contact_phone}
-                                    </li>
+                                    {contact.contact_address?
+                                        <li>
+                                            <span className="mr-1">{contact.contact_address_title}:</span> 
+                                            {contact.contact_address}
+                                        </li>
+                                    : ''}
+                                    
+                                    {contact.contact_email?
+                                        <li>
+                                            <span className="mr-1">{contact.contact_email_title}:</span> 
+                                            {contact.contact_email}
+                                        </li>
+                                    : ''}
+
+                                    {contact.contact_contact_phone?
+                                        <li>
+                                            <span className="mr-1">{contact.contact_phone_title}:</span> 
+                                            {contact.contact_phone}
+                                        </li>
+                                    : ''}
                                 </ul>
                             </div>
                         </div>
