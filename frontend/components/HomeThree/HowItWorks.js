@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { BACKEND_URL } from '../../config/constant';
 
 
     export default function HowItWorks({ homeInfo }) {
@@ -14,7 +15,7 @@ import React, { useState } from 'react';
                     <div className="row">
                         <div className="col-lg-4 col-md-6">
                             <div className="single-how-it-works">
-                                <img src={process.env.BACKEND_URL + homeInfo.step1_icon?.data.attributes.url} alt="image" />
+                                <img src={BACKEND_URL + homeInfo.step1_icon?.data.attributes.url} alt="image" />
                                 <h3>{homeInfo.step1_title}</h3>
                                 <p>{homeInfo.step1_description}</p>
                             </div>
@@ -22,7 +23,7 @@ import React, { useState } from 'react';
 
                         <div className="col-lg-4 col-md-6">
                             <div className="single-how-it-works">
-                                <img src={process.env.BACKEND_URL + homeInfo.step2_icon?.data.attributes.url} alt="image" />
+                                <img src={BACKEND_URL + homeInfo.step2_icon?.data.attributes.url} alt="image" />
                                 <h3>{homeInfo.step2_title}</h3>
                                 <p>{homeInfo.step2_description}</p>
                             </div>
@@ -30,7 +31,7 @@ import React, { useState } from 'react';
 
                         <div className="col-lg-4 col-md-6">
                             <div className="single-how-it-works">
-                                <img src={process.env.BACKEND_URL + homeInfo.step3_icon?.data.attributes.url} alt="image" />
+                                <img src={BACKEND_URL + homeInfo.step3_icon?.data.attributes.url} alt="image" />
                                 <h3>{homeInfo.step3_title}</h3>
                                 <p>{homeInfo.step3_description}</p>
                             </div>

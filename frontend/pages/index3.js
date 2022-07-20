@@ -16,12 +16,12 @@ import BlogCard from '../components/Common/BlogCard';
 import Footer from '../components/Layouts/Footer';
 import Rates from '../components/Rates/Rates';
 import axios from 'axios';
+import { BACKEND_URL } from '../config/constant';
 
-export default function Home(pageprops) {
-    console.log('pageprops', pageprops)
+export default function Home() {
     const [homeInfo, setHomeInfo] = useState({})
     const getHome = async () => {
-        axios.get(process.env.BACKEND_URL+'/api/home-page', {params: {populate:'*'}})
+        axios.get(BACKEND_URL+'/api/home-page', {params: {populate:'*'}})
           .then(function (response) {
             console.log('img', response.data.data.attributes.step1_icon?.data.attributes.url);
             setHomeInfo(response.data.data.attributes)
@@ -53,11 +53,3 @@ export default function Home(pageprops) {
             </>
         );
     }
-
-Home.getStaticProps((ctx) => {
-  return{
-    props:{
-      pageprops: process.env.BACKEND_URL
-    }
-  }
-})
