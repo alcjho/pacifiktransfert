@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import FaqTextContent from './FaqTextContent';
 import FaqContactForm from './FaqContactForm';
+import { BACKEND_URL } from '../../config/constant';
+
 
     export default function FaqContentArea({ faq }) {
         return (
@@ -14,7 +16,7 @@ import FaqContactForm from './FaqContactForm';
                                 <p>{faq.faq_content}</p>
 
                                 <div className="faq-image">
-                                    <img src={process.env.BACKEND_URL + faq.faq_content_image?.data.attributes.url} alt="image" />
+                                    <img src={ BACKEND_URL + faq.faq_content_image?.data.attributes.url} alt="image" />
                                 </div>
                             </div>
                         </div>
