@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "global": "^4.4.0",
+    "nookies": "^2.5.2",
     "yarn": "^1.22.19"
   }
 }
