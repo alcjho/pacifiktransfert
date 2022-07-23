@@ -1,9 +1,10 @@
-import nc from 'next-connect';
 import { sessionMiddleware } from '../../middleware/session';
 import { createStrapiAxios } from '../../utils/strapi';
+import { createRouter } from "next-connect";
 
-export default nc()
-  .use(sessionMiddleware)
+
+const router = createRouter();
+router
   .post(async (req, res) => {
     const { email, password } = req.body;
 
@@ -37,3 +38,5 @@ export default nc()
       res.status(500).json(error);
     }
   });
+
+  export default router;

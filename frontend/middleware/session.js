@@ -1,15 +1,18 @@
-import { withIronSession, ironSession } from 'iron-session';
+import { withIronSession, ironSession } from 'next-iron-session';
+import { SECRET_COOKIE_PASSWORD } from '../config/constant';
 
 const sessionConfig = {
-  password: process.env.SECRET_COOKIE_PASSWORD,
+  password: SECRET_COOKIE_PASSWORD,
   cookieName: 'next-session',
   cookieOptions: {
     secure: false,
   },
 };
 
-export const sessionMiddleware = ironSession(sessionConfig);
+const sessionMiddleware = ironSession(sessionConfig);
 
-export function withSession(handler) {
+function withSession(handler) {
   return withIronSession(handler, sessionConfig);
 }
+
+export {sessionMiddleware, withSession};
