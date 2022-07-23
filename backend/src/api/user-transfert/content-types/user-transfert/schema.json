@@ -1,0 +1,71 @@
+{
+  "kind": "collectionType",
+  "collectionName": "user_transferts",
+  "info": {
+    "singularName": "user-transfert",
+    "pluralName": "user-transferts",
+    "displayName": "user_transferts",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "cdate": {
+      "type": "datetime",
+      "unique": true,
+      "private": true
+    },
+    "amount_sent": {
+      "type": "decimal",
+      "required": true
+    },
+    "amount_received": {
+      "type": "decimal",
+      "required": true
+    },
+    "from_name": {
+      "type": "string",
+      "required": true
+    },
+    "from_firstname": {
+      "type": "string",
+      "required": true
+    },
+    "to_name": {
+      "type": "string",
+      "required": true
+    },
+    "to_firstname": {
+      "type": "string",
+      "required": true
+    },
+    "to_email": {
+      "type": "email",
+      "required": true
+    },
+    "reception_proof": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "user_transferts"
+    },
+    "from_email": {
+      "type": "email",
+      "required": true,
+      "unique": false
+    }
+  }
+}
