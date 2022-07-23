@@ -1,0 +1,36 @@
+{
+  "kind": "singleType",
+  "collectionName": "termes_conditions",
+  "info": {
+    "singularName": "termes-et-conditions",
+    "pluralName": "termes-conditions",
+    "displayName": "Termes et conditions",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "terms_page_cover_title": {
+      "type": "string"
+    },
+    "terms_cover": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "terms_page_cover_subtitle": {
+      "type": "string"
+    },
+    "terms_content": {
+      "type": "richtext"
+    }
+  }
+}

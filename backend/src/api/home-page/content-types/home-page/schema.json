@@ -1,0 +1,197 @@
+{
+  "kind": "singleType",
+  "collectionName": "home_pages",
+  "info": {
+    "singularName": "home-page",
+    "pluralName": "home-pages",
+    "displayName": "Acceuil",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "Carousel": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "why_us_title": {
+      "type": "string"
+    },
+    "why_us_description": {
+      "type": "text"
+    },
+    "reason1_title": {
+      "type": "string"
+    },
+    "reason1_description": {
+      "type": "text"
+    },
+    "reason1_icon": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "reason2_title": {
+      "type": "string"
+    },
+    "reason2_description": {
+      "type": "text"
+    },
+    "reason2_icon": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "reason3_title": {
+      "type": "string"
+    },
+    "reason3_description": {
+      "type": "text"
+    },
+    "reason3_icon": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "reason4_title": {
+      "type": "string"
+    },
+    "reason4_description": {
+      "type": "text"
+    },
+    "reason4_icon": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "steppers_title": {
+      "type": "string"
+    },
+    "steppers_description": {
+      "type": "text"
+    },
+    "step1_title": {
+      "type": "string"
+    },
+    "step1_description": {
+      "type": "text"
+    },
+    "step1_icon": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "step2_title": {
+      "type": "string"
+    },
+    "step2_description": {
+      "type": "text"
+    },
+    "step2_icon": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "step3_title": {
+      "type": "string"
+    },
+    "step3_description": {
+      "type": "text"
+    },
+    "step3_icon": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "description": {
+      "type": "text"
+    },
+    "sender_input_label": {
+      "type": "string"
+    },
+    "transition_fee_value": {
+      "type": "string"
+    },
+    "transition_fee_label": {
+      "type": "string"
+    },
+    "recipient_label": {
+      "type": "string"
+    },
+    "save_label": {
+      "type": "string"
+    },
+    "save_value": {
+      "type": "string"
+    },
+    "cta_label": {
+      "type": "string"
+    },
+    "cta_description": {
+      "type": "string"
+    },
+    "terms_policy": {
+      "type": "string"
+    },
+    "exchange_rate_value": {
+      "type": "float"
+    },
+    "exchange_rate_label": {
+      "type": "string"
+    }
+  }
+}

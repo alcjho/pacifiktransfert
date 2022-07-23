@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
+import { BACKEND_URL } from '../../config/constant';
 
 export default function MainBanner({ homeInfo }) {
   const [senderValue, setSenderValue] = useState('')

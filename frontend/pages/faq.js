@@ -5,12 +5,14 @@ import FaqContentArea from '../components/Faq/FaqContentArea';
 import AccountCreateArea from '../components/Common/AccountCreateArea';
 import Footer from '../components/Layouts/Footer';
 import axios from 'axios';
+import { BACKEND_URL } from '../config/constant';
+
 
     export default function Faq() {
         const [faq, setFaq] = useState({})
 
         const getFaq = async () => {
-        axios.get('http://99.79.48.57:1337/api/faq', {params: {populate:'*'}})
+        axios.get(BACKEND_URL+'/api/faq', {params: {populate:'*'}})
           .then(function (response) {
             setFaq(response.data.data.attributes)
           })

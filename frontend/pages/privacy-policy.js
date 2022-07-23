@@ -3,12 +3,12 @@ import Navbar from '../components/Layouts/Navbar';
 import PageBannerContent from '../components/Common/PageBannerContent';
 import Footer from '../components/Layouts/Footer';
 import axios from 'axios';
+import { BACKEND_URL } from '../config/constant'
 
     export default function PrivacyPolicy() {
-
         const [privacyPolicy, setPrivacyPolicy] = useState({})
         const getPrivacyPolicy = async () => {
-            axios.get('http://99.79.48.57:1337/api/vie-privee', {params: {populate:'*'}})
+            axios.get(BACKEND_URL+'/api/vie-privee', {params: {populate:'*'}})
             .then(function (response) {
                 setPrivacyPolicy(response.data.data.attributes)
             })

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
+import { BACKEND_URL } from '../../config/constant';
+
 const ModalVideo = dynamic(() => import('react-modal-video'), {
     ssr: false
 });
@@ -20,7 +22,7 @@ const ModalVideo = dynamic(() => import('react-modal-video'), {
 
                         <div className="col-lg-6 col-md-12">
                             <div className="about-image">
-                                <img src={process.env.BACKEND_URL + aboutUs.about_us_content_image?.data?.attributes.url} alt="image" />
+                                <img src={BACKEND_URL + aboutUs.about_us_content_image?.data?.attributes.url} alt="image" />
                             </div>
                         </div>
                     </div>
