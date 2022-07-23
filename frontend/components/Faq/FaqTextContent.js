@@ -12,7 +12,7 @@ import {
         return (
             <div className="faq-accordion">
                 <Accordion allowZeroExpanded preExpanded={selectedAccordion}>
-                {faq?.questions_list?.map((value, index) => 
+                {faq?.questions_list?.questions?.map((value, index) => 
                     <AccordionItem key={'question' + index} uuid={index} onClick={()=> setSelectedAccordion(index)}>
                         <AccordionItemHeading>
                             <AccordionItemButton>

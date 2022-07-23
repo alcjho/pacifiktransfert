@@ -68,10 +68,10 @@ export default function MainBanner({ homeInfo }) {
                         <strong>{homeInfo?.exchange_rate_value}</strong>{" "}
                         {homeInfo?.exchange_rate_label}
                       </span>
-                      <span>
+                      {/* <span>
                         <strong>${homeInfo?.transition_fee_value}</strong>{" "}
                          {homeInfo?.transition_fee_label}
-                      </span>
+                      </span> */}
                     </div>
 
                     <div className="form-group">
