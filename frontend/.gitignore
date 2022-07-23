@@ -65,4 +65,4 @@ node_modules/
 # dotenv environment variables file
 .env
 .env.local
-variables.js
+config/constant.js
