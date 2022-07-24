@@ -68,6 +68,28 @@
       "relation": "oneToMany",
       "target": "api::user-transfert.user-transfert",
       "mappedBy": "user"
+    },
+    "address": {
+      "type": "string"
+    },
+    "province": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::uprovince.uprovince"
+    },
+    "cellphone": {
+      "type": "string"
+    },
+    "other_phone": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "occupation": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::occupation.occupation"
     }
   }
 }

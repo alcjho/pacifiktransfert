@@ -25,14 +25,6 @@
       "type": "decimal",
       "required": true
     },
-    "from_name": {
-      "type": "string",
-      "required": true
-    },
-    "from_firstname": {
-      "type": "string",
-      "required": true
-    },
     "to_name": {
       "type": "string",
       "required": true
@@ -62,10 +54,12 @@
       "target": "plugin::users-permissions.user",
       "inversedBy": "user_transferts"
     },
-    "from_email": {
-      "type": "email",
-      "required": true,
-      "unique": false
+    "city": {
+      "type": "string"
+    },
+    "code": {
+      "type": "uid",
+      "private": true
     }
   }
 }
