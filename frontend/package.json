@@ -29,6 +29,7 @@
         "react-image-lightbox": "^5.1.4",
         "react-modal-video": "^1.2.8",
         "react-owl-carousel3": "^2.2.5",
+        "react-select": "^5.4.0",
         "react-visibility-sensor": "^5.1.1",
         "sass": "^1.35.2",
         "sweetalert2": "^10.16.9",
