@@ -3,16 +3,12 @@ module.exports = ({ env }) => ({
   email: {
     provider: 'nodemailer',
     providerOptions: {
-      host: env('EMAIL_SMTP_HOST', 'smtp-relay.sendinblue.com'),
-      port: env('EMAIL_SMTP_PORT', 587),
+      host: 'smtp.mailtrap.io',
+      port: '25',
       auth: {
-        user: env('EMAIL_SMTP_USER'),
-        pass: env('EMAIL_SMTP_PASS')
+        user: '7a4fdb477a6e3c' ,
+        pass: 'e674d0f73eab8c'
       },
     },
-    settings: {
-	defaultFrom: env('EMAIL_ADDRESS_FROM'),
-	defaultReplyTo: env('EMAIL_ADDRESS_REPLY')
-    }
    }
 })
