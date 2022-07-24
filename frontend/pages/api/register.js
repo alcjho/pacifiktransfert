@@ -3,15 +3,10 @@ import { setCookie } from 'nookies'
 import { BACKEND_URL } from '../../config/constant';
 
 export default async (req, res) => {
-    const { username, password, email } = req.body;
-    console.log('body',req.body)
+    const userdata  = req.body;
 
     try {
-    const response = await axios.post(BACKEND_URL+'/api/auth/local/register', {
-        username,
-        email,
-        password,
-    });
+    const response = await axios.post(BACKEND_URL+'/api/auth/local/register', userdata);
 
     setCookie({ res }, 'jwt', response.data.jwt, {
         httpOnly: true,
