@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import axios from 'axios';
+import { parseCookies, setCookie, destroyCookie } from 'nookies'
+import checkuser from './api/checkuser';
 
 function Login() {
+    const router = useRouter();
     const [error, setError] = useState();
     const [userData, setUserData] = useState({
         identifier: '',
@@ -27,8 +30,8 @@ function Login() {
 
         try {
             await axios.post('/api/login', userData);
-            console.log('Login was successful!')
-            //router.replace('/profile');
+            const redirectUrl = router.query['redirect']
+            router.replace(redirectUrl?redirectUrl:'/transactions');
         } catch (err) {
             setError(errors[err.response?.data.error.message] || errors['Default'])
            console.log(err.response?.data.error.message)
@@ -103,6 +106,14 @@ function Login() {
             </section>
         </>
     );
+}
+
+export async function getStaticProps(ctx){
+    return {
+        props: {
+            pageProps: null
+        }
+    }
 }
 
 export default Login;
