@@ -1,8 +1,5 @@
 {
     "apps" : [{
-      "env":{
-        "NODE_ENV": "development"
-      },
       "name"       : "pacifictransfert-fe",
       "script"     : "npm",
       "args"       : "start",

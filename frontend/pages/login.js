@@ -27,6 +27,7 @@ function Login() {
             setError('un identifiant et un mot-de-passe sont obligatoires');
             return;
         }
+ 	console.log(userData, e)
 
         try {
             await axios.post('/api/login', userData);
