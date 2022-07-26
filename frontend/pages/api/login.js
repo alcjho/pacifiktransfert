@@ -5,8 +5,9 @@ import { BACKEND_URL } from '../../config/constant';
 export default async (req, res) => {
     const userdata  = req.body;
     try {
+    console.log('before', userdata)
     const { data } = await axios.post(BACKEND_URL+'/api/auth/local', userdata);
-    console.log(data)
+    console.log('data',data)
     setCookie({ res }, 'jwt', data.jwt, {
         httpOnly: true,
         secure: process.env.NODE_ENV !== 'development',
