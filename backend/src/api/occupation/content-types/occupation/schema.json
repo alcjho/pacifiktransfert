@@ -1,0 +1,43 @@
+{
+  "kind": "collectionType",
+  "collectionName": "occupations",
+  "info": {
+    "singularName": "occupation",
+    "pluralName": "occupations",
+    "displayName": "Occupation",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name_fr": {
+      "type": "enumeration",
+      "enum": [
+        "Administrations publiques",
+        "Agriculture, foresterie, pêche et chasse",
+        "Arts, spectacles et loisirs",
+        "Autres services (sauf les administrations publiques)",
+        "Commerce de détail",
+        "Commerce de gros",
+        "Construction",
+        "Extraction minière, exploitation en carrière, et extraction de pétrole et de gaz",
+        "Fabrication",
+        "Finance et assurances",
+        "Gestion de sociétés et d’entreprises",
+        "Hébergement et services de restauration",
+        "Industrie de l’information et industrie culturelle",
+        "Services administratifs, services de soutien, services de gestion des déchets et services d’assainissement",
+        "Services d’enseignement",
+        "Services de restauration et débit de boisson",
+        "Services immobiliers et services de location et de location à bail",
+        "Services professionnels, scientifiques et techniques",
+        "Services publics",
+        "Soins de santé et assistance sociale",
+        "Transport et entreposage",
+        "Transport par camion"
+      ]
+    }
+  }
+}

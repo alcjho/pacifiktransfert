@@ -5308,6 +5308,12 @@ Login Area CSS
 /*================================================
 Signup Area CSS
 =================================================*/
+
+.signup-area {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
 .signup-image {
   height: 100%;
   width: 100%;
@@ -5323,6 +5329,7 @@ Signup Area CSS
 
 .signup-content {
   height: 100vh;
+  position: relative;
 }
 
 .signup-content .signup-form {

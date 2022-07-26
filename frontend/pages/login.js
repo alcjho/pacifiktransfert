@@ -1,9 +1,44 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
+import { useRouter } from 'next/router';
 import Link from 'next/link';
 import axios from 'axios';
 
 function Login() {
-    
+    const [error, setError] = useState();
+    const [userData, setUserData] = useState({
+        identifier: '',
+        password: ''
+    })
+
+    const errors = {
+        'Default': 'Erreur de validatioon',
+        'Invalid identifier or password': 'Identifiant ou/et mot-de-passe invalide',
+        'Your account email is not confirmed': "Compte inactif. Rendez-vous sur votre courriel pour l'activation",
+        'Forbidden': "Désolé. vous n'êtes pas autorisé a acceder ce contenu"
+
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if(!userData.identifier || !userData.password){
+            setError('un identifiant et un mot-de-passe sont obligatoires');
+            return;
+        }
+
+        try {
+            await axios.post('/api/login', userData);
+            console.log('Login was successful!')
+            //router.replace('/profile');
+        } catch (err) {
+            setError(errors[err.response?.data.error.message] || errors['Default'])
+           console.log(err.response?.data.error.message)
+        }
+    }
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setUserData({...userData, [name]: value });
+    }
     return (
         <>
             <section className="login-area">
@@ -30,13 +65,13 @@ function Login() {
                                         <h3>Bienvenue</h3>
                                         <p>C'est votre première fois? <Link href="/sign-up"><a>Inscrivez-vous</a></Link></p>
 
-                                        <form>
+                                        <form onSubmit ={handleSubmit}>
                                             <div className="form-group">
-                                                <input type="email" name="email" id="email" placeholder="Your email address" className="form-control" />
+                                                <input type="email" name="identifier" id="identifier" placeholder="Votre adresse courriel" className="form-control" onChange={e => handleChange(e)}/>
                                             </div>
 
                                             <div className="form-group">
-                                                <input type="password" name="password" id="password" placeholder="Your password" className="form-control" />
+                                                <input type="password" name="password" id="password" placeholder="Votre mot-de-passe" className="form-control" onChange={e => handleChange(e)}/>
                                             </div>
 
                                             <button type="submit" className="btn btn-primary">Connexion</button>
@@ -44,8 +79,8 @@ function Login() {
                                             <div className="forgot-password">
                                                 <Link href="/forgot-password"><a>Mot-de-passe oublié?</a></Link>
                                             </div>
-
-                                            {/* <div className="connect-with-social">
+                                            
+                                            {/* <div classN>ame="connect-with-social">
                                                 <button type="submit" className="facebook">
                                                     <i className="fab fa-facebook-square"></i> Connect with Facebook
                                                 </button>
@@ -54,6 +89,11 @@ function Login() {
                                                 </button>
                                             </div> */}
                                         </form>
+                                        <div className="error mt-5">
+                                            {error?
+                                                <span className="alert alert-danger">{error}</span>
+                                            :''}
+                                        </div>
                                     </div>
                                 </div>
                             </div>

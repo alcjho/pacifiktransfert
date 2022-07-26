@@ -4,11 +4,9 @@ import { BACKEND_URL } from '../../config/constant';
 
 export default async (req, res) => {
     const userdata  = req.body;
-
     try {
-    const response = await axios.post(BACKEND_URL+'/api/auth/local/register', userdata);
-
-    setCookie({ res }, 'jwt', response.data.jwt, {
+    const { data } = await axios.post(BACKEND_URL+'/api/auth/local', userdata);
+    setCookie({ res }, 'jwt', data.jwt, {
         httpOnly: true,
         secure: process.env.NODE_ENV !== 'development',
         maxAge: 30 * 24 * 60 * 60,
