@@ -8,7 +8,6 @@ export default async (req, res) => {
     try {
     
     const { data } = await axios.post(BACKEND_URL+'/api/auth/local', userdata);
-
     setCookie({ res }, 'jwt', data.jwt, {
         httpOnly: true,
         secure: false,
