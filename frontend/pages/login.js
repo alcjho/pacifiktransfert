@@ -30,6 +30,7 @@ function Login() {
 
         try {
             await axios.post('/api/login', userData);
+            console.log(userData)
             const redirectUrl = router.query['redirect']
             router.replace(redirectUrl?redirectUrl:'/transactions');
         } catch (err) {
