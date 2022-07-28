@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import SendMoneyForm from './SendMoneyForm';
 
-    export default function SendMoneyContent({ contact }) {
+    export default function SendMoneyContent({ contact, user }) {
         return (
             <>
                 <div className="contact-area ptb-70">
@@ -14,7 +14,7 @@ import SendMoneyForm from './SendMoneyForm';
 
                         <div className="row">
                             <div className="col-md-12">
-                                <SendMoneyForm contactInfo={contact} />
+                                <SendMoneyForm contactInfo={contact} userInfo={ user } />
                             </div>
                         </div>
                     </div>

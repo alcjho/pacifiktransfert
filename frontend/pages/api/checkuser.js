@@ -9,12 +9,13 @@ export default async (ctx) => {
     
     if (cookies?.jwt) {
         try {
-            const { data } = await axios.get(BACKEND_URL+'/api/users/me', {
+            const { data } = await axios.get(BACKEND_URL+'/api/users/me?populate=*', {
                 headers: {
                     Authorization: `Bearer ${cookies.jwt}`,
                 },
             });
 
+            data.jwt = cookies.jwt;
             user = data;
 
         } catch (e) {
@@ -26,7 +27,7 @@ export default async (ctx) => {
     return {
       redirect: {
         permanent: false,
-        destination: '/login?redirect='+ctx.resolvedUrl
+        destination: '/login'
       }
     }
   }else{

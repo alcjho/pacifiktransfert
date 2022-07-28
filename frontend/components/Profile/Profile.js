@@ -27,7 +27,6 @@ export default function Profile() {
 
     const onSubmit = async e => {
         // e.preventDefault();
-        console.log('enter here')
         if (confirm) {
             try {
                 // const url = `${baseUrl}/api/contact`;
