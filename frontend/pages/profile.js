@@ -9,7 +9,7 @@ import Footer from '../components/Layouts/Footer';
 import { setCookie } from 'nookies'
 import checkuser from './api/checkuser';
 
-export default function Profile() {
+export default function UserProfile() {
 
     return (
         <>
