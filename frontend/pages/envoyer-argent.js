@@ -6,9 +6,10 @@ import AccountCreateArea from '../components/Common/AccountCreateArea';
 import Footer from '../components/Layouts/Footer';
 import axios from 'axios';
 import { BACKEND_URL } from '../config/constant';
+import { setCookie } from 'nookies'
 import checkuser from './api/checkuser';
 
-    export default function envoyerArgent({ user}) {
+    export default function envoyerArgent(user) {
         const [contact, setContact] = useState({})
 
         const getContact = async () => {
@@ -34,7 +35,7 @@ import checkuser from './api/checkuser';
                     pageCaption={"rapide, confidentiel et sécurisé"}
                 />
 
-                <SendMoneyContent contact={contact} />
+                <SendMoneyContent contact={contact} user={ user.user }/>
 
                 {/* <AccountCreateArea /> */}
 
@@ -45,8 +46,13 @@ import checkuser from './api/checkuser';
 
 export const getServerSideProps = async (ctx) => {
   let user = await checkuser(ctx);
-
-  if(user.redirect){;
+  if(user.redirect){
+    setCookie(ctx, 'redirect', ctx.resolvedUrl, {
+      httpOnly: true,
+      secure: false,
+      maxAge: 120,
+      path: '/',
+    });
     return user;
   }
 

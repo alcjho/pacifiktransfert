@@ -7,9 +7,8 @@ import SendMoneyContent from '../components/SendMoney/SendMoneyContent';
 import AccountCreateArea from '../components/Common/AccountCreateArea';
 import Footer from '../components/Layouts/Footer';
 import checkuser from './api/checkuser';
-
-export default function transaction() {
-
+import { setCookie } from 'nookies'
+export default function transaction(user) {
     return (
         <>
             <Navbar />
@@ -17,7 +16,7 @@ export default function transaction() {
                 pageTitle={"Transactions"} 
                 pageCaption={"Votre historique de tous les transactions"}
             />
-            <Transaction />
+            <Transaction user={ user.user }/>
             <Footer />
         </>
     )
@@ -25,8 +24,13 @@ export default function transaction() {
 
 export const getServerSideProps = async (ctx) => {
     let user = await checkuser(ctx);
-  
     if(user.redirect){;
+      setCookie(ctx, 'redirect', ctx.resolvedUrl, {
+        httpOnly: true,
+        secure: false,
+        maxAge: 120,
+        path: '/',
+      });
       return user;
     }
   
