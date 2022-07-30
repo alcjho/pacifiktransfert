@@ -18,6 +18,7 @@ class Rates extends Component {
             })
         });
     }
+    
     render() {
         let { rates, updateDate } = this.state;
         let tablHead = [];

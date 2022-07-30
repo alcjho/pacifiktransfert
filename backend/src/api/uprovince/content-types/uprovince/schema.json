@@ -1,0 +1,22 @@
+{
+  "kind": "collectionType",
+  "collectionName": "uprovinces",
+  "info": {
+    "singularName": "uprovince",
+    "pluralName": "uprovinces",
+    "displayName": "Province",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name_fr": {
+      "type": "string"
+    },
+    "code": {
+      "type": "string"
+    }
+  }
+}

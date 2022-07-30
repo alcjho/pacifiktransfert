@@ -7084,6 +7084,11 @@ mz@^2.7.0:
     object-assign "^4.0.1"
     thenify-all "^1.0.0"
 
+n@^9.0.0:
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/n/-/n-9.0.0.tgz#0f57f3567d4e6721cbd62eec7972875fa69dfe84"
+  integrity sha512-OZie4DuAZASChFZnIkf5BYEYEhMe6utRTAWM+98aS6N0pRLNxcDEMwxSsy7is98zTlDICcQB2dym+u10pEOtBg==
+
 nano-time@1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/nano-time/-/nano-time-1.0.0.tgz"
@@ -7254,6 +7259,11 @@ nodemailer-shared@1.1.0:
   integrity sha512-68xW5LSyPWv8R0GLm6veAvm7E+XFXkVgvE3FW0FGxNMMZqMkPFeGDVALfR1DPdSfcoO36PnW7q5AAOgFImEZGg==
   dependencies:
     nodemailer-fetch "1.6.0"
+
+nodemailer@6.6.1:
+  version "6.6.1"
+  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-6.6.1.tgz#2a05fbf205b897d71bf43884167b5d4d3bd01b99"
+  integrity sha512-1xzFN3gqv+/qJ6YRyxBxfTYstLNt0FCtZaFRvf4Sg9wxNGWbwFmGXVpfSi6ThGK6aRxAo+KjHtYSW8NvCsNSAg==
 
 normalize-path@^3.0.0, normalize-path@~3.0.0:
   version "3.0.0"
@@ -9260,6 +9270,14 @@ strapi-plugin-ezforms@^0.0.7:
   dependencies:
     axios "^0.24.0"
     twilio "^3.71.2"
+
+strapi-provider-email-nodemailer@^3.6.10:
+  version "3.6.10"
+  resolved "https://registry.yarnpkg.com/strapi-provider-email-nodemailer/-/strapi-provider-email-nodemailer-3.6.10.tgz#30390b1851ffbc5efeb6463491f4fa37d852bfa7"
+  integrity sha512-Ra1Ek/GE0Pg6K3NIJ1ZF5a2wIKxjQ0oSshsC0AYmNo047FFlId+z2lJLGvCRIEPTP+T5EVHllWitiWCpWwbHbA==
+  dependencies:
+    lodash "4.17.21"
+    nodemailer "6.6.1"
 
 stream-browserify@^3.0.0:
   version "3.0.0"

@@ -1,10 +1,17 @@
 import React, { useState } from "react";
 import Link from "next/link";
-import { BACKEND_URL } from '../../config/constant';
+import axios from "axios";
+import { setCookie } from 'nookies';
+import { useRouter } from 'next/router'
 
 export default function MainBanner({ homeInfo }) {
+  const router = useRouter();
   const [senderValue, setSenderValue] = useState('')
   const [receiverValue, setReceiverValue] = useState('')
+  const [userData, setUserData] = useState({
+    send: '',
+    receive: ''
+})
 
   const updateAmount = (input) => {
     if (input === 'sender') {
@@ -16,6 +23,24 @@ export default function MainBanner({ homeInfo }) {
       console.log('(Number(senderValue) * Number(homeInfo.exchange_rate_label)', Number(senderValue) / Number(homeInfo.exchange_rate_label))
     }
   }
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    setCookie(null, 'send', senderValue);
+    setCookie(null, 'receive', receiverValue);
+
+    try {
+        router.replace('/envoyer-argent');
+    } catch (err) {
+        console.log(err.response);
+    }
+  }
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUserData({...userData, [name]: value });
+  }
+
   return (
     <div className="main-banner-section">
       <div className="d-table">
@@ -41,12 +66,13 @@ export default function MainBanner({ homeInfo }) {
 
               <div className="col-lg-5 col-md-12">
                 <div className="money-transfer-form">
-                  <form>
+                  <form onSubmit={handleSubmit}>
                     <div className="form-group">
                       <label>{homeInfo?.sender_input_label}</label>
                       <div className="money-transfer-field">
                         <input
                           type="text"
+                          name="send"
                           className="form-control"
                           placeholder="1,000"
                           value={Number(senderValue)}
@@ -80,11 +106,13 @@ export default function MainBanner({ homeInfo }) {
                       <div className="money-transfer-field">
                         <input
                           type="text"
+                          name="receive"
                           className="form-control"
                           placeholder="1,000"
                           value={Number(receiverValue)}
                           onChange={(e)=> {
                             setReceiverValue(e.target.value);
+                            handleChange(e);
                           }}
                           onBlur={() => updateAmount('receiver')}
                         />
