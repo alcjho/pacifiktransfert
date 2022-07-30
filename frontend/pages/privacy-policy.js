@@ -4,6 +4,7 @@ import PageBannerContent from '../components/Common/PageBannerContent';
 import Footer from '../components/Layouts/Footer';
 import axios from 'axios';
 import { BACKEND_URL } from '../config/constant'
+import MarkdownToHtml from 'react-markdown';
 
     export default function PrivacyPolicy() {
         const [privacyPolicy, setPrivacyPolicy] = useState({})
@@ -32,8 +33,8 @@ import { BACKEND_URL } from '../config/constant'
 
                 <div className="ptb-70">
                     <div className="container">
-                        <div className="main-text-content" dangerouslySetInnerHTML={{__html: privacyPolicy.privacy_policy_content}}>
-
+                        <div className="main-text-content">
+                            <MarkdownToHtml children={ privacyPolicy.privacy_policy_content } />
                         </div>
                     </div>
                 </div>

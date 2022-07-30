@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import Link from "next/link";
-import { BACKEND_URL } from '../../config/constant';
+import axios from "axios";
+import { setCookie } from 'nookies';
+import { useRouter } from 'next/router'
 
 export default function MainBanner({ homeInfo }) {
+  const router = useRouter();
   const [senderValue, setSenderValue] = useState('')
   const [receiverValue, setReceiverValue] = useState('')
   const [userData, setUserData] = useState({
@@ -21,9 +24,13 @@ export default function MainBanner({ homeInfo }) {
     }
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
+    e.preventDefault();
+    setCookie(null, 'send', senderValue);
+    setCookie(null, 'receive', receiverValue);
+
     try {
-        router.replace('/envoyer-argent?send='+userData.send+'&receive='+userData.receive);
+        router.replace('/envoyer-argent');
     } catch (err) {
         console.log(err.response);
     }
@@ -59,7 +66,7 @@ export default function MainBanner({ homeInfo }) {
 
               <div className="col-lg-5 col-md-12">
                 <div className="money-transfer-form">
-                  <form action={"/envoyer-argent?send="+userData.send+"&receive="+userData.receive}>
+                  <form onSubmit={handleSubmit}>
                     <div className="form-group">
                       <label>{homeInfo?.sender_input_label}</label>
                       <div className="money-transfer-field">

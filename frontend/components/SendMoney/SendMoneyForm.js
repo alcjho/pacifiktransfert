@@ -5,9 +5,9 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { BACKEND_URL } from '../../config/constant';
 import SelectComponent from 'react-select';
+import nookies from 'nookies';
 
 const MySwal = withReactContent(Swal)
-import baseUrl from '../../utils/baseUrl';
 
 const alertContent = () => {
     MySwal.fire({
@@ -38,13 +38,15 @@ const INITIAL_STATE = {
 };
 
 const ContactForm = ({ contactInfo, userInfo }) => {
-
+    const sendAndReceive = nookies.get();
     const [recipient, setRecipient] = useState(INITIAL_STATE);
     const { register, handleSubmit, errors } = useForm();
     const [confirm, setConfirm] = useState(false)
     const [sucessSent, setSucessSent] = useState(false);
     const [ trxTypes, setTrxTypes ] = useState([])
     const [ orangeDisabled, setOrangeDisabled ] = useState(false);
+    const [ sendAmount, setSendAmount ] = useState();
+    const [ receiveAmont, setReceiveAmount ] = useState(); 
 
     const handleChange = e => {
         const { name, value } = e.target;
@@ -63,7 +65,7 @@ const ContactForm = ({ contactInfo, userInfo }) => {
     }
 
     const getTrxTypes = async () => {
-        await axios.get(BACKEND_URL+'/api/transfert-types',{
+        await axios.get(BACKEND_URL+'/api/transfert-types', {
             headers: {
                 Authorization: `Bearer ${userInfo.jwt}`,
             },
@@ -90,19 +92,8 @@ const ContactForm = ({ contactInfo, userInfo }) => {
                     }
                 })
                 .then(response => {
-                    console.log(response)
                     setSucessSent(true)
                 });
-            // try {
-            //     const { data } = await axios.post(BACKEND_URL+'/api/user-transferts', {to_name: 'Jean-louis', to_email: 'Yamileyjla@gmail.com', to_firstname: 'Yamiley', amount_to_send: '1000', amount_to_receive: '70000'}, {
-            //         headers: {
-            //             Authorization: `Bearer ${userInfo.jwt}`,
-            //         },
-            //     });
-                
-            // } catch (error) {
-            //     console.log(error)
-            // }
         }
     };
 
@@ -118,6 +109,35 @@ const ContactForm = ({ contactInfo, userInfo }) => {
                 <form id="contactForm" className='mx-5' onSubmit={onSubmit}>
                     {!confirm ?
                         <div>
+                            <div className="form-group">
+                                <input 
+                                    type="text" 
+                                    name="amount_to_send" 
+                                    placeholder={"Montant initial"}  
+                                    className="form-control" 
+                                    value={sendAndReceive.send}
+                                    onChange={(e)=>handleChange(e)}
+                                    ref={register({ required: true })}
+                                />
+                                <div className='invalid-feedback' style={{display: 'block'}}>
+                                    {errors.address && 'entrer votre adresse'}
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <input 
+                                    type="text" 
+                                    name="amount_to_receive" 
+                                    placeholder={"Montant a recevoir"}  
+                                    className="form-control" 
+                                    value={sendAndReceive.receive}
+                                    onChange={(e)=>handleChange(e)}
+                                    ref={register({ required: true })}
+                                    disabled={true}
+                                />
+                                <div className='invalid-feedback' style={{display: 'block'}}>
+                                    {errors.address && 'entrer votre adresse'}
+                                </div>
+                            </div>
                             <div className="form-group">
                                 <input 
                                     type="text" 
@@ -227,35 +247,7 @@ const ContactForm = ({ contactInfo, userInfo }) => {
                                     {errors.address && 'entrer votre adresse'}
                                 </div>
                             </div>
-                            <div className="form-group">
-                                <input 
-                                    type="text" 
-                                    name="amount_to_send" 
-                                    placeholder={"Montant initial"}  
-                                    className="form-control" 
-                                    value={recipient.amount_to_send}
-                                    onChange={(e)=>handleChange(e)}
-                                    ref={register({ required: true })}
-                                />
-                                <div className='invalid-feedback' style={{display: 'block'}}>
-                                    {errors.address && 'entrer votre adresse'}
-                                </div>
-                            </div>
-                            <div className="form-group">
-                                <input 
-                                    type="text" 
-                                    name="amount_to_receive" 
-                                    placeholder={"Montant a recevoir"}  
-                                    className="form-control" 
-                                    value={recipient.amount_to_receive}
-                                    onChange={(e)=>handleChange(e)}
-                                    ref={register({ required: true })}
-                                    // disabled={true}
-                                />
-                                <div className='invalid-feedback' style={{display: 'block'}}>
-                                    {errors.address && 'entrer votre adresse'}
-                                </div>
-                            </div>
+                            
                             <div className="form-group">
                                 <input 
                                     type="text" 
@@ -273,7 +265,6 @@ const ContactForm = ({ contactInfo, userInfo }) => {
                             <div className="form-group" style={{textAlign:'left'}}>
                                 <SelectComponent 
                                     placeholder="Selectionnez le type de transfert" 
-                                    value={trxTypes.find(obj => obj.value === trxTypes)}
                                     options={trxTypes} 
                                     onChange={handleTrxTypeChange}/>
                             </div>

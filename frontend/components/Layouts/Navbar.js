@@ -59,7 +59,7 @@ export default function Navbar() {
                                 <div className={classOne} id="navbarSupportedContent">
                                     <ul className="navbar-nav">
                                         <li className="nav-item">
-                                            <Link href="/index3" activeClassName="active">
+                                            <Link href="/" activeClassName="active">
                                                 <a className="nav-link">
                                                     Acceuil 
                                                 </a>
