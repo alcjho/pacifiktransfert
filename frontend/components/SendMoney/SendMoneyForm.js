@@ -58,6 +58,7 @@ const ContactForm = ({ contactInfo, userInfo, sendMoneyPage }) => {
     }
 
     const handleTrxTypeChange = e => {
+        console.log('handle', e)
         if(e.value == 1){
             setOrangeDisabled(true);
         }else{
@@ -66,6 +67,7 @@ const ContactForm = ({ contactInfo, userInfo, sendMoneyPage }) => {
 
         const { name, value } = {name: 'transfert_type', value: [e.value]}
         setRecipient({...recipient, [name]: value });
+        console.log('type', getTypeLabel(e.value))
     }
 
     const getTrxTypes = async () => {
@@ -83,6 +85,11 @@ const ContactForm = ({ contactInfo, userInfo, sendMoneyPage }) => {
         });
     }
 
+    const getTypeLabel = (value) => {
+        const result = trxTypes.find(type => type.value == value)
+        return result?.label;
+    }
+
     const getConfirmationMessage = async () => {
         await axios.get(BACKEND_URL+'/api/success-transfert', {params: {populate:'*'}})
         .then((response)=>{
@@ -91,13 +98,14 @@ const ContactForm = ({ contactInfo, userInfo, sendMoneyPage }) => {
     }
 
     const onSubmit = async (e) => {
+        console.log('wess')
         // e.preventDefault();
         if (orangeDisabled !== null) {
+
             setConfirm(true)
             if (confirm) {
                 recipient.user = [userInfo.id]
                 axios
-    
                     .post(BACKEND_URL+'/api/user-transferts', {data: recipient}, {
                         headers: {
                             Authorization: `Bearer ${userInfo.jwt}`
@@ -105,12 +113,17 @@ const ContactForm = ({ contactInfo, userInfo, sendMoneyPage }) => {
                     })
                     .then(response => {
                         setSucessSent(true)
+                        window.scrollTo({top: 0, left: 0, behavior: 'smooth'});
                     });
             }
+        }
+        else {
+            setSelectTypeError(true)
         }
     };
 
     const onError = (errors, e) => {
+        console.log('error', errors)
         if (orangeDisabled === null) {
             setSelectTypeError(true)
         }
@@ -304,7 +317,7 @@ const ContactForm = ({ contactInfo, userInfo, sendMoneyPage }) => {
                                     className={selectTypeError ? ' is-invalid-select ' : ''}
                                     placeholder="Selectionnez le type de transfert" 
                                     options={trxTypes} 
-                                    onChange={() => {handleTrxTypeChange; setSelectTypeError(false)}}/>
+                                    onChange={(e) => {handleTrxTypeChange(e); setSelectTypeError(false)}}/>
                                 <div className='invalid-feedback' style={{display: 'block'}}>
                                     {selectTypeError && 'selectionner le type de transfert'}
                                 </div>
@@ -318,11 +331,12 @@ const ContactForm = ({ contactInfo, userInfo, sendMoneyPage }) => {
                                         className={"form-control ".concat(errors.orange_number ? "is-invalid" : "")} 
                                         value={recipient.orange_number}
                                         onChange={(e)=>handleChange(e)}
-                                        ref={register({ required: true })}
+                                        ref={ register({ required: orangeDisabled === false, pattern: /(\+?237)?(23|6[6578])\d{7}/  })}
                                         disabled={orangeDisabled}
                                     />
                                     <div className='invalid-feedback' style={{display: 'block'}}>
-                                        {errors.orange_number && 'entrer un autre numéro de téléphone'}
+                                        {errors.orange_number && errors.orange_number === "required" && 'entrer le numéro de téléphone'}
+                                        {errors.orange_number && errors.orange_number === "pattern" && 'entrer un numéro de téléphone valide'}
                                     </div>
                                 </div>
                             }
@@ -429,7 +443,7 @@ const ContactForm = ({ contactInfo, userInfo, sendMoneyPage }) => {
                                     {"Type de transfert"}
                                 </label>
                                 <div>
-                                    {recipient.transfert_type}
+                                    {recipient.transfert_type ? getTypeLabel(recipient.transfert_type) : ''}
                                 </div>
                             </div>
                             <div className="form-group">
@@ -440,7 +454,7 @@ const ContactForm = ({ contactInfo, userInfo, sendMoneyPage }) => {
                                     {"Numéro orange money"}
                                 </label>
                                 <div>
-                                    {recipient.transfert_type==1?recipient.numero_orange:'N/A'}
+                                    {recipient.transfert_type == 2 ? recipient.orange_number:'N/A'}
                                 </div>
                             </div>
                             <div className='d-flex'>
