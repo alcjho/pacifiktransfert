@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { BACKEND_URL } from '../../config/constant'
+import Zoom from 'react-medium-image-zoom'
+import 'react-medium-image-zoom/dist/styles.css'
 
 const profile_info = {
     'name': 'Jhonny Alcius',
@@ -35,14 +37,14 @@ export default function Transaction({ user }) {
     <div>
         <div className="container rounded bg-white mt-5 mb-5 profile-page">
             <div className="row">
-                <div className="col-md-3 border-right">
+                <div className="col-md-2 border-right">
                     <div className="d-flex flex-column align-items-center text-center p-3 py-3">
                         <img className="rounded-circle mt-5" width="150px" src={user.photo} />
                         <span className="font-weight-bold">{ user.firstname + ' ' + user.lastname  }</span>
                         <span className="text-black-50">{user.email}</span>
                         </div>
                 </div>
-                <div className="col-md-9 border-right mt-5">
+                <div className="col-md-10 border-right mt-5">
                     <h4>Transactions</h4>
                     <div className="card my-5">
                         <div className="card-body p-4">
@@ -57,6 +59,7 @@ export default function Transaction({ user }) {
                                         <th>Montant recu</th>
                                         <th>type de transfert</th>
                                         <th>Action</th>
+                                        <th>Receipe</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -80,10 +83,23 @@ export default function Transaction({ user }) {
                                                        Edit
                                                     </button>
                                                 </td>
+                                                <td>
+                                                    {transaction.attributes?.reception_proof?.data?.attributes?.url ?
+                                                        <Zoom>
+                                                            <img
+                                                                style={{maxWidth: '100px'}}
+                                                                src={BACKEND_URL + transaction.attributes?.reception_proof.data?.attributes?.url}
+                                                                alt="no image"
+                                                            />
+                                                        </Zoom>
+                                                        :
+                                                        "Pas de reçu"
+                                                    }
+                                                </td>
                                             </tr>
                                         )}
                                 </tbody>
-                                </table>
+                            </table>
                         </div>
                     </div>
                 </div>

@@ -12,8 +12,8 @@ const profile_info = {
     'phone': '+5149556255'
 }
 
-export default function Profile() {
-    const [profile, setProfile] = useState(profile_info)
+export default function Profile({ profileInfo }) {
+    const [profile, setProfile] = useState(profileInfo)
     const { register, handleSubmit, errors } = useForm();
     const [editPersonalInfo, setEditPersonalInfo] = useState(false)
     const [editOccupation, setEditOccupation] = useState(false)

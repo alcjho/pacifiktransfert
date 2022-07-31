@@ -32,6 +32,7 @@ import { BACKEND_URL } from '../config/constant';
                 <PageBannerContent 
                     pageTitle={faq.faq_cover_title} 
                     pageCaption={faq.faq_cover_subtitle} 
+                    coverImage={BACKEND_URL + faq.faq_cover?.data?.attributes?.url}
                 />
 
                 <FaqContentArea faq={faq} />
