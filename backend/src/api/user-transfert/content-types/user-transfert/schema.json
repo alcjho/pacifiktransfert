@@ -4,7 +4,7 @@
   "info": {
     "singularName": "user-transfert",
     "pluralName": "user-transferts",
-    "displayName": "user_transferts",
+    "displayName": "user_transfert",
     "description": ""
   },
   "options": {
@@ -17,11 +17,11 @@
       "unique": true,
       "private": true
     },
-    "amount_sent": {
+    "amount_to_send": {
       "type": "decimal",
       "required": true
     },
-    "amount_received": {
+    "amount_to_receive": {
       "type": "decimal",
       "required": true
     },
@@ -54,12 +54,47 @@
       "target": "plugin::users-permissions.user",
       "inversedBy": "user_transferts"
     },
-    "city": {
+    "to_city": {
       "type": "string"
     },
     "code": {
       "type": "uid",
       "private": true
+    },
+    "to_address": {
+      "type": "string"
+    },
+    "orange_number": {
+      "type": "string"
+    },
+    "to_phone": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string"
+    },
+    "transfert_type": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::transfert-type.transfert-type"
+    },
+    "to_other_phone": {
+      "type": "string"
+    },
+    "to_middle_name": {
+      "type": "string"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "En traitement",
+        "Complété",
+        "Action requise"
+      ],
+      "default": "En traitement"
+    },
+    "message": {
+      "type": "text"
     }
   }
 }
