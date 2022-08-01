@@ -22,6 +22,13 @@ import checkuser from './api/checkuser';
                 console.log(error);
               });
         } 
+        // be remplaced by api
+        const sendMoneyPage = {
+          'page_title': 'Envoyer de l\'argent',
+          'page_caption': 'rapide, confidentiel et sécurisé',
+          'cover_image': '/images/page-title-bg2.jpg',
+          'exchange_rate_value': '450'
+      }
 
         useEffect(() => {
             getContact()
@@ -31,11 +38,12 @@ import checkuser from './api/checkuser';
                 <Navbar />
 
                 <PageBannerContent 
-                    pageTitle={"Envoyer de l'argent"} 
-                    pageCaption={"rapide, confidentiel et sécurisé"}
+                    pageTitle={sendMoneyPage.page_title} 
+                    pageCaption={sendMoneyPage.page_caption}
+                    coverImage={sendMoneyPage.cover_image}
                 />
 
-                <SendMoneyContent contact={contact} user={ user.user }/>
+                <SendMoneyContent contact={contact} user={ user.user } sendMoneyPage={sendMoneyPage}/>
 
                 {/* <AccountCreateArea /> */}
 

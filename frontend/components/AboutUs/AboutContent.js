@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { BACKEND_URL } from '../../config/constant';
+import MarkDownToHtml from 'react-markdown'
 
 const ModalVideo = dynamic(() => import('react-modal-video'), {
     ssr: false
@@ -16,7 +17,9 @@ const ModalVideo = dynamic(() => import('react-modal-video'), {
                             <div className="about-content">
                                 <span>{aboutUs.about_us_content_uptitle}</span>
                                 <h2>{aboutUs.about_us_content_title}</h2>
-                                <p>{aboutUs.about_us_content_desc}</p>
+                                <p>
+                                    <MarkDownToHtml children={aboutUs.about_us_content_desc} />
+                                </p>
                             </div>
                         </div>
 

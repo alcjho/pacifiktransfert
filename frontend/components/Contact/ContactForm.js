@@ -4,7 +4,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 const MySwal = withReactContent(Swal)
-import baseUrl from '../../utils/baseUrl';
+import { BACKEND_URL, BEARER_TOKEN } from '../../config/constant';
 
 const alertContent = () => {
     MySwal.fire({
@@ -19,37 +19,37 @@ const alertContent = () => {
 
 // Form initial state
 const INITIAL_STATE = {
-    name: "",
+    fullname: "",
     email: "",
-    number: "",
+    phone: "",
     subject: "",
-    text: ""
+    message: ""
 };
 
 const ContactForm = ({ contactInfo }) => {
 
     const [contact, setContact] = useState(INITIAL_STATE);
+    const [success, setSuccess ] = useState()
     const { register, handleSubmit, errors } = useForm();
 
     const handleChange = e => {
         const { name, value } = e.target;
         setContact(prevState => ({ ...prevState, [name]: value }));
-        console.log(contact)
     }
 
     const onSubmit = async e => {
-        // e.preventDefault();
-        try {
-            const url = `${baseUrl}/api/contact`;
-            const { name, email, number, subject, text } = contact;
-            const payload = { name, email, number, subject, text };
-            await axios.post(url, payload);
-            console.log(url);
-            setContact(INITIAL_STATE);
-            alertContent();
-        } catch (error) {
-            console.log(error)
-        }
+        const { fullname, email, phone, subject, message } = contact;
+        const contact_info = { fullname, email, phone, subject, message };
+        axios
+            .post(BACKEND_URL+'/api/contact-messages', {data: contact_info}, {
+                headers: {
+                    Authorization: `Bearer ${BEARER_TOKEN}`
+                }
+            })
+            .then(response => {
+                setSuccess(true)
+                setContact(INITIAL_STATE)
+            });
     };
 
     return (
@@ -61,15 +61,15 @@ const ContactForm = ({ contactInfo }) => {
                         <div className="form-group">
                             <input 
                                 type="text" 
-                                name="name" 
+                                name="fullname" 
                                 placeholder={contactInfo.name_placeholder} 
                                 className="form-control" 
-                                value={contact.name}
+                                value={contact.fullname}
                                 onChange={handleChange}
                                 ref={register({ required: true })}
                             />
                             <div className='invalid-feedback' style={{display: 'block'}}>
-                                {errors.name && 'Please enter your name'}
+                                {errors.fullname && 'Le nom complet est obligatoire'}
                             </div>
                         </div>
                     </div>
@@ -86,7 +86,7 @@ const ContactForm = ({ contactInfo }) => {
                                 ref={register({ required: true, pattern: /^\S+@\S+$/i })}
                             />
                             <div className='invalid-feedback' style={{display: 'block'}}>
-                                {errors.email && 'Please enter your email'}
+                                {errors.email && 'Le courriel est obligatoire'}
                             </div>
                         </div>
                     </div>
@@ -95,15 +95,15 @@ const ContactForm = ({ contactInfo }) => {
                         <div className="form-group">
                             <input 
                                 type="text" 
-                                name="number" 
+                                name="phone" 
                                 placeholder={contactInfo.phone_placeholder}  
                                 className="form-control" 
-                                value={contact.number}
+                                value={contact.phone}
                                 onChange={handleChange}
                                 ref={register({ required: true })}
                             />
                             <div className='invalid-feedback' style={{display: 'block'}}>
-                                {errors.number && 'Please enter your number'}
+                               
                             </div>
                         </div>
                     </div>
@@ -120,7 +120,7 @@ const ContactForm = ({ contactInfo }) => {
                                 ref={register({ required: true })}
                             />
                             <div className='invalid-feedback' style={{display: 'block'}}>
-                                {errors.subject && 'Please enter your number'}
+                                {errors.subject && 'La raison est obligatoire'}
                             </div>
                         </div>
                     </div>
@@ -128,23 +128,27 @@ const ContactForm = ({ contactInfo }) => {
                     <div className="col-lg-12 col-md-12">
                         <div className="form-group">
                             <textarea 
-                                name="text" 
+                                name="message" 
                                 cols="30" 
                                 rows="5" 
                                 placeholder={contactInfo.message_placeholder}
                                 className="form-control" 
-                                value={contact.text}
+                                value={contact.message}
                                 onChange={handleChange}
                                 ref={register({ required: true })}
                             />
                             <div className='invalid-feedback' style={{display: 'block'}}>
-                                {errors.text && 'Write your message'}
+                                {errors.message && 'Le message ne peut pas être vide'}
                             </div>
                         </div>
                     </div>
 
                     <div className="col-lg-12 col-sm-12">
-                        <button type="submit" className="btn btn-primary">{contactInfo.send_message_btn_label}</button>
+                        <button type="submit" className="btn btn-primary">{contactInfo.send_message_btn_label}</button>{
+                            success?
+                            <img src="/images/success-icon.png" style={{width: '50px', float:'right'}}/>
+                            :''
+                        }
                     </div>
                 </div>
             </form>

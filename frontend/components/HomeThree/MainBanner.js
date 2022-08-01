@@ -1,8 +1,14 @@
 import React, { useState } from "react";
 import Link from "next/link";
+import { useForm } from 'react-hook-form';
+import axios from "axios";
+import { setCookie } from 'nookies';
+import { useRouter } from 'next/router'
 import { BACKEND_URL } from '../../config/constant';
 
 export default function MainBanner({ homeInfo }) {
+  const { register, handleSubmit, errors } = useForm();
+  const router = useRouter();
   const [senderValue, setSenderValue] = useState('')
   const [receiverValue, setReceiverValue] = useState('')
   const [userData, setUserData] = useState({
@@ -21,9 +27,13 @@ export default function MainBanner({ homeInfo }) {
     }
   }
 
-  const handleSubmit = async (e) => {
+  const onSubmit = async (e) => {
+    // e?.preventDefault();
+    setCookie(null, 'send', senderValue);
+    setCookie(null, 'receive', receiverValue);
+
     try {
-        router.replace('/envoyer-argent?send='+userData.send+'&receive='+userData.receive);
+        router.replace('/envoyer-argent');
     } catch (err) {
         console.log(err.response);
     }
@@ -35,7 +45,7 @@ export default function MainBanner({ homeInfo }) {
   }
 
   return (
-    <div className="main-banner-section">
+    <div className="main-banner-section" style={{backgroundImage: `url(` + BACKEND_URL + homeInfo.Carousel?.data[0]?.attributes?.url + `)`}}>
       <div className="d-table">
         <div className="d-table-cell">
           <div className="container">
@@ -59,13 +69,14 @@ export default function MainBanner({ homeInfo }) {
 
               <div className="col-lg-5 col-md-12">
                 <div className="money-transfer-form">
-                  <form action={"/envoyer-argent?send="+userData.send+"&receive="+userData.receive}>
+                  <form id="moneyForm" onSubmit={handleSubmit(onSubmit)}>
                     <div className="form-group">
                       <label>{homeInfo?.sender_input_label}</label>
                       <div className="money-transfer-field">
                         <input
                           type="text"
-                          name="send"
+                          name="send_amount"
+                          ref={register({ required: true, max: 1000, min: 1 })}
                           className="form-control"
                           placeholder="1,000"
                           value={Number(senderValue)}
@@ -80,6 +91,11 @@ export default function MainBanner({ homeInfo }) {
                         </div>
                         </div>
                       </div>
+                    </div>
+                    <div className='invalid-feedback' style={{display: 'block'}}>
+                        {errors.send_amount && errors.send_amount.type === "required"  && 'entrer le montant à envoyer'}
+                        {errors.send_amount && errors.send_amount.type === "max" && 'maximum 1000$'}
+                        {errors.send_amount && errors.send_amount.type === "min" && 'min 10$'}
                     </div>
 
                     <div className="currency-info">

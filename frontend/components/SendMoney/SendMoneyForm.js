@@ -5,9 +5,9 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { BACKEND_URL } from '../../config/constant';
 import SelectComponent from 'react-select';
+import nookies from 'nookies';
 
 const MySwal = withReactContent(Swal)
-import baseUrl from '../../utils/baseUrl';
 
 const alertContent = () => {
     MySwal.fire({
@@ -37,21 +37,28 @@ const INITIAL_STATE = {
     transfert_type: ""
 };
 
-const ContactForm = ({ contactInfo, userInfo }) => {
-
+const ContactForm = ({ contactInfo, userInfo, sendMoneyPage }) => {
+    const sendAndReceive = nookies.get();
     const [recipient, setRecipient] = useState(INITIAL_STATE);
-    const { register, handleSubmit, errors } = useForm();
+    const { register, handleSubmit, errors, control } = useForm();
     const [confirm, setConfirm] = useState(false)
     const [sucessSent, setSucessSent] = useState(false);
     const [ trxTypes, setTrxTypes ] = useState([])
-    const [ orangeDisabled, setOrangeDisabled ] = useState(false);
+    const [ orangeDisabled, setOrangeDisabled ] = useState(null);
+    const [confirmationMessage, setConfirmationMessage] = useState("")
+    const [selectTypeError, setSelectTypeError] = useState(false)
 
     const handleChange = e => {
         const { name, value } = e.target;
         setRecipient({...recipient, [name]: value });
     }
 
+    const updateFormByAmout = () => {
+        setRecipient({...recipient, ["amount_to_send"]: sendAndReceive.send, ["amount_to_receive"]: sendAndReceive.receive})
+    }
+
     const handleTrxTypeChange = e => {
+        console.log('handle', e)
         if(e.value == 1){
             setOrangeDisabled(true);
         }else{
@@ -60,10 +67,11 @@ const ContactForm = ({ contactInfo, userInfo }) => {
 
         const { name, value } = {name: 'transfert_type', value: [e.value]}
         setRecipient({...recipient, [name]: value });
+        console.log('type', getTypeLabel(e.value))
     }
 
     const getTrxTypes = async () => {
-        await axios.get(BACKEND_URL+'/api/transfert-types',{
+        await axios.get(BACKEND_URL+'/api/transfert-types', {
             headers: {
                 Authorization: `Bearer ${userInfo.jwt}`,
             },
@@ -75,39 +83,60 @@ const ContactForm = ({ contactInfo, userInfo }) => {
             })            
             setTrxTypes(options)
         });
-        
+    }
+
+    const getTypeLabel = (value) => {
+        const result = trxTypes.find(type => type.value == value)
+        return result?.label;
+    }
+
+    const getConfirmationMessage = async () => {
+        await axios.get(BACKEND_URL+'/api/success-transfert', {params: {populate:'*'}})
+        .then((response)=>{
+            setConfirmationMessage(response.data.data.attributes.confirmation_message)
+        });
     }
 
     const onSubmit = async (e) => {
-        e.preventDefault();
-        setConfirm(true)
-        if (confirm) {
-            recipient.user = [userInfo.id]
-            axios
-                .post(BACKEND_URL+'/api/user-transferts', {data: recipient}, {
-                    headers: {
-                        Authorization: `Bearer ${userInfo.jwt}`
-                    }
-                })
-                .then(response => {
-                    console.log(response)
-                    setSucessSent(true)
-                });
-            // try {
-            //     const { data } = await axios.post(BACKEND_URL+'/api/user-transferts', {to_name: 'Jean-louis', to_email: 'Yamileyjla@gmail.com', to_firstname: 'Yamiley', amount_to_send: '1000', amount_to_receive: '70000'}, {
-            //         headers: {
-            //             Authorization: `Bearer ${userInfo.jwt}`,
-            //         },
-            //     });
-                
-            // } catch (error) {
-            //     console.log(error)
-            // }
+        console.log('wess')
+        // e.preventDefault();
+        if (orangeDisabled !== null) {
+
+            setConfirm(true)
+            if (confirm) {
+                recipient.user = [userInfo.id]
+                axios
+                    .post(BACKEND_URL+'/api/user-transferts', {data: recipient}, {
+                        headers: {
+                            Authorization: `Bearer ${userInfo.jwt}`
+                        }
+                    })
+                    .then(response => {
+                        setSucessSent(true)
+                        window.scrollTo({top: 0, left: 0, behavior: 'smooth'});
+                    });
+            }
+        }
+        else {
+            setSelectTypeError(true)
         }
     };
 
+    const onError = (errors, e) => {
+        console.log('error', errors)
+        if (orangeDisabled === null) {
+            setSelectTypeError(true)
+        }
+      };
+
+    const updateAmount = (e) => {
+          setRecipient({...recipient, ["amount_to_receive"]: Number(e.target.value) * Number(sendMoneyPage.exchange_rate_value)})
+      }
+
     useEffect(() => {
         getTrxTypes();
+        updateFormByAmout();
+        getConfirmationMessage();
       }, [])
 
     return (
@@ -115,21 +144,54 @@ const ContactForm = ({ contactInfo, userInfo }) => {
         <div className="contact-form">
             {!sucessSent ? 
             
-                <form id="contactForm" className='mx-5' onSubmit={onSubmit}>
+                <form id="contactForm" className='mx-5' onSubmit={handleSubmit(onSubmit, onError)}>
                     {!confirm ?
                         <div>
                             <div className="form-group">
                                 <input 
                                     type="text" 
+                                    name="amount_to_send" 
+                                    placeholder={"Montant initial"}  
+                                    className={"form-control ".concat(errors.amount_to_send ? "is-invalid" : "")} 
+                                    value={recipient.amount_to_send}
+                                    onChange={(e)=>handleChange(e)}
+                                    ref={register({ required: true, max: 1000, min: 10 })}
+                                    onBlur={(e)=> updateAmount(e)}
+                                />
+                                <div className='invalid-feedback' style={{display: 'block'}}>
+                                    {errors.amount_to_send && errors.amount_to_send.type === "required"  && 'entrer le montant à envoyer'}
+                                    {errors.amount_to_send && errors.amount_to_send.type === "max" && 'maximum 1000$'}
+                                    {errors.amount_to_send && errors.amount_to_send.type === "min" && 'min 10$'}
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <input 
+                                    type="text" 
+                                    name="amount_to_receive" 
+                                    placeholder={"Montant a recevoir"}  
+                                    className={"form-control ".concat(errors.amount_to_receive ? "is-invalid" : "")} 
+                                    readOnly
+                                    value={recipient.amount_to_receive}
+                                    onChange={(e)=>handleChange(e)}
+                                    ref={register({ required: true })}
+                                    disabled={true}
+                                />
+                                <div className='invalid-feedback' style={{display: 'block'}}>
+                                    {errors.amount_to_receive && 'entrer le montant à recevoir'}
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <input 
+                                    type="text" 
                                     name="to_firstname" 
                                     placeholder={"prenom"} 
-                                    className="form-control" 
+                                    className={"form-control ".concat(errors.to_firstname ? "is-invalid" : "")} 
                                     value={recipient.to_firstname}
                                     onChange={(e)=>handleChange(e)}
                                     ref={register({ required: true })}
                                 />
                                 <div className='invalid-feedback' style={{display: 'block'}}>
-                                    {errors.firstname && 'entrer votre prenom'}
+                                    {errors.to_firstname && 'entrer le prenom'}
                                 </div>
                             </div>
                             <div className="form-group">
@@ -137,13 +199,13 @@ const ContactForm = ({ contactInfo, userInfo }) => {
                                     type="text" 
                                     name="to_name" 
                                     placeholder={"nom"}  
-                                    className="form-control" 
+                                    className={"form-control ".concat(errors.to_name ? "is-invalid" : "")}
                                     value={recipient.to_name}
                                     onChange={(e)=>handleChange(e)}
                                     ref={register({ required: true })}
                                 />
                                 <div className='invalid-feedback' style={{display: 'block'}}>
-                                    {errors.lastname && 'entrer votre nom'}
+                                    {errors.to_name && 'entrer le nom'}
                                 </div>
                             </div>
                             <div className="form-group">
@@ -158,45 +220,53 @@ const ContactForm = ({ contactInfo, userInfo }) => {
                                 />
                             </div>
                             <div className="form-group">
-                                <input 
-                                    type="text" 
-                                    name="to_phone" 
-                                    placeholder={"numero de telephone"}  
-                                    className="form-control" 
-                                    value={recipient.to_phone}
-                                    onChange={(e)=>handleChange(e)}
-                                    ref={register({ required: true })}
-                                />
+                                <div className='d-flex'>
+                                    <h6 className='me-2 mb-0 align-self-center'>+237</h6>
+                                    <input 
+                                        type="text" 
+                                        name="to_phone" 
+                                        placeholder={"numero de telephone"}  
+                                        className={"form-control ".concat(errors.to_phone ? "is-invalid" : "")}
+                                        value={recipient.to_phone}
+                                        onChange={(e)=>handleChange(e)}
+                                        ref={register({ required: true, pattern: /(\+?237)?(23|6[6578])\d{7}/ })}
+                                    />
+                                </div>
                                 <div className='invalid-feedback' style={{display: 'block'}}>
-                                    {errors.phonenumber && 'entrer votre numéro de téléphone'}
+                                    {errors.to_phone && errors.to_phone.type === "required" && 'entrer le numéro de téléphone'}
+                                    {errors.to_phone && errors.to_phone.type === "pattern" && 'entrer un numéro de téléphone valide'}
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <div className='d-flex'>
+                                    <h6 className='me-2 mb-0 align-self-center'>+237</h6>
+                                    <input 
+                                        type="text" 
+                                        name="to_other_phone" 
+                                        placeholder={"entrer un second numéro de téléphone"}  
+                                        className={"form-control ".concat(errors.to_other_phone ? "is-invalid" : "")}
+                                        value={recipient.to_other_phone}
+                                        onChange={(e)=>handleChange(e)}
+                                        ref={register({ required: true, pattern: /(\+?237)?(23|6[6578])\d{7}/ })}
+                                    />
+                                </div>
+                                <div className='invalid-feedback' style={{display: 'block'}}>
+                                    {errors.to_other_phone && errors.to_other_phone.type === "required" && 'entrer le numéro de téléphone'}
+                                    {errors.to_other_phone && errors.to_other_phone.type === "pattern" && 'entrer un numéro de téléphone valide'}
                                 </div>
                             </div>
                             <div className="form-group">
                                 <input 
-                                    type="text" 
-                                    name="to_other_phone" 
-                                    placeholder={"entrer un second numéro de téléphone"}  
-                                    className="form-control" 
-                                    value={recipient.to_other_phone}
-                                    onChange={(e)=>handleChange(e)}
-                                    ref={register({ required: true })}
-                                />
-                                <div className='invalid-feedback' style={{display: 'block'}}>
-                                    {errors.to_other_phone && 'entrer un autre numéro de téléphone'}
-                                </div>
-                            </div>
-                            <div className="form-group">
-                                <input 
-                                    type="text" 
+                                    type="email" 
                                     name="to_email" 
                                     placeholder={"Courriel du destinataire"}  
-                                    className="form-control" 
+                                    className={"form-control ".concat(errors.to_email ? "is-invalid" : "")}
                                     value={recipient.to_email}
                                     onChange={(e)=>handleChange(e)}
                                     ref={register({ required: true })}
                                 />
                                 <div className='invalid-feedback' style={{display: 'block'}}>
-                                    {errors.phonenumber && 'entrer votre numéro de téléphone'}
+                                    {errors.to_email && 'entrer le courriel du destinataire'}
                                 </div>
                             </div>
                             <div className="form-group">
@@ -204,64 +274,36 @@ const ContactForm = ({ contactInfo, userInfo }) => {
                                     type="text" 
                                     name="to_city" 
                                     placeholder={"ville"}  
-                                    className="form-control" 
+                                    className={"form-control ".concat(errors.to_city ? "is-invalid" : "")}
                                     value={recipient.to_city}
                                     onChange={(e)=>handleChange(e)}
                                     ref={register({ required: true })}
                                 />
                                 <div className='invalid-feedback' style={{display: 'block'}}>
-                                    {errors.city && 'entrer votre ville'}
+                                    {errors.to_city && 'entrer la ville'}
                                 </div>
                             </div>
                             <div className="form-group">
                                 <input 
                                     type="text" 
                                     name="to_address" 
-                                    placeholder={"Adresse de distinataire"}  
-                                    className="form-control" 
+                                    placeholder={"Adresse de destinataire"}  
+                                    className={"form-control ".concat(errors.to_address ? "is-invalid" : "")}
                                     value={recipient.to_address}
                                     onChange={(e)=>handleChange(e)}
                                     ref={register({ required: true })}
                                 />
                                 <div className='invalid-feedback' style={{display: 'block'}}>
-                                    {errors.address && 'entrer votre adresse'}
+                                    {errors.to_address && "entrer l'adresse de destinataire"  }
                                 </div>
                             </div>
-                            <div className="form-group">
-                                <input 
-                                    type="text" 
-                                    name="amount_to_send" 
-                                    placeholder={"Montant initial"}  
-                                    className="form-control" 
-                                    value={recipient.amount_to_send}
-                                    onChange={(e)=>handleChange(e)}
-                                    ref={register({ required: true })}
-                                />
-                                <div className='invalid-feedback' style={{display: 'block'}}>
-                                    {errors.address && 'entrer votre adresse'}
-                                </div>
-                            </div>
-                            <div className="form-group">
-                                <input 
-                                    type="text" 
-                                    name="amount_to_receive" 
-                                    placeholder={"Montant a recevoir"}  
-                                    className="form-control" 
-                                    value={recipient.amount_to_receive}
-                                    onChange={(e)=>handleChange(e)}
-                                    ref={register({ required: true })}
-                                    // disabled={true}
-                                />
-                                <div className='invalid-feedback' style={{display: 'block'}}>
-                                    {errors.address && 'entrer votre adresse'}
-                                </div>
-                            </div>
+                            
                             <div className="form-group">
                                 <input 
                                     type="text" 
                                     name="reason" 
                                     placeholder={"Raison de l'envoie"}  
-                                    className="form-control" 
+                                    className={"form-control ".concat(errors.reason ? "is-invalid" : "")}
                                     value={recipient.reason}
                                     onChange={(e)=>handleChange(e)}
                                     ref={register({ required: true })}
@@ -272,26 +314,32 @@ const ContactForm = ({ contactInfo, userInfo }) => {
                             </div>
                             <div className="form-group" style={{textAlign:'left'}}>
                                 <SelectComponent 
+                                    className={selectTypeError ? ' is-invalid-select ' : ''}
                                     placeholder="Selectionnez le type de transfert" 
-                                    value={trxTypes.find(obj => obj.value === trxTypes)}
                                     options={trxTypes} 
-                                    onChange={handleTrxTypeChange}/>
-                            </div>
-                            <div className="form-group">
-                                <input 
-                                    type="text" 
-                                    name="orange_number" 
-                                    placeholder={"Numéro orange money"}  
-                                    className="form-control" 
-                                    value={recipient.orange_number}
-                                    onChange={(e)=>handleChange(e)}
-                                    ref={register({ required: true })}
-                                    disabled={orangeDisabled}
-                                />
+                                    onChange={(e) => {handleTrxTypeChange(e); setSelectTypeError(false)}}/>
                                 <div className='invalid-feedback' style={{display: 'block'}}>
-                                    {errors.to_other_phone && 'entrer un autre numéro de téléphone'}
+                                    {selectTypeError && 'selectionner le type de transfert'}
                                 </div>
                             </div>
+                            {orangeDisabled === false &&
+                                <div className="form-group">
+                                    <input 
+                                        type="text" 
+                                        name="orange_number" 
+                                        placeholder={"Numéro orange money"}  
+                                        className={"form-control ".concat(errors.orange_number ? "is-invalid" : "")} 
+                                        value={recipient.orange_number}
+                                        onChange={(e)=>handleChange(e)}
+                                        ref={ register({ required: orangeDisabled === false, pattern: /(\+?237)?(23|6[6578])\d{7}/  })}
+                                        disabled={orangeDisabled}
+                                    />
+                                    <div className='invalid-feedback' style={{display: 'block'}}>
+                                        {errors.orange_number && errors.orange_number === "required" && 'entrer le numéro de téléphone'}
+                                        {errors.orange_number && errors.orange_number === "pattern" && 'entrer un numéro de téléphone valide'}
+                                    </div>
+                                </div>
+                            }
                             
                             <div>
                                 <button style={{zIndex: 0}} type="submit" className="btn btn-primary">{"Continuer"}</button>
@@ -345,6 +393,17 @@ const ContactForm = ({ contactInfo, userInfo }) => {
                             </div>
                             <div className="form-group">
                                 <label 
+                                    htmlFor="phone" 
+                                    className='fw-bold mb-1'
+                                >
+                                    {"un second numéro de téléphone"}
+                                </label>
+                                <div>
+                                    {recipient.to_other_phone}
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label 
                                     htmlFor="city" 
                                     className='fw-bold mb-1'
                                 >
@@ -384,7 +443,7 @@ const ContactForm = ({ contactInfo, userInfo }) => {
                                     {"Type de transfert"}
                                 </label>
                                 <div>
-                                    {recipient.transfert_type}
+                                    {recipient.transfert_type ? getTypeLabel(recipient.transfert_type) : ''}
                                 </div>
                             </div>
                             <div className="form-group">
@@ -395,7 +454,7 @@ const ContactForm = ({ contactInfo, userInfo }) => {
                                     {"Numéro orange money"}
                                 </label>
                                 <div>
-                                    {recipient.transfert_type==1?recipient.numero_orange:'N/A'}
+                                    {recipient.transfert_type == 2 ? recipient.orange_number:'N/A'}
                                 </div>
                             </div>
                             <div className='d-flex'>
@@ -411,7 +470,7 @@ const ContactForm = ({ contactInfo, userInfo }) => {
                 </form>
                 : 
                 <div className='text-center'>
-                    <h4 className='fw-bold text-success'>L'argent est envoyé par success</h4>
+                    <h4 className='fw-bold text-success'>{confirmationMessage}</h4>
                     <img src='/images/payment-successful.png' style={{width: '500px', textAlign: 'center'}} />
                     <div>
                         <button type="button" className="btn btn-primary">{"retour à l'acceuil"}</button>

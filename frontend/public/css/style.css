@@ -7818,4 +7818,13 @@ Footer Area CSS
   animation-delay: -0.5s;
 }
 
+/* input  */
+.form-control.is-invalid {
+  border: 1px solid #dc3545 !important;
+}
+
+.is-invalid-select {
+  border: 1px solid red;
+}
+
 

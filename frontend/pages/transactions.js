@@ -9,12 +9,21 @@ import Footer from '../components/Layouts/Footer';
 import checkuser from './api/checkuser';
 import { setCookie } from 'nookies'
 export default function transaction(user) {
+
+  // TODOS: to be remplaced by api call
+  const transactionPage = {
+    'page_title': 'Transactions',
+    'page_caption': 'Votre historique de tous les transactions',
+    'cover_image': '/images/page-title-bg2.jpg'
+}
+
     return (
         <>
             <Navbar />
             <PageBannerContent 
-                pageTitle={"Transactions"} 
-                pageCaption={"Votre historique de tous les transactions"}
+                pageTitle={transactionPage.page_title} 
+                pageCaption={transactionPage.page_caption}
+                coverImage={transactionPage.cover_image}
             />
             <Transaction user={ user.user }/>
             <Footer />
