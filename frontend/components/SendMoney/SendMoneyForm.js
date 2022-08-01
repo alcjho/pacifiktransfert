@@ -229,7 +229,8 @@ const ContactForm = ({ contactInfo, userInfo, sendMoneyPage }) => {
                                         className={"form-control ".concat(errors.to_phone ? "is-invalid" : "")}
                                         value={recipient.to_phone}
                                         onChange={(e)=>handleChange(e)}
-                                        ref={register({ required: true, pattern: /(\+?237)?(23|6[6578])\d{7}/ })}
+                                        ref={register}
+                                        //ref={register({ required: true, pattern: /(\+?237)?(23|6[6578])\d{7}/ })}
                                     />
                                 </div>
                                 <div className='invalid-feedback' style={{display: 'block'}}>
@@ -247,7 +248,8 @@ const ContactForm = ({ contactInfo, userInfo, sendMoneyPage }) => {
                                         className={"form-control ".concat(errors.to_other_phone ? "is-invalid" : "")}
                                         value={recipient.to_other_phone}
                                         onChange={(e)=>handleChange(e)}
-                                        ref={register({ required: true, pattern: /(\+?237)?(23|6[6578])\d{7}/ })}
+                                        ref={register}
+                                        //ref={register({ required: true, pattern: /(\+?237)?(23|6[6578])\d{7}/ })}
                                     />
                                 </div>
                                 <div className='invalid-feedback' style={{display: 'block'}}>
@@ -331,7 +333,8 @@ const ContactForm = ({ contactInfo, userInfo, sendMoneyPage }) => {
                                         className={"form-control ".concat(errors.orange_number ? "is-invalid" : "")} 
                                         value={recipient.orange_number}
                                         onChange={(e)=>handleChange(e)}
-                                        ref={ register({ required: orangeDisabled === false, pattern: /(\+?237)?(23|6[6578])\d{7}/  })}
+                                        ref={register}
+                                        //ref={ register({ required: orangeDisabled === false, pattern: /(\+?237)?(23|6[6578])\d{7}/  })}
                                         disabled={orangeDisabled}
                                     />
                                     <div className='invalid-feedback' style={{display: 'block'}}>

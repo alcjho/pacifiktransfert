@@ -4,6 +4,9 @@ import axios from 'axios';
 import { BACKEND_URL } from '../../config/constant'
 import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
+import moment from 'moment';
+import Link from 'next/link';
+
 
 const profile_info = {
     'name': 'Jhonny Alcius',
@@ -19,7 +22,7 @@ export default function Transaction({ user }) {
     const [transactionHistory, setTransactionHistory] = useState([])
     
     async function getTransactionHistory(){
-        const { data } = await axios.get(BACKEND_URL+'/api/user-transferts?filters[user][id][$eq]=22&populate=*', {
+        const { data } = await axios.get(BACKEND_URL+'/api/user-transferts?filters[user][id][$eq]='+ user.id + '&sort=createdAt:DESC&populate=*', {
             headers: {
                 Authorization: `Bearer ${user.jwt}`,
             },
@@ -48,25 +51,25 @@ export default function Transaction({ user }) {
                     <h4>Transactions</h4>
                     <div className="card my-5">
                         <div className="card-body p-4">
-                            <h5 className="card-title mb-4">Toutes les transactions</h5>
-
+                            <h5 style={{display: 'inline-block'}} className="card-title mb-4">Toutes les transactions</h5>
+                            <h6 style={{display: 'inline-block', float:'right'}} className="card-title mb-4"><Link href='/envoyer-argent'>Nouveau transfert</Link></h6>
                             <table className="table align-middle mb-0 bg-white">
                                 <thead className="bg-light">
                                     <tr className='p-3'>
                                         <th>Date</th>
                                         <th>Destinataire</th>
-                                        <th>Montant envoye</th>
-                                        <th>Montant recu</th>
-                                        <th>type de transfert</th>
-                                        <th>Action</th>
-                                        <th>Receipe</th>
+                                        <th>Montant envoyé</th>
+                                        <th>Montant reçu</th>
+                                        <th>Type de transfert</th>
+                                        <th>Statut</th>
+                                        <th>Reçu</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                         {transactionHistory?.map((transaction) => 
                                             <tr>
                                                 <td>
-                                                    <p className="fw-bold mb-1">{transaction.attributes?.createdAt}</p>
+                                                    <p className="fw-bold mb-1">{moment(transaction.attributes?.createdAt).format('YYYY-MM-DD HH:mm:ss')}</p>
                                                 </td>
                                                 <td>
                                                     <p className="fw-normal mb-1">{transaction.attributes?.to_email}</p>
@@ -79,9 +82,7 @@ export default function Transaction({ user }) {
                                                 </td>
                                                 <td>{transaction.attributes?.transfert_type.data?.attributes.name_fr}</td>
                                                 <td>
-                                                    <button type="button" className="btn btn-link btn-sm btn-rounded">
-                                                       Edit
-                                                    </button>
+                                                    {transaction.attributes?.status}
                                                 </td>
                                                 <td>
                                                     {transaction.attributes?.reception_proof?.data?.attributes?.url ?
@@ -93,7 +94,7 @@ export default function Transaction({ user }) {
                                                             />
                                                         </Zoom>
                                                         :
-                                                        "Pas de reçu"
+                                                        "Pas encore de reçu"
                                                     }
                                                 </td>
                                             </tr>
