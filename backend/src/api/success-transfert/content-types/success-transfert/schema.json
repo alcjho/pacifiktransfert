@@ -1,0 +1,18 @@
+{
+  "kind": "singleType",
+  "collectionName": "success_transferts",
+  "info": {
+    "singularName": "success-transfert",
+    "pluralName": "success-transferts",
+    "displayName": "Success transfert"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "confirmation_message": {
+      "type": "text"
+    }
+  }
+}

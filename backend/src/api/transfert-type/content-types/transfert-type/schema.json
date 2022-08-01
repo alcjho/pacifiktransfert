@@ -1,0 +1,19 @@
+{
+  "kind": "collectionType",
+  "collectionName": "transfert_types",
+  "info": {
+    "singularName": "transfert-type",
+    "pluralName": "transfert-types",
+    "displayName": "transfert_type",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name_fr": {
+      "type": "string"
+    }
+  }
+}
