@@ -50,12 +50,25 @@ export default function UserProfile({ user }) {
   }, [])
 
 
+  const profile_info = {
+    'name': 'Jhonny Alcius',
+    'birth': '21/12/1998',
+    'gender': 'male',
+    'address': '2145 rue saint-germain, saint-laurent, H4L3T2, Canada',
+    'occupation': '18',
+    'email': 'luis.jhonny@gmail.com',
+    'phone': '+5149556255',
+    'cover_image': '/images/page-title-bg2.jpg'
+}
+
     return (
         <>
             <Navbar />
             <PageBannerContent 
                 pageTitle={"Profile Settings"} 
                 pageCaption={"rapide, confidentiel et sécurisé"}
+                coverImage={profile_info.cover_image}
+                
             />
             <Profile profile={profile} occupation={occupation}/>
             <Footer />

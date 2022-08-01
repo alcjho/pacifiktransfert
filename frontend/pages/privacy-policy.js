@@ -29,6 +29,7 @@ import MarkdownToHtml from 'react-markdown';
                 <PageBannerContent 
                     pageTitle={privacyPolicy.privacy_policy_cover_title}
                     pageCaption={privacyPolicy.privacy_policy_cover_subtitle}
+                    coverImage={BACKEND_URL + privacyPolicy.privacy_policy_cover?.data?.attributes?.url}
                 />
 
                 <div className="ptb-70">

@@ -35,6 +35,7 @@ import { BACKEND_URL } from '../config/constant';
                 <PageBannerContent 
                     pageTitle={aboutUs.about_us_cover_title}
                     pageCaption={aboutUs.about_us_cover_subtitle}
+                    coverImage={BACKEND_URL + aboutUs.about_us_cover?.data?.attributes?.url}
                 />
 
                 <AboutContent aboutUs={aboutUs}/>

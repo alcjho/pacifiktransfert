@@ -26,8 +26,11 @@ import MarkdownToHtml from 'react-markdown';
         return (
             <>
                 <Navbar />
-                <PageBannerContent pageTitle={termsAndConditions.terms_page_cover_title} pageCaption={termsAndConditions.terms_page_cover_subtitle} />
-
+                <PageBannerContent pageTitle={termsAndConditions.terms_page_cover_title} 
+                    pageCaption={termsAndConditions.terms_page_cover_subtitle} 
+                    coverImage={BACKEND_URL + termsAndConditions.terms_cover?.data?.attributes?.url}
+                    />
+                    
                 <div className="ptb-70">
                     <div className="container">
                         <div className="main-text-content">
