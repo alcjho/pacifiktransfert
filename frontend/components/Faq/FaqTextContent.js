@@ -7,22 +7,22 @@ import {
     AccordionItemButton
 } from 'react-accessible-accordion';
 
-    export default function FaqTextContent({ faq }) {
+    export default function FaqTextContent({ questions }) {
         const [selectedAccordion, setSelectedAccordion] = useState('')
         return (
             <div className="faq-accordion">
                 <Accordion allowZeroExpanded preExpanded={selectedAccordion}>
-                {faq?.questions_list?.questions?.map((value, index) => 
+                {questions?.map((question, index) => 
                     <AccordionItem key={'question' + index} uuid={index} onClick={()=> setSelectedAccordion(index)}>
                         <AccordionItemHeading>
                             <AccordionItemButton>
-                               {value.question}
+                               {question?.attributes.question}
                             </AccordionItemButton>
                         </AccordionItemHeading>
 
                         <AccordionItemPanel>
                             <p className="accordion-content">
-                                {value.response}
+                                {question?.attributes.response}
                             </p>
                         </AccordionItemPanel>
                     </AccordionItem>

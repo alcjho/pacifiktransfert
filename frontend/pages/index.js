@@ -3,23 +3,28 @@ import Navbar from '../components/Layouts/Navbar';
 import MainBanner from '../components/HomeThree/MainBanner';
 import FeaturedCard from '../components/HomeThree/FeaturedCard';
 import HowItWorks from '../components/HomeThree/HowItWorks';
-import ServicesContent from '../components/HomeThree/ServicesContent';
-import ComparisonsTableTwo from '../components/Common/ComparisonsTableTwo';
-import OurFeaturesStyleTwo from '../components/Common/OurFeaturesStyleTwo';
-import EasyPaymentBorrow from '../components/Common/EasyPaymentBorrow';
-import FunFacts from '../components/HomeThree/FunFacts';
-import CustomersFeedback from '../components/Common/CustomersFeedback';
-import PartnerContent from '../components/Common/PartnerContent';
-import AppDownloadContent from '../components/HomeThree/AppDownloadContent';
-import AccountCreateArea from '../components/Common/AccountCreateArea';
-import BlogCard from '../components/Common/BlogCard';
 import Footer from '../components/Layouts/Footer';
-import Rates from '../components/Rates/Rates';
 import axios from 'axios';
-import { BACKEND_URL } from '../config/constant';
+import { BACKEND_URL, BEARER_TOKEN } from '../config/constant';
 
 export default function Home() {
     const [homeInfo, setHomeInfo] = useState({})
+    const [adminConfig, setAdminConfig] = useState();
+
+    const getAdminConfig = async () => {
+      axios.get(BACKEND_URL+'/api/admin-settings/1', {
+        headers: {
+            Authorization: `Bearer ${BEARER_TOKEN}`
+        }})
+        .then(function (response) {
+          console.log(response.data.data.attributes)
+          setAdminConfig(response.data.data.attributes)
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    } 
+
     const getHome = async () => {
         axios.get(BACKEND_URL+'/api/home-page', {params: {populate:'*'}})
           .then(function (response) {
@@ -32,7 +37,8 @@ export default function Home() {
     }
       
       useEffect(() => {
-        getHome()
+        getHome();
+        getAdminConfig();
       }, [])
       
 
@@ -41,7 +47,7 @@ export default function Home() {
             <>
                 <Navbar />
 
-                <MainBanner homeInfo={homeInfo} />
+                <MainBanner homeInfo={homeInfo} admconfig={adminConfig} />
 
                 <FeaturedCard homeInfo={homeInfo} />
 

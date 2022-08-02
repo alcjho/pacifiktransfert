@@ -1,48 +1,50 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form';
 import ProfileImageUploader from '../Profile/ProfileImageUploader'
 import SelectComponent from 'react-select';
+import { BACKEND_URL } from '../../config/constant';
 
-const profile_info = {
-    'name': '',
-    'gender': '',
-    'address': '',
-    'occupation': '',
-    'email': '',
-    'phone': ''
-}
-
-export default function Profile({ profile, occupation }) {
-    const { register, handleSubmit, errors } = useForm();
+export default function Profile({ profile, provinces, occupations }) {
     const [editPersonalInfo, setEditPersonalInfo] = useState(false)
     const [editOccupation, setEditOccupation] = useState(false)
     const [editContact, setEditContact] = useState(false)
     const [ success, setSuccess ] = useState();
+    const [ profileData, setProfileData] = useState();
+    const { register, handleSubmit, errors } = useForm();
+    
 
+
+    const getProfileData = async () => {
+        setProfileData(profile);
+    }
 
     const handleChange = e => {
         const { name, value } = e.target;
-        //setProfile(prevState => ({ ...prevState, [name]: value }));
+        setProfileData({...profileData, [name]: value });
     }
+
+
+    const handleProvinceChange = e => {
+        setProfileData({...profileData, ['province']:  profileData?.province });
+    }
+
+    const handleOccupationChange = e => {
+        setProfileData({...profileData, ['occupation']: profileData?.occupation });
+    }
+
+    useEffect(() => {
+        getProfileData(); 
+    }, [])
 
     const onSubmit = async e => {
         // e.preventDefault();
         if (confirm) {
             try {
-                // const url = `${baseUrl}/api/contact`;
-                // const { firstname, lastname, cellphone, city, address, reason, phonenumber2 } = recipient;
-                // const payload = { firstname, lastname, secondname, phonenumber, city, address,  reason, phonenumber2};
-                // await axios.post(url, payload);
-                // console.log(url);
-                // setRecipient(INITIAL_STATE);
             } catch (error) {
                 console.log(error)
             }
         }
     };
-
-
-    
 
   return (
     <form id="profileForm" className='mx-5' onSubmit={handleSubmit(onSubmit)}>
@@ -50,9 +52,9 @@ export default function Profile({ profile, occupation }) {
             <div className="row">
                 <div className="col-md-3 border-right">
                     <div className="d-flex flex-column align-items-center text-center p-3 py-5">
-                        <ProfileImageUploader />
-                        {/* <img className="rounded-circle mt-5" width="150px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg" /> */}
-                        <span className="font-weight-bold">{profile?.name}</span>
+                        <ProfileImageUploader photo={profile?.photo.url?BACKEND_URL+profile.photo.url:"https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"}/>             
+                        {/* <img className="rounded-circle mt-5" width="150px" src={ profile?.photo.url?BACKEND_URL+profile.photo.url:"https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"} /> */}
+                        <span className="font-weight-bold">{profile?.firstname + ' '+ profile?.lastname}</span>
                         <span className="text-black-50">{profile?.email}</span>
                     </div>
                     
@@ -80,7 +82,7 @@ export default function Profile({ profile, occupation }) {
                                         name="firstname" 
                                         placeholder={"enter your name"}  
                                         className="form-control d-inline w-auto" 
-                                        value={profile?.firstname}
+                                        value={profileData?.firstname}
                                         onChange={(e)=>handleChange(e)}
                                         ref={register({ required: true })}
                                         />
@@ -101,7 +103,7 @@ export default function Profile({ profile, occupation }) {
                                         name="lastname" 
                                         placeholder={"enter your name"}  
                                         className="form-control d-inline w-auto" 
-                                        value={profile?.lastname}
+                                        value={profileData?.lastname}
                                         onChange={(e)=>handleChange(e)}
                                         ref={register({ required: true })}
                                         />
@@ -123,7 +125,7 @@ export default function Profile({ profile, occupation }) {
                                         name="gender" 
                                         placeholder={"enter your gender"}  
                                         className="form-control d-inline w-auto" 
-                                        value={profile?.gender}
+                                        value={profileData?.gender}
                                         onChange={(e)=>handleChange(e)}
                                         ref={register({ required: true })}
                                         />
@@ -142,7 +144,7 @@ export default function Profile({ profile, occupation }) {
                                         name="address" 
                                         placeholder={"enter your gender"}  
                                         className="form-control d-inline w-auto" 
-                                        value={profile?.address}
+                                        value={profileData?.address}
                                         onChange={(e)=>handleChange(e)}
                                         ref={register({ required: true })}
                                         />
@@ -161,7 +163,7 @@ export default function Profile({ profile, occupation }) {
                                         name="city" 
                                         placeholder={"Enter your city"}  
                                         className="form-control d-inline w-auto" 
-                                        value={profile?.city}
+                                        value={profileData?.city}
                                         onChange={(e)=>handleChange(e)}
                                         ref={register({ required: true })}
                                         />
@@ -169,21 +171,16 @@ export default function Profile({ profile, occupation }) {
                                 </label> 
                             </li>
                             <li>
-                                <label>
+                                <label style={{width:'100%'}}>
                                     <span className='fw-bold'>Province: </span> 
                                     
                                     {!editPersonalInfo ? 
-                                        <>{profile?.Province}</>
+                                        <>{profile?.province.id}</>
                                         : 
-                                        <input 
-                                        type="text" 
-                                        name="province" 
-                                        placeholder={"Enter your city"}  
-                                        className="form-control d-inline w-auto" 
-                                        value={profile?.Province}
-                                        onChange={(e)=>handleChange(e)}
-                                        ref={register({ required: true })}
-                                        />
+                                        <SelectComponent 
+                                            value={{value: profileData?.province?.id, label: profileData?.province?.name_fr}}
+                                            onChange={(e) => handleProvinceChange(e)}
+                                            options={provinces} style={{zIndex: 2}}/>
                                     }
                                 </label> 
                             </li>
@@ -205,7 +202,7 @@ export default function Profile({ profile, occupation }) {
                                     {!editOccupation ? 
                                         <>{profile?.occupation}</>
                                         : 
-                                        <SelectComponent options={occupation} style={{zIndex: 2}}/>
+                                        <SelectComponent onClick={(e)=>handleOccupationChange(e)} options={occupations} style={{zIndex: 2}}/>
                                     }
                                 </label> 
                             </li>

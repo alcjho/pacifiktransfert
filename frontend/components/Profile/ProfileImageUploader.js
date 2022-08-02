@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+
 const ImgUpload =({
     onChange,
     src
@@ -14,7 +15,7 @@ const ImgUpload =({
   export default class CardProfile extends React.Component {
     state = {
       file: '',
-      imagePreviewUrl: 'https://github.com/OlgaKoplik/CodePen/blob/master/profile.jpg?raw=true'
+      imagePreviewUrl: this.props.photo
     }
   
     photoUpload = e =>{

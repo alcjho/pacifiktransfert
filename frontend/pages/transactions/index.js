@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import Link from 'next/link';
-import Transaction from "../components/Transaction/Transaction";
-import Navbar from '../components/Layouts/DashboardNavbar';
-import PageBannerContent from '../components/Common/PageBannerContent';
-import SendMoneyContent from '../components/SendMoney/SendMoneyContent';
-import AccountCreateArea from '../components/Common/AccountCreateArea';
-import Footer from '../components/Layouts/Footer';
-import checkuser from './api/checkuser';
+import Transaction from "../../components/Transaction/Transaction";
+import Navbar from '../../components/Layouts/DashboardNavbar';
+import PageBannerContent from '../../components/Common/PageBannerContent';
+import SendMoneyContent from '../../components/SendMoney/SendMoneyContent';
+import AccountCreateArea from '../../components/Common/AccountCreateArea';
+import Footer from '../../components/Layouts/Footer';
+import checkuser from '../api/checkuser';
 import { setCookie } from 'nookies'
 export default function transaction(user) {
 

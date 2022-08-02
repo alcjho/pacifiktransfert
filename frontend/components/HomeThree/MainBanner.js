@@ -6,7 +6,7 @@ import { setCookie } from 'nookies';
 import { useRouter } from 'next/router'
 import { BACKEND_URL } from '../../config/constant';
 
-export default function MainBanner({ homeInfo }) {
+export default function MainBanner({ homeInfo, admconfig }) {
   const { register, handleSubmit, errors } = useForm();
   const router = useRouter();
   const [senderValue, setSenderValue] = useState('')
@@ -18,12 +18,10 @@ export default function MainBanner({ homeInfo }) {
 
   const updateAmount = (input) => {
     if (input === 'sender') {
-      setReceiverValue(Number(senderValue) * Number(homeInfo.exchange_rate_value))
-      console.log('(Number(senderValue) * Number(homeInfo.exchange_rate_label)', Number(senderValue) * Number(homeInfo.exchange_rate_label))
+      setReceiverValue(Number(senderValue) * Number(admconfig.exchange_rate))
     }
     else {
-      setSenderValue(Number(receiverValue) / Number(homeInfo.exchange_rate_value))
-      console.log('(Number(senderValue) * Number(homeInfo.exchange_rate_label)', Number(senderValue) / Number(homeInfo.exchange_rate_label))
+      setSenderValue(Number(receiverValue) / Number(admconfig.exchange_rate))
     }
   }
 
@@ -86,7 +84,7 @@ export default function MainBanner({ homeInfo }) {
                         <div className="amount-currency-select">
                           <div className="amount-currency-select">
                           <select tabIndex="-1" aria-disabled="true" style={{pointerEvents: 'none', touchAction: 'none'}}>
-                            <option>CAD</option>
+                            <option>{admconfig?.default_sender_currency}</option>
                           </select>
                         </div>
                         </div>
@@ -102,7 +100,7 @@ export default function MainBanner({ homeInfo }) {
                       <div className="bar"></div>
                       <span>
                         <strong>{homeInfo?.exchange_rate_value}</strong>{" "}
-                        {homeInfo?.exchange_rate_label}
+                        {admconfig?.default_sender_exchange_rate}
                       </span>
                       {/* <span>
                         <strong>${homeInfo?.transition_fee_value}</strong>{" "}
@@ -127,7 +125,7 @@ export default function MainBanner({ homeInfo }) {
                         />
                         <div className="amount-currency-select">
                           <select readOnly="readonly" tabIndex="-1" aria-disabled="true" style={{pointerEvents: 'none', touchAction: 'none'}}>
-                            <option>XAF</option>
+                            <option>{admconfig?.default_receiver_currency}</option>
                           </select>
                         </div>
                       </div>

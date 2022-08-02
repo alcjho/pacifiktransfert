@@ -1,24 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import { BACKEND_URL } from '../../config/constant';
 import SelectComponent from 'react-select';
 import nookies from 'nookies';
-
-const MySwal = withReactContent(Swal)
-
-const alertContent = () => {
-    MySwal.fire({
-        title: 'Congratulations!',
-        text: 'Your message was successfully send and will back to you soon',
-        icon: 'success',
-        timer: 2000,
-        timerProgressBar: true,
-        showConfirmButton: false,
-    })
-}
+import Link from 'next/link';
 
 // Form initial state
 const INITIAL_STATE = {
@@ -37,7 +23,7 @@ const INITIAL_STATE = {
     transfert_type: ""
 };
 
-const ContactForm = ({ contactInfo, userInfo, sendMoneyPage }) => {
+const ContactForm = ({ contactInfo, userInfo, admconfig, gencode }) => {
     const sendAndReceive = nookies.get();
     const [recipient, setRecipient] = useState(INITIAL_STATE);
     const { register, handleSubmit, errors, control } = useForm();
@@ -98,13 +84,11 @@ const ContactForm = ({ contactInfo, userInfo, sendMoneyPage }) => {
     }
 
     const onSubmit = async (e) => {
-        console.log('wess')
-        // e.preventDefault();
         if (orangeDisabled !== null) {
-
             setConfirm(true)
             if (confirm) {
                 recipient.user = [userInfo.id]
+                recipient.code = gencode;
                 axios
                     .post(BACKEND_URL+'/api/user-transferts', {data: recipient}, {
                         headers: {
@@ -130,7 +114,7 @@ const ContactForm = ({ contactInfo, userInfo, sendMoneyPage }) => {
       };
 
     const updateAmount = (e) => {
-          setRecipient({...recipient, ["amount_to_receive"]: Number(e.target.value) * Number(sendMoneyPage.exchange_rate_value)})
+          setRecipient({...recipient, ["amount_to_receive"]: Number(e.target.value) * Number(admconfig?.exchange_rate?admconfig?.exchange_rate:0)})
       }
 
     useEffect(() => {
@@ -147,6 +131,7 @@ const ContactForm = ({ contactInfo, userInfo, sendMoneyPage }) => {
                 <form id="contactForm" className='mx-5' onSubmit={handleSubmit(onSubmit, onError)}>
                     {!confirm ?
                         <div>
+
                             <div className="form-group">
                                 <input 
                                     type="text" 
@@ -352,6 +337,26 @@ const ContactForm = ({ contactInfo, userInfo, sendMoneyPage }) => {
                         <div className='confirm'>
                             <div className="form-group">
                                 <label 
+                                    className='fw-bold mb-1'
+                                >
+                                    {"Montant initial"}
+                                </label>
+                                <div>
+                                    {recipient.amount_to_send}
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label 
+                                    className='fw-bold mb-1'
+                                >
+                                    {"Montant à recevoir"}
+                                </label>
+                                <div>
+                                    {recipient.amount_to_receive}
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label 
                                     htmlFor="to_firstname" 
                                     className='fw-bold mb-1'
                                 >
@@ -476,7 +481,7 @@ const ContactForm = ({ contactInfo, userInfo, sendMoneyPage }) => {
                     <h4 className='fw-bold text-success'>{confirmationMessage}</h4>
                     <img src='/images/payment-successful.png' style={{width: '500px', textAlign: 'center'}} />
                     <div>
-                        <button type="button" className="btn btn-primary">{"retour à l'acceuil"}</button>
+                        <Link href="/transactions" className="btn btn-primary">{"retour à l'acceuil"}</Link>
                     </div>
                 </div>
             }

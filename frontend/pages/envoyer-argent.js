@@ -5,12 +5,14 @@ import SendMoneyContent from '../components/SendMoney/SendMoneyContent';
 import AccountCreateArea from '../components/Common/AccountCreateArea';
 import Footer from '../components/Layouts/Footer';
 import axios from 'axios';
-import { BACKEND_URL } from '../config/constant';
+import { BACKEND_URL, BEARER_TOKEN } from '../config/constant';
 import { setCookie } from 'nookies'
 import checkuser from './api/checkuser';
 
     export default function envoyerArgent(user) {
         const [contact, setContact] = useState({})
+        const [adminConfig, setAdminConfig] = useState();
+        const [sendMoneyPage, setSendMoneyPage] = useState();
 
         const getContact = async () => {
             axios.get(BACKEND_URL+'/api/contact', {params: {populate:'*'}})
@@ -22,28 +24,47 @@ import checkuser from './api/checkuser';
                 console.log(error);
               });
         } 
-        // be remplaced by api
-        const sendMoneyPage = {
-          'page_title': 'Envoyer de l\'argent',
-          'page_caption': 'rapide, confidentiel et sécurisé',
-          'cover_image': '/images/page-title-bg2.jpg',
-          'exchange_rate_value': '450'
-      }
+
+        const getAdminConfig = async () => {
+          axios.get(BACKEND_URL+'/api/admin-settings/1', {
+            headers: {
+                Authorization: `Bearer ${BEARER_TOKEN}`
+            }})
+            .then(function (response) {
+              setAdminConfig(response.data.data.attributes)
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+        } 
+
+
+        const getSendMoneyPage = async () => {
+          axios.get(BACKEND_URL+'/api/send-money?populate=*')
+            .then(function (response) {
+              setSendMoneyPage(response.data.data.attributes)
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+        } 
 
         useEffect(() => {
             getContact()
+            getAdminConfig()
+            getSendMoneyPage()
           }, [])
         return (
             <>
                 <Navbar />
 
                 <PageBannerContent 
-                    pageTitle={sendMoneyPage.page_title} 
-                    pageCaption={sendMoneyPage.page_caption}
-                    coverImage={sendMoneyPage.cover_image}
+                    pageTitle={sendMoneyPage?.title} 
+                    pageCaption={sendMoneyPage?.subtitle}
+                    coverImage={BACKEND_URL + sendMoneyPage?.cover.data.attributes.url}
                 />
 
-                <SendMoneyContent contact={contact} user={ user.user } sendMoneyPage={sendMoneyPage}/>
+                <SendMoneyContent contact={contact} user={ user.user } admconfig={adminConfig}/>
 
                 {/* <AccountCreateArea /> */}
 

@@ -13,20 +13,53 @@ import { BACKEND_URL, BEARER_TOKEN } from '../config/constant';
 
 export default function UserProfile({ user }) {
   const [profile, setProfile] = useState();
-  const [occupation, setOccupation] = useState();
+  const [occupations, setOccupations] = useState();
+  const [provinces, setProvinces] = useState();
+
   const getProfile = async () => {
     axios
-        .get(BACKEND_URL+'/api/users/me?populate=*',{
+        .get(BACKEND_URL+'/api/users/'+user.id+'?populate=*',{
             headers: {
                 Authorization: `Bearer ${user.jwt}`
             }
         })
         .then(response => {
-            setProfile(response.data)
+          console.log(response.data)
+            const profileObject = {
+              'id': response.data.id,
+              'firstname': response.data.firstname,
+              'lastname': response.data.lastname,
+              'email': response.data.email,
+              'address': response.data.address,
+              'city': response.data.city,
+              'province': [response.data?.province?.id],
+              'photo': BACKEND_URL+response.data.photo?.url,
+              'occupation': [response.data?.occupation?.id],
+              'cellphone': [response.data?.cellphone]
+            };
+
+            setProfile(profileObject);
         });
   };
 
-  const getOccupation = async () => {
+  const getProvinces = async () => {
+    axios
+        .get(BACKEND_URL+'/api/uprovinces',{
+            headers: {
+                Authorization: `Bearer ${user.jwt}`
+            }
+        })
+        .then(response => {
+            let province_options = [];
+            response?.data.data.map(province => {
+              province_options.push({label: province.attributes.name_fr, value: province.id})
+            })
+            setProvinces(province_options)
+        });
+  };
+
+
+  const getOccupations = async () => {
     axios
         .get(BACKEND_URL+'/api/occupations',{
             headers: {
@@ -40,13 +73,14 @@ export default function UserProfile({ user }) {
             res.data.map(ocp => {
               occupation_options.push({label: ocp.attributes.name_fr, value: ocp.id});
             })
-            setOccupation(occupation_options)
+            setOccupations(occupation_options)
         });
   };
 
   useEffect(() => {
     getProfile();
-    getOccupation();
+    getOccupations();
+    getProvinces();
   }, [])
 
 
@@ -70,7 +104,7 @@ export default function UserProfile({ user }) {
                 coverImage={profile_info.cover_image}
                 
             />
-            <Profile profile={profile} occupation={occupation}/>
+            <Profile profile={profile} provinces={provinces} occupations={occupations}/>
             <Footer />
         </>
     )

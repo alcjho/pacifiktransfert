@@ -4,7 +4,7 @@ import FaqContactForm from './FaqContactForm';
 import { BACKEND_URL } from '../../config/constant';
 
 
-    export default function FaqContentArea({ faq }) {
+    export default function FaqContentArea({ faq, questions }) {
         return (
             <div className="faq-area ptb-70">
                 <div className="container">
@@ -22,7 +22,7 @@ import { BACKEND_URL } from '../../config/constant';
                         </div>
 
                         <div className="col-lg-7 col-md-12">
-                            <FaqTextContent faq={faq} />
+                            <FaqTextContent faq={faq} questions={questions} />
                         </div>
                     </div>
 

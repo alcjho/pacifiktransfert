@@ -253,7 +253,7 @@ export default function Navbar() {
 
                                 <div className="others-options">
                                     {/* <Link href="/login"> */}
-                                    <Link href="/login">
+                                    <Link href="/transactions">
                                         <a className="login-btn">
                                             <i className="flaticon-user"></i>Connexion</a>
                                     </Link>
