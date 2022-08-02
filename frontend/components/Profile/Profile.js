@@ -175,10 +175,10 @@ export default function Profile({ profile, provinces, occupations }) {
                                     <span className='fw-bold'>Province: </span> 
                                     
                                     {!editPersonalInfo ? 
-                                        <>{profile?.province.id}</>
+                                        <>{profile?.province.label}</>
                                         : 
                                         <SelectComponent 
-                                            value={{value: profileData?.province?.id, label: profileData?.province?.name_fr}}
+                                            value={ profile?.province }
                                             onChange={(e) => handleProvinceChange(e)}
                                             options={provinces} style={{zIndex: 2}}/>
                                     }
@@ -227,7 +227,7 @@ export default function Profile({ profile, provinces, occupations }) {
                                         <input 
                                         type="text" 
                                         name="email" 
-                                        placeholder={"enter your gender"}  
+                                        placeholder={"enter your email address"}  
                                         className="form-control d-inline w-auto" 
                                         value={profile?.email}
                                         onChange={(e)=>handleChange(e)}

@@ -24,7 +24,6 @@ export default function UserProfile({ user }) {
             }
         })
         .then(response => {
-          console.log(response.data)
             const profileObject = {
               'id': response.data.id,
               'firstname': response.data.firstname,
@@ -32,10 +31,11 @@ export default function UserProfile({ user }) {
               'email': response.data.email,
               'address': response.data.address,
               'city': response.data.city,
-              'province': [response.data?.province?.id],
+              'province': {value: response.data?.province?.id, label: response.data?.province?.name_fr },
               'photo': BACKEND_URL+response.data.photo?.url,
               'occupation': [response.data?.occupation?.id],
-              'cellphone': [response.data?.cellphone]
+              'cellphone': [response.data?.cellphone],
+              'gender': response.data?.gender,
             };
 
             setProfile(profileObject);
