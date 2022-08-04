@@ -104,7 +104,7 @@ export default function UserProfile({ user }) {
                 coverImage={profile_info.cover_image}
                 
             />
-            <Profile profile={profile} provinces={provinces} occupations={occupations}/>
+            <Profile user={user} profile={profile} provinces={provinces} occupations={occupations}/>
             <Footer />
         </>
     )
