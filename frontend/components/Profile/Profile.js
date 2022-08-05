@@ -12,11 +12,9 @@ export default function Profile({ user, profile, provinces, occupations, occupat
     const [editContact, setEditContact] = useState(false)
     const [ success, setSuccess ] = useState();
     const [ profileData, setProfileData] = useState();
-    const [occupation, setOccupation] = useState({value: profile.occupation.id, label: profile.occupation?.name_fr })
-    const [province, setProvince] = useState({value: profile.province.id, label: profile.province?.name_fr })
+    const [occupation, setOccupation] = useState({value: profile?.occupation?.id, label: profile.occupation?.name_fr })
+    const [province, setProvince] = useState({value: profile?.province?.id, label: profile?.province?.name_fr })
     
-
-
     const getProfileData = async () => {
         setProfileData(profile);
     }
@@ -57,8 +55,8 @@ export default function Profile({ user, profile, provinces, occupations, occupat
         setEditContact(false)
         delete profileData.photo;
         profileData.username = profileData.email?profileData?.email:null;
-        profileData.occupation = profileData.occupation?[profileData?.occupation.id]:null;
-        profileData.province = profileData.province?[profileData?.province.id]:null;
+        profileData.occupation = profileData.occupation?[profileData?.occupation?.id]:null;
+        profileData.province = profileData.province?[profileData?.province?.id]:null;
                 axios
                     .put(BACKEND_URL+'/api/users/'+user.id, profileData, {
                         headers: {
@@ -68,7 +66,11 @@ export default function Profile({ user, profile, provinces, occupations, occupat
                     .then(response => {
                         console.log('success wessim')
                     });
-            } 
+    }
+
+    const uploadPhoto = (event) => {
+        console.log('upload event',event)
+    }
 
     useEffect(() => {
         getProfileData(); 
@@ -80,7 +82,7 @@ export default function Profile({ user, profile, provinces, occupations, occupat
             <div className="row">
                 <div className="col-md-3 border-right">
                     <div className="d-flex flex-column align-items-center text-center p-3 py-5">
-                        <ProfileImageUploader photo={profile?.photo.url?BACKEND_URL+profile.photo.url:"https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"}/>             
+                        <ProfileImageUploader onChange={uploadPhoto} photo={profile?.photo.url?BACKEND_URL+profile.photo.url:"https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"}/>             
                         {/* <img className="rounded-circle mt-5" width="150px" src={ profile?.photo.url?BACKEND_URL+profile.photo.url:"https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"} /> */}
                         <span className="font-weight-bold">{profileData?.firstname + ' '+ profile?.lastname}</span>
                         <span className="text-black-50">{profileData?.email}</span>
