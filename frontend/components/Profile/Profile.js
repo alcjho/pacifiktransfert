@@ -3,14 +3,17 @@ import { useForm } from 'react-hook-form';
 import ProfileImageUploader from '../Profile/ProfileImageUploader'
 import SelectComponent from 'react-select';
 import { BACKEND_URL } from '../../config/constant';
+import axios from 'axios';
 
-export default function Profile({ profile, provinces, occupations }) {
+export default function Profile({ user, profile, provinces, occupations, occupationsObject, provincesObject }) {
+    const { register, handleSubmit, errors } = useForm();
     const [editPersonalInfo, setEditPersonalInfo] = useState(false)
     const [editOccupation, setEditOccupation] = useState(false)
     const [editContact, setEditContact] = useState(false)
     const [ success, setSuccess ] = useState();
     const [ profileData, setProfileData] = useState();
-    const { register, handleSubmit, errors } = useForm();
+    const [occupation, setOccupation] = useState({value: profile.occupation.id, label: profile.occupation?.name_fr })
+    const [province, setProvince] = useState({value: profile.province.id, label: profile.province?.name_fr })
     
 
 
@@ -24,27 +27,52 @@ export default function Profile({ profile, provinces, occupations }) {
     }
 
 
-    const handleProvinceChange = e => {
-        setProfileData({...profileData, ['province']:  profileData?.province });
+    const handleProvinceChange = selectedOption => {
+        let selectedProvince = occupationsObject.find(data => data.id === selectedOption.value);
+        setProfileData({...profileData, ['province']:  selectedProvince });
+
     }
 
-    const handleOccupationChange = e => {
-        setProfileData({...profileData, ['occupation']: profileData?.occupation });
+    const handleOccupationChange = selectedOption => {
+        let selectedOccupation = provincesObject.find(data => data.id === selectedOption.value);
+        console.log('here')
+        setProfileData({...profileData, ['occupation']: selectedOccupation });
     }
+
+    const getOccupationName = selectedOption => {
+        let selectedOccupation = occupationsObject?.find(data => data.id === selectedOption?.value)
+        return selectedOccupation?.attributes?.name_fr
+    }
+
+    const getProvinceName = selectedOption => {
+        let selectedProvince = provincesObject?.find(data => data.id === selectedOption?.value)
+        return selectedProvince?.attributes?.name_fr
+    }
+   
+
+    const onSubmit = async (e) => {
+        console.log('jwt', user.jwt)
+        setEditPersonalInfo(false);
+        setEditOccupation(false)
+        setEditContact(false)
+        delete profileData.photo;
+        profileData.username = profileData.email?profileData?.email:null;
+        profileData.occupation = profileData.occupation?[profileData?.occupation.id]:null;
+        profileData.province = profileData.province?[profileData?.province.id]:null;
+                axios
+                    .put(BACKEND_URL+'/api/users/'+user.id, profileData, {
+                        headers: {
+                            Authorization: `Bearer ${user.jwt}`
+                        }
+                    })
+                    .then(response => {
+                        console.log('success wessim')
+                    });
+            } 
 
     useEffect(() => {
         getProfileData(); 
-    }, [])
-
-    const onSubmit = async e => {
-        // e.preventDefault();
-        if (confirm) {
-            try {
-            } catch (error) {
-                console.log(error)
-            }
-        }
-    };
+    }, [profile])
 
   return (
     <form id="profileForm" className='mx-5' onSubmit={handleSubmit(onSubmit)}>
@@ -54,8 +82,8 @@ export default function Profile({ profile, provinces, occupations }) {
                     <div className="d-flex flex-column align-items-center text-center p-3 py-5">
                         <ProfileImageUploader photo={profile?.photo.url?BACKEND_URL+profile.photo.url:"https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"}/>             
                         {/* <img className="rounded-circle mt-5" width="150px" src={ profile?.photo.url?BACKEND_URL+profile.photo.url:"https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"} /> */}
-                        <span className="font-weight-bold">{profile?.firstname + ' '+ profile?.lastname}</span>
-                        <span className="text-black-50">{profile?.email}</span>
+                        <span className="font-weight-bold">{profileData?.firstname + ' '+ profile?.lastname}</span>
+                        <span className="text-black-50">{profileData?.email}</span>
                     </div>
                     
                 </div>
@@ -64,80 +92,101 @@ export default function Profile({ profile, provinces, occupations }) {
                         <div className="pricing-header text-start d-flex justify-content-between">
                             <h3 className='text-start'>Donnée personnelle</h3>
                             <div> 
+                                {!editPersonalInfo ? 
                                 <a className='text-end pointer' onClick={()=> setEditPersonalInfo(!editPersonalInfo)}>
                                     {!editPersonalInfo ? 'editer' : 'enregistrer'}
-                                </a>
+                                </a> :
+                                <button type="submit" className="btn btn-primary">Enregistrer</button>
+                                }
+                                
                             </div>
                             
                         </div>
                         <ul className="pricing-features">
-                            <li>
-                                <label>
-                                    <span className='fw-bold'>Nom: </span> 
+                            <div className='row mb-2'>
+                                <div className='col-md-2 text-right'>
+                                    <label className='fw-bold'>
+                                        prenom*:
+                                    </label>
+                                </div>
+                                <div className='col'>
                                     {!editPersonalInfo ? 
-                                        <>{profile?.firstname}</>
+                                        <>{profileData?.firstname}</>
                                         : 
                                         <input 
                                         type="text" 
                                         name="firstname" 
                                         placeholder={"enter your name"}  
-                                        className="form-control d-inline w-auto" 
+                                        className={"form-control w-auto ".concat(errors.firstname ? "is-invalid" : "")} 
                                         value={profileData?.firstname}
                                         onChange={(e)=>handleChange(e)}
                                         ref={register({ required: true })}
                                         />
                                     }
-                                </label> 
-                                <div className='invalid-feedback' style={{display: 'block'}}>
-                                    {errors.name && 'Entrez votre prenom'}
+                                    <div className='invalid-feedback' style={{display: 'block'}}>
+                                        {errors.firstname && 'Entrez votre prenom'}
+                                    </div>
                                 </div>
-                            </li>
-                            <li>
-                                <label>
-                                    <span className='fw-bold'>Nom: </span> 
+                            </div>
+                            <div className='row mb-2'>
+                                <div className='col-md-2 text-right'>
+                                    <label className='fw-bold'>
+                                        Nom*:
+                                    </label>
+                                </div>
+                                <div className='col'>
                                     {!editPersonalInfo ? 
-                                        <>{profile?.lastname}</>
+                                        <>{profileData?.lastname}</>
                                         : 
                                         <input 
                                         type="text" 
                                         name="lastname" 
                                         placeholder={"enter your name"}  
-                                        className="form-control d-inline w-auto" 
+                                        className={"form-control w-auto ".concat(errors.lastname ? "is-invalid" : "")} 
                                         value={profileData?.lastname}
                                         onChange={(e)=>handleChange(e)}
                                         ref={register({ required: true })}
                                         />
                                     }
-                                </label> 
-                                <div className='invalid-feedback' style={{display: 'block'}}>
-                                    {errors.name && 'Entrez votre nom'}
+                                    <div className='invalid-feedback' style={{display: 'block'}}>
+                                        {errors.lastname && 'Entrez votre prenom'}
+                                    </div>
                                 </div>
-                            </li>
-                            <li>
-                                <label>
-                                    <span className='fw-bold'>Genre: </span>
-                                     
-                                     {!editPersonalInfo ? 
-                                        <>{profile?.gender}</>
+                            </div>
+                            <div className='row mb-2'>
+                                <div className='col-md-2 text-right'>
+                                    <label className='fw-bold'>
+                                        Genre*:
+                                    </label>
+                                </div>
+                                <div className='col'>
+                                    {!editPersonalInfo ? 
+                                        <>{profileData?.gender}</>
                                         : 
                                         <input 
                                         type="text" 
                                         name="gender" 
                                         placeholder={"enter your gender"}  
-                                        className="form-control d-inline w-auto" 
+                                        className={"form-control w-auto ".concat(errors.gender ? "is-invalid" : "")} 
                                         value={profileData?.gender}
                                         onChange={(e)=>handleChange(e)}
                                         ref={register({ required: true })}
                                         />
                                     }
-                                </label> 
-                            </li>
-                            <li>
-                                <label>
-                                    <span className='fw-bold'>Adresse: </span> 
-                                    
+                                    <div className='invalid-feedback' style={{display: 'block'}}>
+                                        {errors.gender && 'Entrez votre sexe'}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className='row mb-2'>
+                                <div className='col-md-2 text-right'>
+                                    <label className='fw-bold'>
+                                        Adresse:
+                                    </label>
+                                </div>
+                                <div className='col'>
                                     {!editPersonalInfo ? 
-                                        <>{profile?.address}</>
+                                        <>{profileData?.address}</>
                                         : 
                                         <input 
                                         type="text" 
@@ -146,17 +195,20 @@ export default function Profile({ profile, provinces, occupations }) {
                                         className="form-control d-inline w-auto" 
                                         value={profileData?.address}
                                         onChange={(e)=>handleChange(e)}
-                                        ref={register({ required: true })}
+                                        ref={register()}
                                         />
                                     }
-                                </label> 
-                            </li>
-                            <li>
-                                <label>
-                                    <span className='fw-bold'>Ville: </span> 
-                                    
+                                </div>
+                            </div>
+                            <div className='row mb-2'>
+                                <div className='col-md-2 text-right'>
+                                    <label className='fw-bold'>
+                                        Ville:
+                                    </label>
+                                </div>
+                                <div className='col'>
                                     {!editPersonalInfo ? 
-                                        <>{profile?.city}</>
+                                        <>{profileData?.city}</>
                                         : 
                                         <input 
                                         type="text" 
@@ -165,104 +217,136 @@ export default function Profile({ profile, provinces, occupations }) {
                                         className="form-control d-inline w-auto" 
                                         value={profileData?.city}
                                         onChange={(e)=>handleChange(e)}
-                                        ref={register({ required: true })}
+                                        ref={register()}
                                         />
                                     }
-                                </label> 
-                            </li>
-                            <li>
-                                <label style={{width:'100%'}}>
-                                    <span className='fw-bold'>Province: </span> 
-                                    
+                                </div>
+                            </div>
+                            <div className='row mb-2'>
+                                <div className='col-md-2 text-right'>
+                                    <label className='fw-bold'>
+                                        Province:
+                                    </label>
+                                </div>
+                                <div className='col'>
                                     {!editPersonalInfo ? 
-                                        <>{profile?.province.label}</>
+                                        <>{getProvinceName(province)}
+                                        </>
                                         : 
                                         <SelectComponent 
-                                            value={ profile?.province }
-                                            onChange={(e) => handleProvinceChange(e)}
-                                            options={provinces} style={{zIndex: 2}}/>
+                                            value={province}
+                                            options={provinces} style={{zIndex: 2}}
+                                            onChange={selectedOption => {setProvince(selectedOption); handleProvinceChange(selectedOption)}}/>
                                     }
-                                </label> 
-                            </li>
+                                </div>
+                            </div>
                         </ul>
                     </div>
                     <div className="single-pricing-box">
                         <div className="pricing-header text-start d-flex justify-content-between">
                             <h3 className='text-start'>Occupation</h3>
                             <div> 
+                                {!editOccupation ? 
                                 <a className='text-end pointer' onClick={()=> setEditOccupation(!editOccupation)}>
                                     {!editOccupation ? 'editer' : 'enregistrer'}
-                                </a>
+                                </a> :
+                                <button type="submit" className="btn btn-primary">Enregistrer</button>
+                                }
                             </div>
                         </div>
                         <ul className="pricing-features">
-                            <li>
-                                <label style={{width:'100%'}}>
-                                    <span className='fw-bold'>Occupation: </span> 
-                                    {!editOccupation ? 
-                                        <>{profile?.occupation}</>
-                                        : 
-                                        <SelectComponent onClick={(e)=>handleOccupationChange(e)} options={occupations} style={{zIndex: 2}}/>
-                                    }
-                                </label> 
-                            </li>
+                        <div className='row mb-2'>
+                            <div className='col-md-2 text-right'>
+                                <label className='fw-bold'>
+                                    Occupation:
+                                </label>
+                            </div>
+                            <div className='col'>
+                                {!editOccupation ? 
+                                    <>{getOccupationName(occupation)}</>
+                                    : 
+                                    <SelectComponent 
+                                        value={occupation}
+                                        options={occupations} 
+                                        style={{zIndex: 2}}
+                                        onChange={selectedOption => {setOccupation(selectedOption); handleOccupationChange(selectedOption)}}/>
+                                }
+                            </div>
+                        </div>
                         </ul>
                     </div>
                     <div className="single-pricing-box">
                         <div className="pricing-header text-start d-flex justify-content-between">
                             <h3 className='text-start'>Coordonnées</h3>
                             <div> 
+                                {!editContact ? 
                                 <a className='text-end pointer' onClick={()=> setEditContact(!editContact)}>
                                     {!editContact ? 'editer' : 'enregistrer'}
-                                </a>
+                                </a> :
+                                <button type="submit" className="btn btn-primary">Enregistrer</button>
+                                }
                             </div>
                         </div>
                         <ul className="pricing-features">
-                            <li>
-                                <label>
-                                    <span className='fw-bold'>Adresse courriel: </span>
-                                     {!editContact ? 
-                                        <>{profile?.email}</>
+                            <div className='row mb-2'>
+                                <div className='col-md-2 text-right'>
+                                    <label className='fw-bold'>
+                                        Adresse courriel*:
+                                    </label>
+                                </div>
+                                <div className='col'>
+                                    {!editContact ? 
+                                        <>{profileData?.email}</>
                                         : 
                                         <input 
                                         type="text" 
                                         name="email" 
                                         placeholder={"enter your email address"}  
-                                        className="form-control d-inline w-auto" 
-                                        value={profile?.email}
+                                        className={"form-control w-auto ".concat(errors.email ? "is-invalid" : "")} 
+                                        value={profileData?.email}
                                         onChange={(e)=>handleChange(e)}
                                         ref={register({ required: true })}
                                         />
                                     }
-                                </label> 
-                            </li>
-                            <li>
-                                <label>
-                                    <span className='fw-bold'>Numéro de téléphone: </span>
-                                     {!editContact ? 
-                                        <>{profile?.cellphone}</>
+                                    <div className='invalid-feedback' style={{display: 'block'}}>
+                                        {errors.email && 'Entrez votre adresse courriel'}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className='row mb-2'>
+                                <div className='col-md-2 text-right'>
+                                    <label className='fw-bold'>
+                                        Numéro de téléphone*:
+                                    </label>
+                                </div>
+                                <div className='col'>
+                                    {!editContact ? 
+                                        <>{profileData?.cellphone}</>
                                         : 
                                         <input 
                                         type="text" 
                                         name="cellphone" 
                                         placeholder={"Entrez un numéro de téléphone "}  
-                                        className="form-control d-inline w-auto" 
-                                        value={profile?.cellphone}
+                                        className={"form-control w-auto ".concat(errors.cellphone ? "is-invalid" : "")} 
+                                        value={profileData?.cellphone}
                                         onChange={(e)=>handleChange(e)}
                                         ref={register({ required: true })}
                                         />
                                     }
-                                </label> 
-                            </li>
+                                    <div className='invalid-feedback' style={{display: 'block'}}>
+                                        {errors.cellphone && 'Entrez votre numero de telephone'}
+                                    </div>
+                                </div>
+                            </div>
                         </ul>
                     </div>
-                    <div className="col-lg-12 col-sm-12" style={{zIndex: 1}}>
+                    {/* <div className="col-lg-12 col-sm-12" style={{zIndex: 1}}>
                         <button type="submit" className="btn btn-primary">Enregistrer</button>{
                             success?
                             <img src="/images/success-icon.png" style={{width: '50px', float:'right'}}/>
                             :''
                         }
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>
