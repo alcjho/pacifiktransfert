@@ -36,7 +36,7 @@ export default function UserProfile({ user }) {
               'province': response.data.province,
               'photo': BACKEND_URL+response.data.photo?.url,
               'occupation': response.data?.occupation,
-              'cellphone': [response.data?.cellphone],
+              'cellphone': response.data?.cellphone,
               'gender': response.data?.gender,
             };
 
