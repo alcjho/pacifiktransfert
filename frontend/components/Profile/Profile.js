@@ -55,8 +55,12 @@ export default function Profile({ user, profile, provinces, occupations, occupat
         setEditPersonalInfo(false);
         setEditOccupation(false)
         setEditContact(false)
+        delete profileData.photo;
+        profileData.username = profileData.email?profileData?.email:null;
+        profileData.occupation = profileData.occupation?[profileData?.occupation.id]:null;
+        profileData.province = profileData.province?[profileData?.province.id]:null;
                 axios
-                    .put(BACKEND_URL+'/api/users/'+user.id, {data: profileData}, {
+                    .put(BACKEND_URL+'/api/users/'+user.id, profileData, {
                         headers: {
                             Authorization: `Bearer ${user.jwt}`
                         }
@@ -64,13 +68,7 @@ export default function Profile({ user, profile, provinces, occupations, occupat
                     .then(response => {
                         console.log('success wessim')
                     });
-            }
-
-    // useEffect(() => {
-    //     updateOccuapation(profile?.occupation[0])
-    // }, [occupationsObject, profile])
-    
- 
+            } 
 
     useEffect(() => {
         getProfileData(); 

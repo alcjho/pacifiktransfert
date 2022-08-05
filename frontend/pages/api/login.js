@@ -13,7 +13,7 @@ export default async (req, res, redirectUrl) => {
         setCookie({ res }, 'jwt', data.jwt, {
             httpOnly: true,
             secure: false,
-            maxAge: 30 * 24 * 60 * 60,
+            maxAge: 24 * 3600,
             path: '/',
         });
 
