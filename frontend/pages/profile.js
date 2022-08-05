@@ -15,6 +15,8 @@ export default function UserProfile({ user }) {
   const [profile, setProfile] = useState();
   const [occupations, setOccupations] = useState();
   const [provinces, setProvinces] = useState();
+  const [occupationsObject, setOccupationsObject] = useState(null)
+  const [provincesObject, setProvincesObject] = useState(null)
 
   const getProfile = async () => {
     axios
@@ -31,9 +33,9 @@ export default function UserProfile({ user }) {
               'email': response.data.email,
               'address': response.data.address,
               'city': response.data.city,
-              'province': {value: response.data?.province?.id, label: response.data?.province?.name_fr },
+              'province': response.data.province,
               'photo': BACKEND_URL+response.data.photo?.url,
-              'occupation': [response.data?.occupation?.id],
+              'occupation': response.data?.occupation,
               'cellphone': [response.data?.cellphone],
               'gender': response.data?.gender,
             };
@@ -51,6 +53,7 @@ export default function UserProfile({ user }) {
         })
         .then(response => {
             let province_options = [];
+            setProvincesObject(response?.data.data)
             response?.data.data.map(province => {
               province_options.push({label: province.attributes.name_fr, value: province.id})
             })
@@ -68,8 +71,8 @@ export default function UserProfile({ user }) {
         })
         .then(response => {
            let res = response.data;
-
            let occupation_options = [];
+           setOccupationsObject(res.data)
             res.data.map(ocp => {
               occupation_options.push({label: ocp.attributes.name_fr, value: ocp.id});
             })
@@ -104,7 +107,14 @@ export default function UserProfile({ user }) {
                 coverImage={profile_info.cover_image}
                 
             />
-            <Profile user={user} profile={profile} provinces={provinces} occupations={occupations}/>
+            {profile && Object.keys(profile).length > 0 && 
+              <Profile user={user} 
+                      profile={profile} 
+                      provinces={provinces} 
+                      occupations={occupations}
+                      occupationsObject={occupationsObject}
+                      provincesObject={provincesObject}/>
+            }
             <Footer />
         </>
     )

@@ -5,15 +5,15 @@ import SelectComponent from 'react-select';
 import { BACKEND_URL } from '../../config/constant';
 import axios from 'axios';
 
-export default function Profile({ user, profile, provinces, occupations }) {
+export default function Profile({ user, profile, provinces, occupations, occupationsObject, provincesObject }) {
     const { register, handleSubmit, errors } = useForm();
     const [editPersonalInfo, setEditPersonalInfo] = useState(false)
     const [editOccupation, setEditOccupation] = useState(false)
     const [editContact, setEditContact] = useState(false)
     const [ success, setSuccess ] = useState();
     const [ profileData, setProfileData] = useState();
-    const [occupation, setOccupation] = useState(profile?.occupation)
-    const [province, setProvince] = useState(profile?.province)
+    const [occupation, setOccupation] = useState({value: profile.occupation.id, label: profile.occupation?.name_fr })
+    const [province, setProvince] = useState({value: profile.province.id, label: profile.province?.name_fr })
     
 
 
@@ -28,21 +28,35 @@ export default function Profile({ user, profile, provinces, occupations }) {
 
 
     const handleProvinceChange = selectedOption => {
-        setProfileData({...profileData, ['province']:  selectedOption.value });
+        let selectedProvince = occupationsObject.find(data => data.id === selectedOption.value);
+        setProfileData({...profileData, ['province']:  selectedProvince });
 
     }
 
     const handleOccupationChange = selectedOption => {
-        setProfileData({...profileData, ['occupation']: selectedOption.value });
-        console.log('selected option', selectedOption)
+        let selectedOccupation = provincesObject.find(data => data.id === selectedOption.value);
+        console.log('here')
+        setProfileData({...profileData, ['occupation']: selectedOccupation });
     }
 
+    const getOccupationName = selectedOption => {
+        let selectedOccupation = occupationsObject?.find(data => data.id === selectedOption?.value)
+        return selectedOccupation?.attributes?.name_fr
+    }
+
+    const getProvinceName = selectedOption => {
+        let selectedProvince = provincesObject?.find(data => data.id === selectedOption?.value)
+        return selectedProvince?.attributes?.name_fr
+    }
    
 
     const onSubmit = async (e) => {
         console.log('jwt', user.jwt)
+        setEditPersonalInfo(false);
+        setEditOccupation(false)
+        setEditContact(false)
                 axios
-                    .post(BACKEND_URL+'/api/users/'+user.id, {data: profileData}, {
+                    .put(BACKEND_URL+'/api/users/'+user.id, {data: profileData}, {
                         headers: {
                             Authorization: `Bearer ${user.jwt}`
                         }
@@ -51,6 +65,11 @@ export default function Profile({ user, profile, provinces, occupations }) {
                         console.log('success wessim')
                     });
             }
+
+    // useEffect(() => {
+    //     updateOccuapation(profile?.occupation[0])
+    // }, [occupationsObject, profile])
+    
  
 
     useEffect(() => {
@@ -75,9 +94,13 @@ export default function Profile({ user, profile, provinces, occupations }) {
                         <div className="pricing-header text-start d-flex justify-content-between">
                             <h3 className='text-start'>Donnée personnelle</h3>
                             <div> 
+                                {!editPersonalInfo ? 
                                 <a className='text-end pointer' onClick={()=> setEditPersonalInfo(!editPersonalInfo)}>
                                     {!editPersonalInfo ? 'editer' : 'enregistrer'}
-                                </a>
+                                </a> :
+                                <button type="submit" className="btn btn-primary">Enregistrer</button>
+                                }
+                                
                             </div>
                             
                         </div>
@@ -85,7 +108,7 @@ export default function Profile({ user, profile, provinces, occupations }) {
                             <div className='row mb-2'>
                                 <div className='col-md-2 text-right'>
                                     <label className='fw-bold'>
-                                        prenom:
+                                        prenom*:
                                     </label>
                                 </div>
                                 <div className='col'>
@@ -96,21 +119,21 @@ export default function Profile({ user, profile, provinces, occupations }) {
                                         type="text" 
                                         name="firstname" 
                                         placeholder={"enter your name"}  
-                                        className="form-control d-inline w-auto" 
+                                        className={"form-control w-auto ".concat(errors.firstname ? "is-invalid" : "")} 
                                         value={profileData?.firstname}
                                         onChange={(e)=>handleChange(e)}
                                         ref={register({ required: true })}
                                         />
                                     }
                                     <div className='invalid-feedback' style={{display: 'block'}}>
-                                        {errors.name && 'Entrez votre prenom'}
+                                        {errors.firstname && 'Entrez votre prenom'}
                                     </div>
                                 </div>
                             </div>
                             <div className='row mb-2'>
                                 <div className='col-md-2 text-right'>
                                     <label className='fw-bold'>
-                                        Nom:
+                                        Nom*:
                                     </label>
                                 </div>
                                 <div className='col'>
@@ -121,7 +144,7 @@ export default function Profile({ user, profile, provinces, occupations }) {
                                         type="text" 
                                         name="lastname" 
                                         placeholder={"enter your name"}  
-                                        className="form-control d-inline w-auto" 
+                                        className={"form-control w-auto ".concat(errors.lastname ? "is-invalid" : "")} 
                                         value={profileData?.lastname}
                                         onChange={(e)=>handleChange(e)}
                                         ref={register({ required: true })}
@@ -135,7 +158,7 @@ export default function Profile({ user, profile, provinces, occupations }) {
                             <div className='row mb-2'>
                                 <div className='col-md-2 text-right'>
                                     <label className='fw-bold'>
-                                        Genre:
+                                        Genre*:
                                     </label>
                                 </div>
                                 <div className='col'>
@@ -146,7 +169,7 @@ export default function Profile({ user, profile, provinces, occupations }) {
                                         type="text" 
                                         name="gender" 
                                         placeholder={"enter your gender"}  
-                                        className="form-control d-inline w-auto" 
+                                        className={"form-control w-auto ".concat(errors.gender ? "is-invalid" : "")} 
                                         value={profileData?.gender}
                                         onChange={(e)=>handleChange(e)}
                                         ref={register({ required: true })}
@@ -174,12 +197,9 @@ export default function Profile({ user, profile, provinces, occupations }) {
                                         className="form-control d-inline w-auto" 
                                         value={profileData?.address}
                                         onChange={(e)=>handleChange(e)}
-                                        ref={register({ required: true })}
+                                        ref={register()}
                                         />
                                     }
-                                    <div className='invalid-feedback' style={{display: 'block'}}>
-                                        {errors.address && 'Entrez votre adresse'}
-                                    </div>
                                 </div>
                             </div>
                             <div className='row mb-2'>
@@ -199,12 +219,9 @@ export default function Profile({ user, profile, provinces, occupations }) {
                                         className="form-control d-inline w-auto" 
                                         value={profileData?.city}
                                         onChange={(e)=>handleChange(e)}
-                                        ref={register({ required: true })}
+                                        ref={register()}
                                         />
                                     }
-                                    <div className='invalid-feedback' style={{display: 'block'}}>
-                                        {errors.city && 'Entrez votre adresse'}
-                                    </div>
                                 </div>
                             </div>
                             <div className='row mb-2'>
@@ -215,7 +232,8 @@ export default function Profile({ user, profile, provinces, occupations }) {
                                 </div>
                                 <div className='col'>
                                     {!editPersonalInfo ? 
-                                        <>{profileData?.province.label}</>
+                                        <>{getProvinceName(province)}
+                                        </>
                                         : 
                                         <SelectComponent 
                                             value={province}
@@ -230,9 +248,12 @@ export default function Profile({ user, profile, provinces, occupations }) {
                         <div className="pricing-header text-start d-flex justify-content-between">
                             <h3 className='text-start'>Occupation</h3>
                             <div> 
+                                {!editOccupation ? 
                                 <a className='text-end pointer' onClick={()=> setEditOccupation(!editOccupation)}>
                                     {!editOccupation ? 'editer' : 'enregistrer'}
-                                </a>
+                                </a> :
+                                <button type="submit" className="btn btn-primary">Enregistrer</button>
+                                }
                             </div>
                         </div>
                         <ul className="pricing-features">
@@ -244,7 +265,7 @@ export default function Profile({ user, profile, provinces, occupations }) {
                             </div>
                             <div className='col'>
                                 {!editOccupation ? 
-                                    <>{profileData?.occupation}</>
+                                    <>{getOccupationName(occupation)}</>
                                     : 
                                     <SelectComponent 
                                         value={occupation}
@@ -260,16 +281,19 @@ export default function Profile({ user, profile, provinces, occupations }) {
                         <div className="pricing-header text-start d-flex justify-content-between">
                             <h3 className='text-start'>Coordonnées</h3>
                             <div> 
+                                {!editContact ? 
                                 <a className='text-end pointer' onClick={()=> setEditContact(!editContact)}>
                                     {!editContact ? 'editer' : 'enregistrer'}
-                                </a>
+                                </a> :
+                                <button type="submit" className="btn btn-primary">Enregistrer</button>
+                                }
                             </div>
                         </div>
                         <ul className="pricing-features">
                             <div className='row mb-2'>
                                 <div className='col-md-2 text-right'>
                                     <label className='fw-bold'>
-                                        Adresse courriel:
+                                        Adresse courriel*:
                                     </label>
                                 </div>
                                 <div className='col'>
@@ -280,7 +304,7 @@ export default function Profile({ user, profile, provinces, occupations }) {
                                         type="text" 
                                         name="email" 
                                         placeholder={"enter your email address"}  
-                                        className="form-control d-inline w-auto" 
+                                        className={"form-control w-auto ".concat(errors.email ? "is-invalid" : "")} 
                                         value={profileData?.email}
                                         onChange={(e)=>handleChange(e)}
                                         ref={register({ required: true })}
@@ -294,7 +318,7 @@ export default function Profile({ user, profile, provinces, occupations }) {
                             <div className='row mb-2'>
                                 <div className='col-md-2 text-right'>
                                     <label className='fw-bold'>
-                                        Numéro de téléphone:
+                                        Numéro de téléphone*:
                                     </label>
                                 </div>
                                 <div className='col'>
@@ -305,7 +329,7 @@ export default function Profile({ user, profile, provinces, occupations }) {
                                         type="text" 
                                         name="cellphone" 
                                         placeholder={"Entrez un numéro de téléphone "}  
-                                        className="form-control d-inline w-auto" 
+                                        className={"form-control w-auto ".concat(errors.cellphone ? "is-invalid" : "")} 
                                         value={profileData?.cellphone}
                                         onChange={(e)=>handleChange(e)}
                                         ref={register({ required: true })}
@@ -318,13 +342,13 @@ export default function Profile({ user, profile, provinces, occupations }) {
                             </div>
                         </ul>
                     </div>
-                    <div className="col-lg-12 col-sm-12" style={{zIndex: 1}}>
+                    {/* <div className="col-lg-12 col-sm-12" style={{zIndex: 1}}>
                         <button type="submit" className="btn btn-primary">Enregistrer</button>{
                             success?
                             <img src="/images/success-icon.png" style={{width: '50px', float:'right'}}/>
                             :''
                         }
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>
