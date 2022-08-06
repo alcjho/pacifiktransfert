@@ -6,11 +6,12 @@ import { setCookie } from 'nookies';
 import { useRouter } from 'next/router'
 import { BACKEND_URL } from '../../config/constant';
 
-export default function MainBanner({ homeInfo, admconfig }) {
+export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
   const { register, handleSubmit, errors } = useForm();
   const router = useRouter();
   const [senderValue, setSenderValue] = useState('')
   const [receiverValue, setReceiverValue] = useState('')
+  const [transfertType, setTransfertType] = useState('');
   const [userData, setUserData] = useState({
     send: '',
     receive: ''
@@ -18,10 +19,10 @@ export default function MainBanner({ homeInfo, admconfig }) {
 
   const updateAmount = (input) => {
     if (input === 'sender') {
-      setReceiverValue(Number(senderValue) * Number(admconfig.exchange_rate))
+      setReceiverValue((Number(senderValue) * Number(admconfig.exchange_rate)).toFixed(2))
     }
     else {
-      setSenderValue(Number(receiverValue) / Number(admconfig.exchange_rate))
+      setSenderValue((Number(receiverValue) / Number(admconfig.exchange_rate)).toFixed(2))
     }
   }
 
@@ -29,7 +30,7 @@ export default function MainBanner({ homeInfo, admconfig }) {
     // e?.preventDefault();
     setCookie(null, 'send', senderValue);
     setCookie(null, 'receive', receiverValue);
-
+    setCookie(null, 'transfertType', transfertType)
     try {
         router.replace('/envoyer-argent');
     } catch (err) {
@@ -40,6 +41,12 @@ export default function MainBanner({ homeInfo, admconfig }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUserData({...userData, [name]: value });
+    updateAmount('receiver');
+  }
+
+  const handleSelectChange = (e) => {
+    const { name, value } = e.target;
+    setUserData({...userData, [name]: [value] });
   }
 
   return (
@@ -68,18 +75,39 @@ export default function MainBanner({ homeInfo, admconfig }) {
               <div className="col-lg-5 col-md-12">
                 <div className="money-transfer-form">
                   <form id="moneyForm" onSubmit={handleSubmit(onSubmit)}>
+                    <div className="form-group mb-5">
+                      <label>Choisissez un type de transfert</label>
+                      <div className="money-transfer-field">
+                          <select 
+                            required={true}
+                            name="transfert_type"
+                            style={{color: '#000000'}}
+                            ref={register({ required: true })}
+                            className="form-control" 
+                            onChange={(e)=> {handleSelectChange(e);setTransfertType(e.target.value)}}
+                          >
+\                            {trxTypes?.map((trxType) => 
+                                <option value={trxType.value}>{trxType.label}</option>
+                              )
+                            }
+                          </select>
+                      </div>
+                    </div>
+                    <div className='invalid-feedback' style={{display: 'block'}}>
+                        {errors.transfert_type && errors.transfert_type.type === "required"  && 'Choisissez un type de transfert'}
+                    </div>
                     <div className="form-group">
                       <label>{homeInfo?.sender_input_label}</label>
                       <div className="money-transfer-field">
                         <input
-                          type="text"
+                          type="number"
                           name="send_amount"
-                          ref={register({ required: true, max: 1000, min: 1 })}
+                          ref={register({ required: true, min: admconfig?.min_sender_money?admconfig.min_sender_money:10, max: admconfig?.max_sender_money?admconfig?.max_sender_money:1000 })}
                           className="form-control"
                           placeholder="1,000"
                           value={Number(senderValue)}
-                          onChange={(e)=> setSenderValue(e.target.value)}
-                          onBlur={()=> updateAmount('sender')}
+                          onChange={(e)=> {setSenderValue(e.target.value); updateAmount('sender')}}
+                          //onBlur={()=> updateAmount('sender')}
                         />
                         <div className="amount-currency-select">
                           <div className="amount-currency-select">
@@ -92,15 +120,15 @@ export default function MainBanner({ homeInfo, admconfig }) {
                     </div>
                     <div className='invalid-feedback' style={{display: 'block'}}>
                         {errors.send_amount && errors.send_amount.type === "required"  && 'entrer le montant à envoyer'}
-                        {errors.send_amount && errors.send_amount.type === "max" && 'maximum 1000$'}
-                        {errors.send_amount && errors.send_amount.type === "min" && 'min 10$'}
+                        {errors.send_amount && errors.send_amount.type === "max" && `maximum ${admconfig?.max_sender_money?admconfig.max_sender_money:1000} CAD`}
+                        {errors.send_amount && errors.send_amount.type === "min" && `minimum  ${admconfig?.min_sender_money?admconfig.min_sender_money:10} CAD`}
                     </div>
 
                     <div className="currency-info">
                       <div className="bar"></div>
                       <span>
-                        <strong>{homeInfo?.exchange_rate_value}</strong>{" "}
-                        {admconfig?.default_sender_exchange_rate}
+                        {homeInfo?.exchange_rate_label} : <strong>{admconfig?.exchange_rate}</strong>{" "}
+                        
                       </span>
                       {/* <span>
                         <strong>${homeInfo?.transition_fee_value}</strong>{" "}
@@ -112,7 +140,7 @@ export default function MainBanner({ homeInfo, admconfig }) {
                       <label>{homeInfo?.recipient_label}</label>
                       <div className="money-transfer-field">
                         <input
-                          type="text"
+                          type="number"
                           name="receive"
                           className="form-control"
                           placeholder="1,000"
@@ -121,7 +149,7 @@ export default function MainBanner({ homeInfo, admconfig }) {
                             setReceiverValue(e.target.value);
                             handleChange(e);
                           }}
-                          onBlur={() => updateAmount('receiver')}
+                          //onBlur={() => updateAmount('receiver')}
                         />
                         <div className="amount-currency-select">
                           <select readOnly="readonly" tabIndex="-1" aria-disabled="true" style={{pointerEvents: 'none', touchAction: 'none'}}>
@@ -130,6 +158,9 @@ export default function MainBanner({ homeInfo, admconfig }) {
                         </div>
                       </div>
                     </div>
+
+
+                    
 
                     {/* <div className="money-transfer-info">
                       <span>
