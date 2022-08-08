@@ -8,7 +8,7 @@ import calculateFees from '../../components/Rates/calculate';
 export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
   const { register, handleSubmit, errors } = useForm();
   const router = useRouter();
-  const [senderValue, setSenderValue] = useState('')
+  const [senderValue, setSenderValue] = useState(0)
   const [receiverValue, setReceiverValue] = useState('')
   const [transfertType, setTransfertType] = useState('');
   const [userData, setUserData] = useState({
@@ -16,12 +16,12 @@ export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
     receive: ''
 })
 
-  const updateAmount = (input) => {
+  const updateAmount = (value, input) => {
     if (input === 'sender') {
-      setReceiverValue(calculateFees(senderValue, admconfig.exchange_rate));
+      setReceiverValue(calculateFees(value, admconfig.exchange_rate));
     }
     else {
-      setSenderValue(calculateFees(receiverValue, admconfig.exchange_rate, true));
+      setSenderValue(calculateFees(value, admconfig.exchange_rate, true));
     }
   }
 
@@ -35,8 +35,14 @@ export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if(e.target.name == 'send'){
+      setSenderValue(value)
+      updateAmount(value, 'sender');
+    }else if(e.target.name == 'receiver'){
+      setReceiverValue(value)
+      updateAmount(value, 'receiver');
+    }
     setUserData({...userData, [name]: value });
-    updateAmount('receiver');
   }
 
   const handleSelectChange = (e) => {
@@ -94,16 +100,15 @@ export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
                     </div>
                     <div className="form-group">
                       <label>{homeInfo?.sender_input_label}</label>
-                      <div className="">
+                      <div className="send-amount-field">
                         <input
                           type="text"
-                          name="send_amount"
+                          name="send"
                           ref={register({ required: true, min: admconfig?.min_sender_money?admconfig.min_sender_money:10, max: admconfig?.max_sender_money?admconfig?.max_sender_money:1000 })}
                           className="form-control"
-                          placeholder="1,000"
-                          value={Number(senderValue)}
-                          onChange={(e)=> {setSenderValue(!isNaN(e.target.value) ? e.target.value:0); updateAmount('sender')}}
-                          //onBlur={()=> updateAmount('sender')}
+                          placeholder={"Maximum "+admconfig?.max_sender_money+" "+admconfig?.default_sender_currency}
+                          value={senderValue}
+                          onChange={(e)=> handleChange(e)}
                         />
                         <div className="amount-currency-select">
                           <div className="amount-currency-select">
@@ -141,11 +146,7 @@ export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
                           className="form-control"
                           placeholder="1,000"
                           value={Number(receiverValue)}
-                          onChange={(e)=> {
-                            setReceiverValue(e.target.value);
-                            handleChange(e);
-                          }}
-                          //onBlur={() => updateAmount('receiver')}
+                          onChange={(e)=> handleChange(e)}
                         />
                         <div className="amount-currency-select">
                           <select readOnly="readonly" tabIndex="-1" aria-disabled="true" style={{pointerEvents: 'none', touchAction: 'none'}}>

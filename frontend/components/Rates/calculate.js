@@ -1,6 +1,5 @@
 const calculateFees = (amount, exchange_rate, fromTargetRate) => {
     if(!fromTargetRate){
-        console.log('fee total',amount,exchange_rate,(Number(amount) * Number(exchange_rate)).toFixed(2))
         return (Number(amount) * Number(exchange_rate)).toFixed(2);
         
     }else{
