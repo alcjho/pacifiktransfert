@@ -1,0 +1,46 @@
+{
+  "kind": "collectionType",
+  "collectionName": "admin_settings",
+  "info": {
+    "singularName": "admin-setting",
+    "pluralName": "admin-settings",
+    "displayName": "admin_setting",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "exchange_rate": {
+      "type": "string",
+      "regex": "^[0-9]*$"
+    },
+    "currency": {
+      "type": "enumeration",
+      "enum": [
+        "CAD",
+        "XAF",
+        "EUR"
+      ]
+    },
+    "default_receiver_currency": {
+      "type": "string"
+    },
+    "default_sender_currency": {
+      "type": "string"
+    },
+    "interac_email": {
+      "type": "string"
+    },
+    "interac_phone": {
+      "type": "string"
+    },
+    "max_sender_money": {
+      "type": "decimal"
+    },
+    "min_sender_money": {
+      "type": "decimal"
+    }
+  }
+}

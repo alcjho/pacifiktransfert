@@ -1,0 +1,30 @@
+{
+  "kind": "singleType",
+  "collectionName": "send_monies",
+  "info": {
+    "singularName": "send-money",
+    "pluralName": "send-monies",
+    "displayName": "Send money",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "cover": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "subtitle": {
+      "type": "string"
+    }
+  }
+}

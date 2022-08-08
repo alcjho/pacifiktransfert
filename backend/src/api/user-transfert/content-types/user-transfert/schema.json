@@ -57,14 +57,7 @@
     "to_city": {
       "type": "string"
     },
-    "code": {
-      "type": "uid",
-      "private": true
-    },
     "to_address": {
-      "type": "string"
-    },
-    "orange_number": {
       "type": "string"
     },
     "to_phone": {
@@ -88,13 +81,39 @@
       "type": "enumeration",
       "enum": [
         "En traitement",
-        "Complété",
-        "Action requise"
+        "Completer",
+        "Action requise",
+        "Annuler"
       ],
       "default": "En traitement"
     },
     "message": {
-      "type": "text"
+      "type": "text",
+      "maxLength": 300,
+      "minLength": 20
+    },
+    "code": {
+      "type": "string"
+    },
+    "bank_branch": {
+      "type": "string"
+    },
+    "account_number": {
+      "type": "string"
+    },
+    "agency_code": {
+      "type": "string"
+    },
+    "agency_key": {
+      "type": "string"
+    },
+    "transfert_bank": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::bank.bank"
+    },
+    "mobile_money_number": {
+      "type": "string"
     }
   }
 }
