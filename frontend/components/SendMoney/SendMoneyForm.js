@@ -49,7 +49,9 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
     }
 
     const updateFormByAmout = () => {
-        setReceiver({...receiver, ["amount_to_send"]: deposit?.send, ["amount_to_receive"]: calculateFees(deposit?.send, admconfig?.exchange_rate)})
+        let fees = calculateFees(deposit?.send, admconfig?.exchange_rate);
+        setReceiver({...receiver, ["amount_to_send"]: deposit?.send, ["amount_to_receive"]: fees});
+        setReceiveAmout(fees);
     }
 
     const handleReceiverChange = selectedOption => {    
