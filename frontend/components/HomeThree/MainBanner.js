@@ -64,18 +64,12 @@ export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
                   <p>
                     {homeInfo?.description}
                   </p>
-
-                  {/* <Link href="/about-us">
-                    <a className="btn btn-primary">
-                      Learn More{homeInfo?.more_btn}
-                    </a>
-                  </Link> */}
                 </div>
               </div>
 
               <div className="col-lg-5 col-md-12">
                 <div className="money-transfer-form">
-                  <form id="moneyForm" onSubmit={handleSubmit(onSubmit)}>
+                  <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="form-group mb-5">
                       <label>Choisissez un type de transfert</label>
                       <div className="money-transfer-field">
@@ -131,10 +125,6 @@ export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
                         {homeInfo?.exchange_rate_label} : <strong>{admconfig?.exchange_rate}</strong>{" "}
                         
                       </span>
-                      {/* <span>
-                        <strong>${homeInfo?.transition_fee_value}</strong>{" "}
-                         {homeInfo?.transition_fee_label}
-                      </span> */}
                     </div>
 
                     <div className="form-group">
@@ -155,17 +145,6 @@ export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
                         </div>
                       </div>
                     </div>
-
-
-                    
-
-                    {/* <div className="money-transfer-info">
-                      <span>
-                        {homeInfo?.save_label}{" "}
-                        <strong>1,010.32 USD {homeInfo?.save_value}</strong>
-                      </span>
-                    </div> */}
-
                     <button type="submit" className="btn btn-primary">
                       {homeInfo?.cta_label}
                     </button>

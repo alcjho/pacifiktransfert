@@ -33,7 +33,6 @@ export default function Home() {
             Authorization: `Bearer ${BEARER_TOKEN}`
         }})
         .then(function (response) {
-          console.log(response.data.data.attributes)
           setAdminConfig(response.data.data.attributes)
         })
         .catch(function (error) {
@@ -44,7 +43,6 @@ export default function Home() {
     const getHome = async () => {
         axios.get(BACKEND_URL+'/api/home-page', {params: {populate:'*'}})
           .then(function (response) {
-            console.log('img', response.data.data.attributes.step1_icon?.data.attributes.url);
             setHomeInfo(response.data.data.attributes)
           })
           .catch(function (error) {
