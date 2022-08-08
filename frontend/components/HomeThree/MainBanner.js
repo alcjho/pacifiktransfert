@@ -8,7 +8,7 @@ import calculateFees from '../../components/Rates/calculate';
 export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
   const { register, handleSubmit, errors } = useForm();
   const router = useRouter();
-  const [senderValue, setSenderValue] = useState(0)
+  const [senderValue, setSenderValue] = useState('')
   const [receiverValue, setReceiverValue] = useState('')
   const [transfertType, setTransfertType] = useState('');
   const [userData, setUserData] = useState({
@@ -38,7 +38,7 @@ export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
     if(e.target.name == 'send'){
       setSenderValue(value)
       updateAmount(value, 'sender');
-    }else if(e.target.name == 'receiver'){
+    }else if(e.target.name == 'receive'){
       setReceiverValue(value)
       updateAmount(value, 'receiver');
     }
@@ -96,7 +96,7 @@ export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
                       <label>{homeInfo?.sender_input_label}</label>
                       <div className="send-amount-field">
                         <input
-                          type="text"
+                          type="number"
                           name="send"
                           ref={register({ required: true, min: admconfig?.min_sender_money?admconfig.min_sender_money:10, max: admconfig?.max_sender_money?admconfig?.max_sender_money:1000 })}
                           className="form-control"
@@ -134,8 +134,7 @@ export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
                           type="number"
                           name="receive"
                           className="form-control"
-                          placeholder="1,000"
-                          value={Number(receiverValue)}
+                          value={receiverValue}
                           onChange={(e)=> handleChange(e)}
                         />
                         <div className="amount-currency-select">
