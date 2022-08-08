@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useForm } from 'react-hook-form';
-import axios from "axios";
-import { setCookie } from 'nookies';
 import { useRouter } from 'next/router'
 import { BACKEND_URL } from '../../config/constant';
 import calculateFees from '../../components/Rates/calculate';
@@ -96,15 +94,15 @@ export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
                     </div>
                     <div className="form-group">
                       <label>{homeInfo?.sender_input_label}</label>
-                      <div className="money-transfer-field">
+                      <div className="">
                         <input
-                          type="number"
+                          type="text"
                           name="send_amount"
                           ref={register({ required: true, min: admconfig?.min_sender_money?admconfig.min_sender_money:10, max: admconfig?.max_sender_money?admconfig?.max_sender_money:1000 })}
                           className="form-control"
                           placeholder="1,000"
                           value={Number(senderValue)}
-                          onChange={(e)=> {setSenderValue(e.target.value); updateAmount('sender')}}
+                          onChange={(e)=> {setSenderValue(!isNaN(e.target.value) ? e.target.value:0); updateAmount('sender')}}
                           //onBlur={()=> updateAmount('sender')}
                         />
                         <div className="amount-currency-select">
