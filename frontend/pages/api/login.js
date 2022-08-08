@@ -17,7 +17,7 @@ export default async (req, res, redirectUrl) => {
             path: '/',
         });
 
-        res.json({ success: true, redirect: cookies?.redirect? cookies.redirect: '/transactions' });
+        res.json({ success: true, redirect: cookies?.redirect? cookies.redirect: '/transactions?&page=1&items=20' });
     } catch (e) {
         console.log(e.response?.data)
         res.status(400).send(e.response?.data);

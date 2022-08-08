@@ -2,7 +2,7 @@ import React, { Component, useState } from 'react';
 import SendMoneyForm from './SendMoneyForm';
 import crypto from 'crypto';
 
-    export default function SendMoneyContent({ contact, user, admconfig }) {
+    export default function SendMoneyContent({ contact, banks, user, admconfig, trxtypes, mytransferts, deposit }) {
         const [gencode, setGencode] = useState(crypto.randomBytes(4).toString('hex').substring(0,6));
 
         return (
@@ -17,7 +17,7 @@ import crypto from 'crypto';
 
                         <div className="row">
                             <div className="col-md-12">
-                                <SendMoneyForm contactInfo={contact} userInfo={ user } admconfig={admconfig} gencode={gencode}/>
+                                <SendMoneyForm contactInfo={contact} banks={banks} userInfo={ user } admconfig={admconfig} trxtypes={trxtypes} deposit={deposit} mytransferts={mytransferts} gencode={gencode}/>
                             </div>
                         </div>
                     </div>

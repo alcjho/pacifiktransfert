@@ -10,8 +10,8 @@ import Modal from "../Utils/Modal";
 import transaction from '../../pages/transactions';
 import SelectComponent from 'react-select';
 
-export default function Transaction({ userInfo, recipient, admconfig, gencode}) {
-    recipient
+export default function Transaction({ userInfo, banks, recipient, admconfig, gencode}) {
+
     const [confirm, setConfirm] = useState(false);
     const { register, handleSubmit, errors, control } = useForm();
     const [selectTypeError, setSelectTypeError] = useState(false);
@@ -19,7 +19,10 @@ export default function Transaction({ userInfo, recipient, admconfig, gencode}) 
     const [ orangeDisabled, setOrangeDisabled ] = useState(null);
     const [ infos, setInfos] = useState(recipient?.attributes);
     const [successSent, setSuccessSent] = useState(false);
-
+    const [mobileNumber, setMobileNumber] = useState(recipient?.mobile_money_number);
+    const [bankOptions, setBankOptions] = useState();    
+    const [selectedBank, setSelectedBank] = useState();
+    
     const onError = (errors, e) => {
         if (orangeDisabled === null) {
             setSelectTypeError(true)
@@ -44,6 +47,11 @@ export default function Transaction({ userInfo, recipient, admconfig, gencode}) 
         setInfos({...infos, [name]: value });
     }
 
+    const handleBankChange = selectedOption => {
+        const { name, value } = {name: 'status', value: selectedOption.value}
+        setInfos({...infos, [name]: [value] });
+    }
+
     const getTrxTypes = async () => {
         await axios.get(BACKEND_URL+'/api/transfert-types', {
             headers: {
@@ -59,9 +67,12 @@ export default function Transaction({ userInfo, recipient, admconfig, gencode}) 
         });
     }
 
-    const getTypeLabel = (value) => {
-        const result = trxTypes.find(type => type.value == value)
-        return result?.label;
+    const getBanksWithOptions = () => {
+        let BanksWithOptions = []
+        banks.map((option)=>{
+            BanksWithOptions.push({label: option.attributes.name, value: option.id})
+        })
+        setBankOptions(BanksWithOptions)  
     }
 
     const handleTrxTypeChange = e => {
@@ -81,23 +92,20 @@ export default function Transaction({ userInfo, recipient, admconfig, gencode}) 
         infos['amount_to_send'] = infos.amount_to_send? infos.amount_to_send: recipient?.attributes.amount_to_send;
         infos['amount_to_receive'] = infos.amount_to_receive? infos.amount_to_receive: recipient?.attributes.amount_to_receive;
         infos['status'] = 'En traitement';
+        delete infos.reception_proof;
+        infos['transfert_type'] = [infos['transfert_type'].data?.id];
+        infos['transfert_bank'] = selectedBank? [selectedBank.value]: [infos['transfert_bank'].data?.id];
         console.log(infos)
-        if (orangeDisabled !== null) {       
-            recipient.user = [userInfo?.id]
-            axios
-                .put(BACKEND_URL+'/api/user-transferts/'+recipient?.id, {data: infos}, {
-                    headers: {
-                        Authorization: `Bearer ${userInfo.jwt}`
-                    }
-                })
-                .then(response => {
-                    setSuccessSent(true)
-                    window.scrollTo({top: 0, left: 0, behavior: 'smooth'});
-                });
-        }
-        else {
-            setSelectTypeError(true)
-        }
+        axios
+            .put(BACKEND_URL+'/api/user-transferts/'+recipient?.id, {data: infos}, {
+                headers: {
+                    Authorization: `Bearer ${userInfo.jwt}`
+                }
+            })
+            .then(response => {
+                setSuccessSent(true)
+                window.scrollTo({top: 0, left: 0, behavior: 'smooth'});
+            });
     };
 
     useEffect(() => {
@@ -105,6 +113,150 @@ export default function Transaction({ userInfo, recipient, admconfig, gencode}) 
         updateFormByAmout();
     }, [])
 
+    useEffect(() => {
+        getBanksWithOptions();
+        setSelectedBank({label: recipient.attributes?.transfert_bank.data?.attributes.name, value: recipient.attributes?.transfert_bank.data?.id})
+    }, [])
+
+    const bankFields = () => {
+        return(
+            <>
+                <tr>
+                    <th>
+                        Nom de la banque
+                    </th>
+                    <td>
+                        <div className="form-group" style={{textAlign:'left'}}>
+                            <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
+                            <SelectComponent 
+                                name="transfert_bank"
+                                placeholder="Selectionnez une banque" 
+                                value={ selectedBank }
+                                options={ bankOptions } 
+                                onChange={selectedOption => {setSelectedBank(selectedOption); handleBankChange(selectedOption); /*setSelectTypeError(false);*/}}
+                            />
+                                
+                            {/* <div className='invalid-feedback' style={{display: 'block'}}>
+                                {selectTypeError && 'Veuillez selectionner une banque pour le transfert'}
+                            </div> */}
+                        </div> 
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Numéro compte
+                    </th>
+                    <td>
+                        <div className="form-group">
+                            <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
+                            <input 
+                                type="text" 
+                                name="account_number" 
+                                placeholder={"Numero de compte"}  
+                                className={"form-control ".concat(errors.amount_to_receive ? "is-invalid" : "")} 
+                                value={infos.account_number}
+                                onChange={(e)=>handleChange(e)}
+                            />
+                            <div className='invalid-feedback' style={{display: 'block'}}>
+                                {errors.account_number && 'Veuillez entrer le numero de compte'}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Nom de la branche
+                    </th>
+                    <td>
+                        <div className="form-group">
+                            <input 
+                                type="text" 
+                                name="bank_branch" 
+                                placeholder={"Nom de la branche"}  
+                                className={"form-control ".concat(errors.bank_branch ? "is-invalid" : "")} 
+                                value={infos.bank_branch}
+                                onChange={(e)=>handleChange(e)}
+                            />
+                            <div className='invalid-feedback' style={{display: 'block'}}>
+                                {errors.bank_branch && 'Veuillez entrer le nom de la branche'}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Code agence : 
+                    </th>
+                    <td>
+                        <div className="row">
+                            <div className="col-6">
+                                <div className="form-group">
+                                    <input 
+                                        type="text" 
+                                        name="agency_code" 
+                                        placeholder={"Code agence"}  
+                                        className="form-control" 
+                                        value={infos.agency_code}
+                                        onChange={(e)=>handleChange(e)}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Clé agence : 
+                    </th>
+                    <td>
+                        <div className="col-6">
+                            <div className="form-group">
+                                <input 
+                                    type="text" 
+                                    name="agency_key" 
+                                    placeholder={"Clé agence"}  
+                                    className="form-control " 
+                                    value={infos.agency_key}
+                                    onChange={(e)=>handleChange(e)}
+                                />
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </>
+        )
+    }
+
+    const mobileFields = () => {
+        return(
+            <>
+                <tr>
+                    <th>
+                        Numéro mobile money
+                    </th>
+                    <td>
+                        <div className='d-flex'>
+                            <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
+                            <h6 className='me-2 mb-0 align-self-center'>+237</h6>
+                            <input 
+                                type="text" 
+                                name="mobile_money_number" 
+                                placeholder={"numero de telephone"}  
+                                className={"form-control ".concat(errors.mobile_money_number ? "is-invalid" : "")}
+                                value={infos.mobile_money_number}
+                                onChange={(e)=>{handleChange(e);setMobileNumber(e.target.value)}}
+                                ref={register}
+                            />
+                        </div>
+                        <div className='invalid-feedback' style={{display: 'block'}}>
+                            {errors.to_phone && errors.mobile_money_number.type === "required" && 'Veuillez entrer le numéro de téléphone Mobile money'}
+                            {/* {errors.to_phone && errors.mobile_money_number.type === "pattern" && 'entrer un numéro de téléphone valide'} */}
+                        </div>
+                    </td>
+                </tr>
+            </>
+        )
+    }
 
   return (
     <div>
@@ -125,13 +277,10 @@ export default function Transaction({ userInfo, recipient, admconfig, gencode}) 
                                 
                                 { recipient?
                                 <form id="contactForm" className='mx-5' onSubmit={handleSubmit(onSubmit, onError)}>
-                                    {
+                                    {!successSent && recipient?.attributes.status == 'Action requise'?
                                         <div>
-                                            {!successSent && recipient?.attributes.status == 'Action requise'?
-                                                <div className="alert alert-danger">{recipient?.attributes.message}</div>
-                                                :
-                                                <div className="alert alert-success"><span>Vos informations sont à-jour!</span>  <span sltyle={{float:'right'}}><Link href="/transactions">Retour a vos transactions</Link></span></div>
-                                            }
+                                            
+                                            <div className="alert alert-danger">{recipient?.attributes.message}</div>
                                             <table class="table">
                                                 <tr>
                                                     <th>
@@ -139,15 +288,12 @@ export default function Transaction({ userInfo, recipient, admconfig, gencode}) 
                                                     </th>
                                                     <td>
                                                         <div className="form-group" style={{textAlign:'left'}}>
+                                                            <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
                                                             <SelectComponent 
-                                                                className={selectTypeError ? ' is-invalid-select ' : ''}
                                                                 placeholder="Selectionnez une statut pour la transaction" 
                                                                 value={{value: infos?.status, label: infos?.status}}
                                                                 options={[{value: 'Annuler', label: 'Annuler'}, {value: infos?.status, label: infos?.status}]} 
                                                                 onChange={(e) => {handleStatusChange(e); setSelectTypeError(false)}}/>
-                                                            <div className='invalid-feedback' style={{display: 'block'}}>
-                                                                {selectTypeError && 'selectionner le type de transfert'}
-                                                            </div>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -157,6 +303,7 @@ export default function Transaction({ userInfo, recipient, admconfig, gencode}) 
                                                     </th>
                                                     <td>  
                                                         <div className="form-group">
+                                                            <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
                                                             <input 
                                                                 type="text" 
                                                                 name="amount_to_send" 
@@ -181,6 +328,7 @@ export default function Transaction({ userInfo, recipient, admconfig, gencode}) 
                                                     </th>
                                                     <td>
                                                         <div className="form-group">
+                                                            <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
                                                             <input 
                                                                 type="text" 
                                                                 name="amount_to_receive" 
@@ -192,7 +340,7 @@ export default function Transaction({ userInfo, recipient, admconfig, gencode}) 
                                                                 disabled={true}
                                                             />
                                                             <div className='invalid-feedback' style={{display: 'block'}}>
-                                                                {errors.amount_to_receive && 'entrer le montant à recevoir'}
+                                                                {errors.amount_to_receive && 'Veuillez entrer le montant à recevoir'}
                                                             </div>
                                                         </div>
                                                     </td>
@@ -203,6 +351,7 @@ export default function Transaction({ userInfo, recipient, admconfig, gencode}) 
                                                     </th>
                                                     <td>
                                                         <div className="form-group">
+                                                            <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
                                                             <input 
                                                                 type="text" 
                                                                 name="code" 
@@ -222,6 +371,7 @@ export default function Transaction({ userInfo, recipient, admconfig, gencode}) 
                                                     </th>
                                                     <td>
                                                         <div className="form-group">
+                                                            <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
                                                             <input 
                                                                 type="text" 
                                                                 name="to_firstname" 
@@ -232,7 +382,7 @@ export default function Transaction({ userInfo, recipient, admconfig, gencode}) 
                                                                 ref={register({ required: true })}
                                                             />
                                                             <div className='invalid-feedback' style={{display: 'block'}}>
-                                                                {errors.to_firstname && 'entrer le prenom'}
+                                                                {errors.to_firstname && 'Veuillez entrer le prenom'}
                                                             </div>
                                                         </div>
                                                     </td>
@@ -243,6 +393,7 @@ export default function Transaction({ userInfo, recipient, admconfig, gencode}) 
                                                     </th>
                                                     <td>
                                                         <div className="form-group">
+                                                            <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
                                                             <input 
                                                                 type="text" 
                                                                 name="to_name" 
@@ -253,7 +404,7 @@ export default function Transaction({ userInfo, recipient, admconfig, gencode}) 
                                                                 ref={register({ required: true })}
                                                             />
                                                             <div className='invalid-feedback' style={{display: 'block'}}>
-                                                                {errors.to_name && 'entrer le nom'}
+                                                                {errors.to_name && 'Veuilez entrer le nom'}
                                                             </div>
                                                         </div>
                                                     </td>
@@ -266,8 +417,8 @@ export default function Transaction({ userInfo, recipient, admconfig, gencode}) 
                                                         <div className="form-group">
                                                             <input 
                                                                 type="text" 
+                                                                placeholder={"deuxième nom"}  
                                                                 name="to_middle_name" 
-                                                                placeholder={"deuxieme nom"}  
                                                                 className="form-control" 
                                                                 value={infos?.to_middle_name}
                                                                 onChange={(e)=>handleChange(e)}
@@ -284,6 +435,7 @@ export default function Transaction({ userInfo, recipient, admconfig, gencode}) 
                                                         <div className="form-group">
                                                             <div className='d-flex'>
                                                                 <h6 className='me-2 mb-0 align-self-center'>+237</h6>
+                                                                <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
                                                                 <input 
                                                                     type="text" 
                                                                     name="to_phone" 
@@ -308,6 +460,7 @@ export default function Transaction({ userInfo, recipient, admconfig, gencode}) 
                                                     </th>
                                                     <td>
                                                         <div className="form-group">
+                                                            <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
                                                             <input 
                                                                 type="email" 
                                                                 name="to_email" 
@@ -329,6 +482,7 @@ export default function Transaction({ userInfo, recipient, admconfig, gencode}) 
                                                     </th>
                                                     <td>
                                                         <div className="form-group">
+                                                            <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
                                                             <input 
                                                                 type="text" 
                                                                 name="to_city" 
@@ -350,6 +504,7 @@ export default function Transaction({ userInfo, recipient, admconfig, gencode}) 
                                                     </th>
                                                     <td>
                                                         <div className="form-group">
+                                                            <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
                                                             <input 
                                                                 type="text" 
                                                                 name="to_address" 
@@ -371,6 +526,7 @@ export default function Transaction({ userInfo, recipient, admconfig, gencode}) 
                                                     </th>
                                                     <td>
                                                         <div className="form-group">
+                                                            <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
                                                             <input 
                                                                 type="text" 
                                                                 name="reason" 
@@ -386,52 +542,11 @@ export default function Transaction({ userInfo, recipient, admconfig, gencode}) 
                                                         </div>
                                                     </td>
                                                 </tr>
-                                                <tr>
-                                                    <th>
-                                                        Type de transfert :
-                                                    </th>
-                                                    <td>
-                                                        <div className="form-group" style={{textAlign:'left'}}>
-                                                            <SelectComponent 
-                                                                className={selectTypeError ? ' is-invalid-select ' : ''}
-                                                                options={trxTypes} 
-                                                                onChange={(e) => {handleTrxTypeChange(e); setSelectTypeError(false)}}/>
-                                                            <div className='invalid-feedback' style={{display: 'block'}}>
-                                                                {selectTypeError && 'selectionner le type de transaction'}
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                {orangeDisabled === false &&
-                                                <tr>
-                                               
-                                                    <th>
-
-                                                    </th>
-                                                    <td>
-                                                    
-                                                        <div className="form-group">
-                                                            <input 
-                                                                type="text" 
-                                                                name="orange_number" 
-                                                                placeholder={"Numéro orange money"}  
-                                                                className={"form-control ".concat(errors.orange_number ? "is-invalid" : "")} 
-                                                                value={infos?.orange_number}
-                                                                onChange={(e)=>handleChange(e)}
-                                                                ref={register}
-                                                                //ref={ register({ required: orangeDisabled === false, pattern: /(\+?237)?(23|6[6578])\d{7}/  })}
-                                                                disabled={orangeDisabled}
-                                                            />
-                                                            <div className='invalid-feedback' style={{display: 'block'}}>
-                                                                {errors.orange_number && errors.orange_number === "required" && 'entrer le numéro de téléphone'}
-                                                                {errors.orange_number && errors.orange_number === "pattern" && 'entrer un numéro de téléphone valide'}
-                                                            </div>
-                                                        </div>
-                                                   
-                                                    </td>
-                                                </tr>
-                                                }
-                                               
+                                                {infos?.transfert_type.data?.id == 1?
+                                                    bankFields()
+                                                    :
+                                                    mobileFields()
+                                                }                                               
                                                 <tr>
                                                     <td colSpan="2">
                                                         <div>
@@ -441,7 +556,10 @@ export default function Transaction({ userInfo, recipient, admconfig, gencode}) 
                                                 </tr>
                                             </table>
                                         </div> 
-                                    }
+                                :
+                                <div className="alert alert-success"><span>Vos informations sont à-jour!</span>  <span sltyle={{float:'right'}}><Link href="/transactions?page=1&items=20">Retour a vos transactions</Link></span></div>
+                                }
+
                                 </form>  
                                 : <h4>Impossible de trouver la transaction</h4>
                             }                    

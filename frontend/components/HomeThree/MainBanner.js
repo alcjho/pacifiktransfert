@@ -5,6 +5,7 @@ import axios from "axios";
 import { setCookie } from 'nookies';
 import { useRouter } from 'next/router'
 import { BACKEND_URL } from '../../config/constant';
+import calculateFees from '../../components/Rates/calculate';
 
 export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
   const { register, handleSubmit, errors } = useForm();
@@ -19,20 +20,16 @@ export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
 
   const updateAmount = (input) => {
     if (input === 'sender') {
-      setReceiverValue((Number(senderValue) * Number(admconfig.exchange_rate)).toFixed(2))
+      setReceiverValue(calculateFees(senderValue, admconfig.exchange_rate));
     }
     else {
-      setSenderValue((Number(receiverValue) / Number(admconfig.exchange_rate)).toFixed(2))
+      setSenderValue(calculateFees(receiverValue, admconfig.exchange_rate, true));
     }
   }
 
   const onSubmit = async (e) => {
-    // e?.preventDefault();
-    setCookie(null, 'send', senderValue);
-    setCookie(null, 'receive', receiverValue);
-    setCookie(null, 'transfertType', transfertType)
     try {
-        router.replace('/envoyer-argent');
+        router.replace(`/envoyer-argent?send=${senderValue}&trxtype=${transfertType}`);
     } catch (err) {
         console.log(err.response);
     }
@@ -84,9 +81,10 @@ export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
                             style={{color: '#000000'}}
                             ref={register({ required: true })}
                             className="form-control" 
-                            onChange={(e)=> {handleSelectChange(e);setTransfertType(e.target.value)}}
+                            onChange={(e)=> {handleSelectChange(e); setTransfertType(e.target.value)}}
                           >
-\                            {trxTypes?.map((trxType) => 
+                            <option value="">Type de transfert</option>
+                            {trxTypes?.map((trxType) => 
                                 <option value={trxType.value}>{trxType.label}</option>
                               )
                             }

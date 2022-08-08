@@ -5,27 +5,38 @@ import { BACKEND_URL } from '../../config/constant'
 import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
 import moment from 'moment';
-import Link from 'next/link';
 import Modal from "../../components/Utils/Modal";
-import transaction from '../../pages/transactions';
+import { useRouter} from 'next/router';
 
-export default function Transaction({ user }) {
+export default function Transaction({ user, transactions, pagination }) {
+    const router = useRouter();
     const [ transactionHistory, setTransactionHistory ] = useState([])
     const [ isOpen, setIsOpen ] = useState(false);
     const [ message, setMessage ] = useState();
+    const [ pages, setPages] = useState([]);
+    const [ page, setPage] = useState();
 
-    async function getTransactionHistory(page){
-        const { data } = await axios.get(BACKEND_URL+'/api/user-transferts?pagination[page]='+page+'&pagination[pageSize]=100&filters[user][id][$eq]='+ user.id + '&sort=createdAt:DESC&populate=*', {
-            headers: {
-                Authorization: `Bearer ${user.jwt}`,
-            },
-        });
-        console.log(data.data)
-        setTransactionHistory(data.data);
+    const sendMobileMoney = () => {
+        router.push('/envoyer-argent?send=&trxtype=2')
+    }
+
+    const sendDeposit = () => {
+        router.push('/envoyer-argent?send=&trxtype=1')
+    }
+
+    const getAllPages = () => {
+        let p = [];
+        for(let i = 1; i <= pagination.pageCount; i++){
+            p.push(i);
+        }
+        if(p.length > 1){
+            setPages(p)
+        }
     }
 
     useEffect(() => {
-        getTransactionHistory(1);
+        getAllPages();
+        setTransactionHistory(transactions)
     }, [])
 
 
@@ -39,14 +50,15 @@ export default function Transaction({ user }) {
                         <h3>Bienvenue</h3>
                         <span className="font-weight-bold">{ user.firstname + ' ' + user.lastname  }</span>
                         <span className="text-black-50">{user.email}</span>
-                        </div>
+                    </div>
                 </div>
                 <div className="col-md-10 border-right mt-5">
                     <h4>Transactions</h4>
                     <div className="card my-5">
                         <div className="card-body p-4">
-                            <h5 style={{display: 'inline-block'}} className="card-title mb-4">Vos 100 dernièrs transactions</h5>
-                            <h6 style={{display: 'inline-block', float:'right'}} className="card-title mb-4"><Link href='/envoyer-argent'>Nouvelle transaction</Link></h6>
+                            <h5 style={{display: 'inline-block'}} className="card-title mb-4">Vos 100 dernières transactions</h5>
+                            <button style={{float:'right', margin:'5px'}} className="btn btn-primary" onClick={()=>sendMobileMoney()}>Mobile money</button>
+                            <button style={{float:'right', margin:'5px'}} className="btn btn-primary" onClick={()=>sendDeposit()}>Dépot Bancaire</button>
                             <table className="table align-middle mb-0 bg-white">
                                 <thead className="bg-light">
                                     <tr className='p-3'>
@@ -78,7 +90,7 @@ export default function Transaction({ user }) {
                                                 <td>
                                                     {
                                                         (transaction.attributes?.status == "Action requise")?
-                                                            <a href={"/transactions/edit?trx="+transaction.id}>{transaction.attributes?.status}</a>
+                                                            <a href={"/transactions/edit?trx="+transaction.id+"&send=&trxtype="+transaction.attributes.transfert_type.data?.id}>{transaction.attributes?.status}</a>
                                                         : transaction.attributes?.status
                                                         
                                                     }
@@ -100,6 +112,11 @@ export default function Transaction({ user }) {
                                         )}
                                 </tbody>
                             </table>
+                            <div className="page-number text-center">
+                                {pages.map( num =>
+                                    <a style={{fontSize:'20px',backgroundColor: pagination.page == num?'#999':'#eeeeee'}} href={"/transactions?page="+num+"&items=20"}> <span style={{display:'inline-block',width:'30px'}}>{num}</span></a>
+                                )}
+                            </div>
                             {isOpen && <Modal setIsOpen={setIsOpen} message={message}/>}
                         </div>
                     </div>

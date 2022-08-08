@@ -8,36 +8,25 @@ import axios from 'axios';
 import { BACKEND_URL, BEARER_TOKEN } from '../config/constant';
 import { setCookie } from 'nookies'
 import checkuser from './api/checkuser';
+import getBankList from './api/get-bank-list';
+import getAdminSettings from './api/get-admin-settings';
+import getTransfertTypes from './api/get-transfert-types';
+import getMyTransferts from './api/get-transferts';
 
-    export default function envoyerArgent(user) {
+
+    export default function envoyerArgent({ user, banks, admconfig, trxtypes, deposit, mytransferts }) {
         const [contact, setContact] = useState({})
-        const [adminConfig, setAdminConfig] = useState();
         const [sendMoneyPage, setSendMoneyPage] = useState();
 
         const getContact = async () => {
             axios.get(BACKEND_URL+'/api/contact', {params: {populate:'*'}})
               .then(function (response) {
-                console.log('img', response.data.data.attributes.step1_icon?.data.attributes.url);
                 setContact(response.data.data.attributes)
               })
               .catch(function (error) {
                 console.log(error);
               });
         } 
-
-        const getAdminConfig = async () => {
-          axios.get(BACKEND_URL+'/api/admin-settings/1', {
-            headers: {
-                Authorization: `Bearer ${BEARER_TOKEN}`
-            }})
-            .then(function (response) {
-              setAdminConfig(response.data.data.attributes)
-            })
-            .catch(function (error) {
-              console.log(error);
-            });
-        } 
-
 
         const getSendMoneyPage = async () => {
           axios.get(BACKEND_URL+'/api/send-money?populate=*')
@@ -50,9 +39,8 @@ import checkuser from './api/checkuser';
         } 
 
         useEffect(() => {
-            getContact()
-            getAdminConfig()
-            getSendMoneyPage()
+            getSendMoneyPage();
+            getContact();
           }, [])
         return (
             <>
@@ -64,7 +52,7 @@ import checkuser from './api/checkuser';
                     coverImage={BACKEND_URL + sendMoneyPage?.cover.data.attributes.url}
                 />
 
-                <SendMoneyContent contact={contact} user={ user.user } admconfig={adminConfig}/>
+                <SendMoneyContent contact={contact} banks={banks} user={user} admconfig={admconfig.attributes} trxtypes={trxtypes} deposit={deposit} mytransferts={mytransferts}/>
 
                 {/* <AccountCreateArea /> */}
 
@@ -75,7 +63,13 @@ import checkuser from './api/checkuser';
 
 export const getServerSideProps = async (ctx) => {
   let user = await checkuser(ctx);
-  if(user.redirect){
+  let banks = await getBankList(ctx);
+  let config = await getAdminSettings(ctx);
+  let trxTypes = await getTransfertTypes(ctx);
+  let sendAndReceive = {send: ctx.query?.send, trxtype: ctx.query?.trxtype};
+  let mytransferts = await getMyTransferts(ctx, user)
+
+  if(user?.redirect){;
     setCookie(ctx, 'redirect', ctx.resolvedUrl, {
       httpOnly: true,
       secure: false,
@@ -87,7 +81,12 @@ export const getServerSideProps = async (ctx) => {
 
   return {
     props: {
-      user
+      'user': user, 
+      'banks': banks.result,
+      'admconfig': config.result,
+      'trxTypes': trxTypes.result,
+      'deposit': sendAndReceive,
+      'mytransferts': mytransferts.result
     }
   }
 }

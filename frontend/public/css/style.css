@@ -7827,4 +7827,19 @@ Footer Area CSS
   border: 1px solid red;
 }
 
+.page-number {
+  font-size:medium!important;
+}
+
+.page-number a{
+  background-color:'#eee';
+  color: 'red';
+  text-align:'center'
+}
+
+.page-number a:hover{
+  background-color:'#999';
+  color: 'red'
+}
+
 

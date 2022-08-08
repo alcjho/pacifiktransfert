@@ -8,7 +8,9 @@ import AccountCreateArea from '../../components/Common/AccountCreateArea';
 import Footer from '../../components/Layouts/Footer';
 import checkuser from '../api/checkuser';
 import { setCookie } from 'nookies'
-export default function transaction(user) {
+import getTransactions from '../api/get-transferts'
+
+export default function transaction({user, transactions, pagination}) {
 
   // TODOS: to be remplaced by api call
   const transactionPage = {
@@ -25,7 +27,7 @@ export default function transaction(user) {
                 pageCaption={transactionPage.page_caption}
                 coverImage={transactionPage.cover_image}
             />
-            <Transaction user={ user.user }/>
+            <Transaction user={ user } transactions={transactions} pagination={pagination}/>
             <Footer />
         </>
     )
@@ -33,6 +35,7 @@ export default function transaction(user) {
 
 export const getServerSideProps = async (ctx) => {
     let user = await checkuser(ctx);
+    let transactions = await getTransactions(ctx, user);
     if(user.redirect){;
       setCookie(ctx, 'redirect', ctx.resolvedUrl, {
         httpOnly: true,
@@ -45,7 +48,9 @@ export const getServerSideProps = async (ctx) => {
   
     return {
       props: {
-        user
+        'user': user,
+        'transactions': transactions?.result ? transactions.result : [],
+        'pagination': transactions?.result.pagination
       }
     }
   }
