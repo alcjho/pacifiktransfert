@@ -111,6 +111,12 @@
         "M",
         "F"
       ]
+    },
+    "id_with_photo": {
+      "type": "richtext"
+    },
+    "id_with_address": {
+      "type": "richtext"
     }
   }
 }

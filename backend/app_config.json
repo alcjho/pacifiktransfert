@@ -1,11 +1,11 @@
 {
     "apps" : [{
       "env":{
-        "NODE_ENV": "production"
+        "NODE_ENV": "development"
       },
       "name"       : "pacifictransfert",
       "script"     : "npm",
-      "args"       : "start",
+      "args"       : "run develop",
       "log_date_format" : "YYYY-MM-DD HH:mm Z"
     }]
 }

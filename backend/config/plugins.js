@@ -10,5 +10,11 @@ module.exports = ({ env }) => ({
         pass: 'e674d0f73eab8c'
       },
     },
-   }
+   },
+  placeholder: {
+    enabled: true,
+    config: {
+      size: 10,
+    },
+  },
 })
