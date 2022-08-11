@@ -211,7 +211,7 @@ const SignUp = ({provinces, occupations}) => {
                                                         </div>
                                                 </div>
                                                 
-                                                <div className="form-group" style={{textAlign:'left'}}>
+                                                {/* <div className="form-group" style={{textAlign:'left'}}>
                                                     <SelectComponent 
                                                         name="province"
                                                         placeholder="Selectionnez votre province" 
@@ -222,16 +222,12 @@ const SignUp = ({provinces, occupations}) => {
                                                         <div className='invalid-feedback' style={{display: 'block'}}>
                                                             {errors.province && 'Veuillez saisir la province'}
                                                         </div>
-                                                </div>
+                                                </div> */}
                                                 <div>
                                                     <button name="gotoPage1" type="submit" className="btn btn-primary mt-5 ml-2 mb-5" style={{zIndex:0,width:'40%',float:'right'}}>Continuer</button>
                                                 </div>
                                             </>                                               
-                                            : nextPage == 1?
-                                                ''
-                                                :nextPage == 2?
-                                                    ''
-                                                    :''
+                                                :''
                                             }
                                         </form>
                                     </div>
