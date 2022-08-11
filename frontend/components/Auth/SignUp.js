@@ -263,7 +263,7 @@ const SignUp = ({provinces, occupations}) => {
                                                                 <p><a href="#" onClick={() => setPicWithPhoto(null)}><i style={{display:'inline-block'}} class="far fa-edit fa-xl"></i></a></p>
                                                             </>
                                                             :
-                                                               '' // <Webcam picWithPhoto={addPicWithPhoto}/>
+                                                               <Webcam picWithPhoto={addPicWithPhoto}/>
                                                             }
                                                     </div>
                                                     <div>
