@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-//import Webcam from "../../components/Utils/Webcam";
+import Webcam from "../../components/Utils/Webcam";
 import { useRouter } from 'next/router';
 import Link from 'next/link'
 import SelectComponent from 'react-select';
