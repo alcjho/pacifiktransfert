@@ -47,3 +47,12 @@ const Register = () => {
   )
 }
 export default Register;
+
+export const getStaticProps = ({req, res}) => {
+  let initialProps = {};
+  return {
+    props: {
+      initialProps: initialProps
+    }
+  }
+}

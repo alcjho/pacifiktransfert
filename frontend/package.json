@@ -36,6 +36,7 @@
         "react-owl-carousel3": "^2.2.5",
         "react-select": "^5.4.0",
         "react-visibility-sensor": "^5.1.1",
+        "react-webcam": "^7.0.1",
         "sass": "^1.35.2",
         "sweetalert2": "^10.16.9",
         "sweetalert2-react-content": "^3.3.3",

@@ -1361,6 +1361,12 @@ Main Banner Area CSS
   color: #ee0979;
 }
 
+.webcam-content {
+  width: 100%;
+  border: 1px solid rgba(163, 156, 156, 0.1);
+  background-color:rgba(0, 0, 0, 0.5);
+}
+
 .banner-section {
   position: relative;
   z-index: 1;
