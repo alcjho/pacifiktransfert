@@ -51,10 +51,10 @@ import getMyTransferts from './api/get-transferts';
                     pageCaption={sendMoneyPage?.subtitle}
                     coverImage={BACKEND_URL + sendMoneyPage?.cover.data.attributes.url}
                 />
-
-                <SendMoneyContent contact={contact} banks={banks} user={user} admconfig={admconfig.attributes} trxtypes={trxtypes} deposit={deposit} mytransferts={mytransferts}/>
-
-                {/* <AccountCreateArea /> */}
+                {(deposit.trxtype && deposit.trxtype == 1) || (deposit.trxtype && deposit.trxtype == 2)? 
+                  <SendMoneyContent contact={contact} banks={banks} user={user} admconfig={admconfig.attributes} trxtypes={trxtypes} deposit={deposit} mytransferts={mytransferts}/>
+                  :''
+                }
 
                 <Footer />
             </>

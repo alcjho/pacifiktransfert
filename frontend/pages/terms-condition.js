@@ -4,7 +4,6 @@ import PageBannerContent from '../components/Common/PageBannerContent';
 import Footer from '../components/Layouts/Footer';
 import axios from 'axios';
 import { BACKEND_URL } from '../config/constant';
-import MarkdownToHtml from 'react-markdown';
 
     export default function TermsCondition() {
 
@@ -34,7 +33,7 @@ import MarkdownToHtml from 'react-markdown';
                 <div className="ptb-70">
                     <div className="container">
                         <div className="main-text-content">
-                            <MarkdownToHtml children={termsAndConditions.terms_content}/>
+                            <div dangerouslySetInnerHTML={{__html: termsAndConditions.terms_content}} />
                         </div>
                     </div>
                 </div>

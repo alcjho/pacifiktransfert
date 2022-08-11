@@ -34,18 +34,22 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
     const [confirmationMessage, setConfirmationMessage] = useState("")
     const [bankOptions, setBankOptions] = useState();    
     const [receiveAmount, setReceiveAmout] = useState();
+    const [sendAmount, setSendAmount] = useState(deposit?.send);
+    const [maxAmount, setMaxAmount] = useState(deposit?.trxtype == 1?admconfig?.max_sender_money:admconfig?.max_mobile_sender_money);
     const [myTransfertOptions, setMyTransfertOptions] = useState();
     const [receiver, setReceiver] = useState({});
     const [receiverOption, setReceiverOption] = useState();
     const [transfertType, setTransfertType] = useState([]);
     const [bank, setBank] = useState([]);
+
     const handleChange = e => {
         const { name, value } = e.target;
         if(name == 'amount_to_send'){
+            setSendAmount(value)
             let total = calculateFees(value, admconfig?.exchange_rate);
-            setReceiveAmout(total);
+            setReceiveAmout(isNaN(total)?0:total);
         }
-        setReceiver({...receiver, [name]: value });
+        setReceiver({...receiver, [name]: value  });
     }
 
     const updateFormByAmout = () => {
@@ -60,6 +64,7 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
         myreceiver = _.values(myreceiver)[0];
         delete myreceiver.reception_proof;
         setTransfertType([myreceiver?.transfert_type.data?.id]);
+        setMaxAmount(myreceiver?.transfert_type.data?.id == 2? admconfig.max_mobile_sender_money:admconfig.max__sender_money)
         setBank([myreceiver?.transfert_bank.data?.id])
         setReceiveAmout(calculateFees(myreceiver?.amount_to_send, admconfig?.exchange_rate))
         setReceiver(myreceiver)
@@ -99,7 +104,9 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
         receiver.transfert_bank = bank
         receiver.user = [userInfo.id];
         receiver.code = gencode;
-        receiver.amount_to_receive = calculateFees(receiver?.amount_to_send, admconfig?.exchange_rate);
+        receiver.amount_to_receive = calculateFees(receiver?.amount_to_send.replace( /^\D+/g, ''), admconfig?.exchange_rate);
+        receiver.amount_to_send = receiver?.amount_to_send.replace( /^\D+/g, '');
+
         if (confirm) {
             axios
                 .post(BACKEND_URL+'/api/user-transferts', {data: receiver}, {
@@ -131,7 +138,7 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
 
       useEffect(() => {
         if(!receiver?.transfert_type){
-            setTransfertType(deposit.trxtype);
+            setTransfertType(deposit?.trxtype);
         }else{
             setTransfertType(receiver.transfert_type);
         }
@@ -217,7 +224,7 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
                     <input 
                         type="text" 
                         name="mobile_money_number" 
-                        placeholder={"numéro mobile money"}  
+                        placeholder={"Numéro mobile money"}  
                         className={"form-control ".concat(errors.mobile_money_number ? "is-invalid" : "")}
                         value={receiver?receiver?.mobile_money_number:''}
                         onChange={(e)=>handleChange(e)}
@@ -248,44 +255,51 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
                                     onChange={selectedOption => {setReceiverOption(selectedOption); handleReceiverChange(selectedOption);}}
                                 />                                   
                             </div> 
-                            <div className="form-group">
+                            <div className="form-group" style={{display: 'flex'}}>
                                 <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
                                 <input 
                                     type="number" 
                                     name="amount_to_send" 
                                     placeholder={"Montant initial"}  
-                                    className={"form-control ".concat(errors.amount_to_send ? "is-invalid" : "")} 
-                                    value={receiver? receiver?.amount_to_send:''}
+                                    className={"form-control ".concat(errors.amount_to_send ? "is-invalid" : "") + " w-25" } 
+                                    value={sendAmount}
                                     onChange={(e)=>{handleChange(e)}}
-                                    ref={register({ required: true, min: admconfig?.min_sender_money?admconfig.min_sender_money:10, max: admconfig?.max_sender_money?admconfig.max_sender_money:1000 })}
+                                    ref={register({ required: true, min: admconfig?.min_sender_money?admconfig.min_sender_money:10, max: maxAmount})}
                                 />
-                                <div className='invalid-feedback' style={{display: 'block'}}>
-                                    {errors.amount_to_send  && 'Veuillez entrer le montant à envoyer'}
-                                    {errors.amount_to_send && errors.amount_to_send.type === "max" && `maximum ${admconfig?.max_sender_money?admconfig.max_sender_money:1000} CAD`}
-                                    {errors.amount_to_send && errors.amount_to_send.type === "min" && `minimum ${admconfig?.min_sender_money?admconfig.min_sender_money:1000}`}
-                                </div>
+                                <label for="amount_to_send">
+                                    <p className="pt-3 h5 text-warning">&nbsp; : {admconfig.default_sender_currency}  ( maximum ${maxAmount})</p>
+                                </label>
                             </div>
-                            <div className="form-group">
+                            <div className='invalid-feedback' style={{display: 'block'}}>
+                                {errors.amount_to_send  && 'Veuillez entrer le montant à envoyer. '}
+                                {errors.amount_to_send && errors.amount_to_send.type === "max" && `Maximum ${maxAmount} CAD`}
+                                {errors.amount_to_send && errors.amount_to_send.type === "min" && `Minimum ${admconfig?.min_sender_money?admconfig.min_sender_money:1000}`}
+                            </div>
+
+                            <div className="form-group mt-2" style={{display:'flex'}}>
                                 <input 
                                     type="number" 
                                     name="amount_to_receive" 
                                     placeholder={"Montant à recevoir"}  
-                                    className={"form-control ".concat(errors.amount_to_receive ? "is-invalid" : "")} 
+                                    className={"form-control ".concat(errors.amount_to_receive ? "is-invalid" : "") + " w-25"} 
                                     value={receiveAmount}
                                     onChange={(e)=>handleChange(e)}
                                     ref={register({ required: true })}
                                     disabled={true}
                                 />
-                                <div className='invalid-feedback' style={{display: 'block'}}>
-                                    {errors.amount_to_receive && 'Veuillez entrer le montant à recevoir'}
-                                </div>
+                                <label for="amount_to_receive pt-2">
+                                    <p className="pt-3 h5 text-warning">&nbsp; : {admconfig.default_receiver_currency}</p>
+                                </label>
+                            </div>
+                            <div className='invalid-feedback' style={{display: 'block'}}>
+                                {errors.amount_to_receive && 'Veuillez entrer le montant à recevoir'}
                             </div>
                             <div className="form-group">
                                 <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
                                 <input 
                                     type="text" 
                                     name="to_firstname" 
-                                    placeholder={"prénom"} 
+                                    placeholder={"Prénom"} 
                                     className={"form-control ".concat(errors.to_firstname ? "is-invalid" : "")} 
                                     value={receiver?receiver?.to_firstname:''}
                                     onChange={(e)=>handleChange(e)}
@@ -300,7 +314,7 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
                                 <input 
                                     type="text" 
                                     name="to_name" 
-                                    placeholder={"nom"}  
+                                    placeholder={"Nom"}  
                                     className={"form-control ".concat(errors.to_name ? "is-invalid" : "")}
                                     value={receiver?receiver?.to_name:''}
                                     onChange={(e)=>handleChange(e)}
@@ -310,25 +324,14 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
                                     {errors.to_name && 'Veuillez entrer le nom du destinataire'}
                                 </div>
                             </div>
-                            <div className="form-group">
-                                <input 
-                                    type="text" 
-                                    placeholder={"deuxième prénom"}  
-                                    name="to_middle_name" 
-                                    className="form-control" 
-                                    value={receiver?receiver?.middle_name:''}                                    
-                                    onChange={(e)=>handleChange(e)}
-                                    ref={register}
-                                />
-                            </div>
-                            <div className="form-group">
+                            {/* <div className="form-group">
                                 <div className='d-flex'>
                                     <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
                                     <h6 className='me-2 mb-0 align-self-center'>+237</h6>
                                     <input 
                                         type="text" 
                                         name="to_phone" 
-                                        placeholder={"numéro de téléphone"}  
+                                        placeholder={"Numéro de téléphone"}  
                                         className={"form-control ".concat(errors.to_phone ? "is-invalid" : "")}
                                         value={receiver?receiver?.to_phone:''}
                                         onChange={(e)=>handleChange(e)}
@@ -339,42 +342,23 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
                                     {errors.to_phone && errors.to_phone.type === "required" && 'Veuillez entrer le numéro de téléphone'}
                                     {errors.to_phone && errors.to_phone.type === "pattern" && 'Veuillez entrer un numéro de téléphone valide'}
                                 </div>
-                            </div>
+                            </div> */}
                             <div className="form-group">
-                                <div className='d-flex'>
-                                    <h6 className='me-2 mb-0 align-self-center'>+237</h6>
-                                    <input 
-                                        type="text" 
-                                        name="to_other_phone" 
-                                        placeholder={"Veuillez entrer un second numéro de téléphone"}  
-                                        className={"form-control"}
-                                        value={receiver?receiver?.to_other_phone:''}
-                                        onChange={(e)=>handleChange(e)}
-                                        ref={register}
-                                    />
-                                </div>
-                            </div>
-                            <div className="form-group">
-                                <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
                                 <input 
                                     type="email" 
                                     name="to_email" 
                                     placeholder={"Courriel du destinataire"}  
-                                    className={"form-control ".concat(errors.to_email ? "is-invalid" : "")}
+                                    className="form-control"
                                     value={receiver?receiver?.to_email:''}
                                     onChange={(e)=>handleChange(e)}
-                                    ref={register({ required: true })}
                                 />
-                                <div className='invalid-feedback' style={{display: 'block'}}>
-                                    {errors.to_email && 'Veuillez entrer le courriel du destinataire'}
-                                </div>
                             </div>
                             <div className="form-group">
                                 <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
                                 <input 
                                     type="text" 
                                     name="to_city" 
-                                    placeholder={"ville"}  
+                                    placeholder={"Ville"}  
                                     className={"form-control ".concat(errors.to_city ? "is-invalid" : "")}
                                     value={receiver?receiver?.to_city:''}
                                     onChange={(e)=>handleChange(e)}
@@ -433,7 +417,9 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
                             </div>
                         </div> 
                         : 
+                        
                         <div className='confirm'>
+                            <p className="alert alert-warning mb-5 display4">Afin de traiter votre transfert de <bold>{receiver?.amount_to_send} {admconfig.default_sender_currency}</bold> au plus vite, envoyez-nous votre interac à <b style={{color:'red'}}>{admconfig?.interac_email}</b>  utilisant le code à 6 chiffres <b style={{color:'red'}}>{gencode}</b></p>
                             <div className="form-group">
                                 <label 
                                     className='fw-bold mb-1'
@@ -470,43 +456,10 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
                                     htmlFor="to_name" 
                                     className='fw-bold mb-1'
                                 >
-                                    {"nom"}
+                                    {"Nom"}
                                 </label>
                                 <div>
                                     {receiver?.to_name}
-                                </div>
-                            </div>
-                            <div className="form-group">
-                                <label 
-                                    htmlFor="to_middle_name" 
-                                    className='fw-bold mb-1'
-                                >
-                                    {"deuxieme nom"}
-                                </label>
-                                <div>
-                                    {receiver?.to_middle_name ? receiver?.to_middle_name : '-vide-'}
-                                </div>
-                            </div>
-                            <div className="form-group">
-                                <label 
-                                    htmlFor="phone" 
-                                    className='fw-bold mb-1'
-                                >
-                                    {"numero de telephone"}
-                                </label>
-                                <div>
-                                    {receiver?.to_phone}
-                                </div>
-                            </div>
-                            <div className="form-group">
-                                <label 
-                                    htmlFor="phone" 
-                                    className='fw-bold mb-1'
-                                >
-                                    {"un second numéro de téléphone"}
-                                </label>
-                                <div>
-                                    {receiver?.to_other_phone}
                                 </div>
                             </div>
                             <div className="form-group">
@@ -610,7 +563,7 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
                                         htmlFor="mobile_money_number" 
                                         className='fw-bold mb-1'
                                     >
-                                        {"Numero mobile money"}
+                                        {"Numéro mobile money"}
                                     </label>
                                     <div>
                                         {receiver?.mobile_money_number}

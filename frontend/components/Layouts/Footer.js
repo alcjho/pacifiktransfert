@@ -44,7 +44,7 @@ import { BACKEND_URL } from '../../config/constant';
                                     <Link href="/">
                                         <a><img src="/images/logo.png" alt="logo" /></a>
                                     </Link>
-                                    <p>{aboutUs.about_us_content_desc?.substring(0,200)} ...</p>
+                                    <p><div dangerouslySetInnerHTML={{__html: aboutUs.about_us_content_desc?.substring(0,200)+"..."}}/></p>
                                 </div>
                                 
                                 {/* <ul className="social-links">

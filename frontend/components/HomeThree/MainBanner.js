@@ -11,6 +11,7 @@ export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
   const [senderValue, setSenderValue] = useState('')
   const [receiverValue, setReceiverValue] = useState('')
   const [transfertType, setTransfertType] = useState('');
+  const [maxAmount, setMaxAmount] = useState(1000);
   const [userData, setUserData] = useState({
     send: '',
     receive: ''
@@ -47,6 +48,12 @@ export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
 
   const handleSelectChange = (e) => {
     const { name, value } = e.target;
+    if(name == 'transfert_type' && value == 2){
+      setMaxAmount(admconfig.max_mobile_sender_money);
+    }else{
+      setMaxAmount(admconfig.max_sender_money);
+    }
+
     setUserData({...userData, [name]: [value] });
   }
 
@@ -98,9 +105,9 @@ export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
                         <input
                           type="number"
                           name="send"
-                          ref={register({ required: true, min: admconfig?.min_sender_money?admconfig.min_sender_money:10, max: admconfig?.max_sender_money?admconfig?.max_sender_money:1000 })}
+                          ref={register({ required: true, min: admconfig?.min_sender_money?admconfig.min_sender_money:10, max: maxAmount })}
                           className="form-control"
-                          placeholder={"Maximum "+admconfig?.max_sender_money+" "+admconfig?.default_sender_currency}
+                          placeholder={"Maximum "+maxAmount+" "+admconfig?.default_sender_currency}
                           value={senderValue}
                           onChange={(e)=> handleChange(e)}
                         />
@@ -114,9 +121,9 @@ export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
                       </div>
                     </div>
                     <div className='invalid-feedback' style={{display: 'block'}}>
-                        {errors.send_amount && errors.send_amount.type === "required"  && 'entrer le montant à envoyer'}
-                        {errors.send_amount && errors.send_amount.type === "max" && `maximum ${admconfig?.max_sender_money?admconfig.max_sender_money:1000} CAD`}
-                        {errors.send_amount && errors.send_amount.type === "min" && `minimum  ${admconfig?.min_sender_money?admconfig.min_sender_money:10} CAD`}
+                        {errors.send && errors.send.type === "required"  && 'entrer le montant à envoyer'}
+                        {errors.send && errors.send.type === "max" && `maximum ${maxAmount} CAD`}
+                        {errors.send && errors.send.type === "min" && `minimum  ${admconfig?.min_sender_money?admconfig.min_sender_money:10} CAD`}
                     </div>
 
                     <div className="currency-info">

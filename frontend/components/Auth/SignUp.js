@@ -38,7 +38,7 @@ const SignUp = ({provinces, occupations}) => {
     const [hasError, setHasError] = useState(false);
     const { register, handleSubmit, errors, control } = useForm();
     const router = useRouter();
-    
+
     const onSubmit = async (e) => {
         
         if(nextPage == 0){
@@ -66,7 +66,7 @@ const SignUp = ({provinces, occupations}) => {
 
     const addPicWithAddress = (pic) => {
         setIdError(false)
-        setPicWithAddress(pic)
+        setPicWithAddress("<img src='"+pic+"' />")
         setUserData({...userData, ['id_with_address']: pic });
     }
 
