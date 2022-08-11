@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useId } from 'react';
 import Webcam from "../../components/Utils/Webcam";
 import { useRouter } from 'next/router';
 import Link from 'next/link'
@@ -105,7 +105,10 @@ const SignUp = ({provinces, occupations}) => {
                                         <p>Vous avez deja un compte? <Link href="/login"><a>Connexion</a></Link></p>
 
                                         <form onSubmit={handleSubmit(onSubmit, onError)}>
-                                        <h4>Informations de connexion</h4>
+                                            {nextPage == 0 ?
+                                            <>
+                                            
+                                                <h4>Informations de connexion</h4>
                                                 <div className="form-group">
                                                     <input 
                                                         type="email" 
@@ -145,47 +148,136 @@ const SignUp = ({provinces, occupations}) => {
                                                             {errors.confirm_password && 'Veuillez saisir le mot-de-passe a nouveau'}
                                                         </div>
                                                 </div>
-
-                                            <h4>Informations personnelles</h4>
-                                            <div className="form-group">
-                                                <input style={{width:'50%',display:'inline-block'}} type="text" name="firstname" id="firstname" placeholder="Prenom" className="form-control" onChange={e => handleChange(e)}/>
-                                                <input style={{width:'50%',display:'inline-block'}} type="text" name="lastname" id="lastname" placeholder="Nom de famille" className="form-control" onChange={e => handleChange(e)}/>
-                                            </div>
-
-                                            <div className="form-group" style={{textAlign:'left'}}>
-                                                <SelectComponent placeholder="Selectionnez votre occupation" options={occupations} onChange={handleOccupationChange}/>
-                                            </div>
-
-                                            <div className="form-group">
-                                                <input type="text" name="address" id="address" placeholder="Adresse" className="form-control" onChange={e => handleChange(e)}/>
-                                            </div>
-
-                                            <div className="form-group" style={{textAlign:'left'}}>
-                                                <input type="text" name="city" id="city" placeholder="Ville" className="form-control" onChange={e => handleChange(e)}/>
-                                            </div>
-
-                                            <div className="form-group" style={{textAlign:'left'}}>
-                                                <SelectComponent 
-                                                    placeholder="Selectionnez votre province" 
-                                                    value={provinces.find(obj => obj.value === province)}
-                                                    options={provinces} 
-                                                    onChange={handleProvinceChange}/>
-                                            </div>
-
-
- 
-                                            <button type="submit" className="btn btn-primary" style={{zIndex:0}}>Sign Up</button>
-
-                                            {/* <div className="connect-with-social">
-                                                <span>Or</span>
-                                                <button type="submit" className="facebook">
-                                                    <i className="fab fa-facebook-square"></i> Connect with Facebook
-                                                </button>
                                                 
-                                                <button type="submit" className="google">
-                                                    <i className="fab fa-google"></i> Connect with Google
-                                                </button>
-                                            </div> */}
+
+                                                <h4 className="pt-3">Informations personnelles</h4>
+                                                <div className="form-group">
+                                                    <input 
+                                                        type="text" 
+                                                        name="firstname" 
+                                                        placeholder="Votre prénom" 
+                                                        className={"form-control ".concat(errors.firstname ? "is-invalid" : "")} 
+                                                        onChange={e => handleChange(e)}
+                                                        ref={register({required: true})}/>
+                                                        <div className='invalid-feedback' style={{display: 'block'}}>
+                                                            {errors.firstname && 'Veuillez saisir votre prénom'}
+                                                        </div>
+                                                </div>
+                                                <div className="form-group">
+                                                    <input 
+                                                        type="text" 
+                                                        name="lastname" 
+                                                        placeholder="Votre nom" 
+                                                        className={"form-control ".concat(errors.lastname ? "is-invalid" : "")}  
+                                                        onChange={e => handleChange(e)}
+                                                        ref={register({required: true})}/>
+                                                        <div className='invalid-feedback' style={{display: 'block'}}>
+                                                            {errors.lastname && 'Veuillez saisir votre nom'}
+                                                        </div>
+                                                </div>
+
+
+                                                <div className="form-group" style={{textAlign:'left'}}>
+                                                    <SelectComponent 
+                                                        name="occupation"
+                                                        placeholder="Selectionnez votre occupation" 
+                                                        options={occupations} 
+                                                        onChange={handleOccupationChange}/>
+                                                </div>
+
+                                                <div className="form-group">
+                                                    <input 
+                                                        type="text" 
+                                                        name="address" 
+                                                        placeholder="Votre adresse actuelle" 
+                                                        className={"form-control ".concat(errors.address ? "is-invalid" : "")}  
+                                                        onChange={e => handleChange(e)}
+                                                        ref={register({required: true})}/>
+                                                        <div className='invalid-feedback' style={{display: 'block'}}>
+                                                            {errors.address && 'Veuillez saisir votre adresse actuelle'}
+                                                        </div>
+                                                </div>
+
+                                                <div className="form-group" style={{textAlign:'left'}}>
+                                                    <input 
+                                                        type="text" 
+                                                        name="city" 
+                                                        placeholder="Ville" 
+                                                        className={"form-control ".concat(errors.city ? "is-invalid" : "")} 
+                                                        onChange={e => handleChange(e)}
+                                                        ref={register({required: true})}/>
+                                                         <div className='invalid-feedback' style={{display: 'block'}}>
+                                                            {errors.city && 'Veuillez saisir votre ville actuelle'}
+                                                        </div>
+                                                </div>
+                                                
+                                                <div className="form-group" style={{textAlign:'left'}}>
+                                                    <SelectComponent 
+                                                        name="province"
+                                                        placeholder="Selectionnez votre province" 
+                                                        value={provinces.find(obj => obj.value === province)}
+                                                        options={provinces}
+                                                        onChange={handleProvinceChange}
+                                                        ref={register({required:true})}/>
+                                                        <div className='invalid-feedback' style={{display: 'block'}}>
+                                                            {errors.province && 'Veuillez saisir la province'}
+                                                        </div>
+                                                </div>
+                                                <div>
+                                                    <button name="gotoPage1" type="submit" className="btn btn-primary mt-5 ml-2 mb-5" style={{zIndex:0,width:'40%',float:'right'}}>Continuer</button>
+                                                </div>
+                                            </>                                               
+                                            : nextPage == 1?
+                                                <div className="mt-5">
+                                                    <h4>Pièce d'identité avec votre photo</h4>
+                                                    <p> Placez une pièce d'identité avec votre photo devant la caméra avant de prendre la photo (ex. Permis de conduire, Carte de résidence...) </p>
+                                                    <div className="form-group">
+                                                        {picWithPhoto?
+                                                             <>
+                                                                <img height="300px" src={picWithPhoto} />
+                                                                <p><a href="#" onClick={() => setPicWithPhoto(null)}><i style={{display:'inline-block'}} class="far fa-edit fa-xl"></i></a></p>
+                                                            </>
+                                                            :
+                                                               '' // <Webcam picWithPhoto={addPicWithPhoto}/>
+                                                            }
+                                                    </div>
+                                                    <div>
+                                                        <button name="gotoPage0" type="button" className="btn btn-primary mt-5 mr-2 mb-5" style={{zIndex:0,width:'40%',float:'left'}} onClick={()=> {setNextPage(0)}}>Retour</button>
+                                                        <button name="gotoPage2" type="button" className="btn btn-primary mt-5 ml-2 mb-5" style={{zIndex:0,width:'40%',float:'right'}} onClick={()=> {setNextPage(2)}}>Continuer</button>
+                                                    </div>
+                                                </div>
+                                                :nextPage == 2?
+                                                    <div className="mt-5">
+                                                        <h4>Pièce d'identité avec votre adresse</h4>
+                                                        <p> Placez une pièce d'identité avec votre adresse devant la caméra avant de prendre la photo (ex. Carte d'assurance maladie, permis de travail...) </p>
+
+                                                        <div className="form-group">
+                                                            {picWithAddress?
+                                                                <>
+                                                                    <img height="300px" src={picWithAddress} />
+                                                                    <p><a href="#" onClick={() => setPicWithAddress(null)}><i style={{display:'inline-block'}} class="far fa-edit fa-xl"></i></a></p>
+
+                                                                </>
+                                                            :
+                                                                <Webcam picWithAddress={addPicWithAddress}/>
+                                                            }
+                                                        </div>
+                                                        <div>
+                                                            {idError?
+                                                            <div className="alert alert-danger">Les 2 pièces d'identités sont obligatoires</div>
+                                                            :''
+                                                            }
+
+                                                            {error?
+                                                            <div className="alert alert-danger">{error}</div>
+                                                            :''
+                                                            }
+                                                            <button name="gotoPage1" type="button" className="btn btn-primary mt-5 mr-2 mb-5" style={{zIndex:0,width:'40%',float:'left'}} onClick={()=> {setNextPage(1)}}>Retour</button>
+                                                            <button name="sendForm" type="submit" className="btn btn-primary mt-5 ml-2 mb-5" style={{zIndex:0,width:'40%',float:'right'}} onClick={()=>setConfirm(true)}>Envoyer</button>
+                                                        </div>
+                                                    </div>
+                                                    :''
+                                            }
                                         </form>
                                     </div>
                                 </div>
