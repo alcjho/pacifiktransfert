@@ -1,5 +1,4 @@
 import React, {useEffect, useState } from 'react';
-import Link from 'next/link';
 import SignUp from "../components/Auth/SignUp";
 import { BACKEND_URL } from '../config/constant';
 import axios from 'axios'

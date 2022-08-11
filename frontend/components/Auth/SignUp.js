@@ -6,9 +6,6 @@ import SelectComponent from 'react-select';
 import registerUser from '../../pages/api/register';
 import { useForm } from 'react-hook-form';
 
-
-const WebcamComponent = () => <Webcam />;
-
 const SignUp = ({provinces, occupations}) => {
     const [passwordError, setPasswordError] = useState();
     const [passwordConfirmError, setPasswordConfirmError] = useState();
