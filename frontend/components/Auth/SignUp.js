@@ -1,20 +1,19 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import Webcam from "../../components/Utils/Webcam";
 import { useRouter } from 'next/router';
 import Link from 'next/link'
-import axios from 'axios';
 import SelectComponent from 'react-select';
+import registerUser from '../../pages/api/register';
+import { useForm } from 'react-hook-form';
 
 const SignUp = ({provinces, occupations}) => {
-    const [passwordError, setPasswordError] = useState();
-    const [passwordConfirmError, setPasswordConfirmError] = useState();
-    const [alreadySignedUpError, setAlreadySignedUpError] = useState();
-    const [elseError, setElseError] = useState();
-    const [updatingPassword, setUpdatingPassword] = useState(false);
     const [city, setCity] = useState(null);
     const [province, setProvince] = useState(null);
     const [occupation, setOccupation] = useState(null);
-
-    const router = useRouter();
+    const [error, setError] = useState();
+    const [picWithPhoto, setPicWithPhoto] = useState(null);
+    const [picWithAddress, setPicWithAddress] = useState(null);
+    const [idError, setIdError] = useState();
     const [userData, setUserData] = useState({
         username: '',
         email: '',
@@ -26,8 +25,13 @@ const SignUp = ({provinces, occupations}) => {
         occupation: '',
         other_phone: ''
     })
+    const [confirm, setConfirm] = useState(false);
+    const [nextPage, setNextPage] = useState(0);
+    const [hasError, setHasError] = useState(false);
+    const { register, handleSubmit, errors, control } = useForm();
+    const router = useRouter();
     
-    const handleSubmit = async (e) => {
+    const onSubmit = async (e) => {
         e.preventDefault();
         console.log(userData)
         try {
@@ -66,6 +70,14 @@ const SignUp = ({provinces, occupations}) => {
         setUserData({...userData, [name]: value });
     }
 
+    const onError = (errors, e) => {
+        if(errors){
+            setHasError(true)
+        }else{
+            setHasError(false)
+        }
+    };
+
     return (
         <>
             <div className="signup-area">
@@ -92,19 +104,47 @@ const SignUp = ({provinces, occupations}) => {
 
                                         <p>Vous avez deja un compte? <Link href="/login"><a>Connexion</a></Link></p>
 
-                                        <form onSubmit={handleSubmit}>
-                                            <h4>Informations de connexion</h4>
-                                            <div className="form-group">
-                                                <input type="email" name="email" id="email" placeholder="Adresse courriel" className="form-control" onChange={handleEmailChange}/>
-                                            </div>
+                                        <form onSubmit={handleSubmit(onSubmit, onError)}>
+                                        <h4>Informations de connexion</h4>
+                                                <div className="form-group">
+                                                    <input 
+                                                        type="email" 
+                                                        name="email" 
+                                                        placeholder="Adresse courriel" 
+                                                        className={"form-control ".concat(errors.email ? "is-invalid" : "")} 
+                                                        onChange={handleEmailChange}
+                                                        ref={register({required: true})}/>
+                                                        <div className='invalid-feedback' style={{display: 'block'}}>
+                                                            {errors.email && 'Veuillez saisir un courriel valid'}
+                                                        </div>
+                                                </div>
+                                                
 
-                                                <input type="password" name="password" id="password" placeholder="Creer mot-de-passe (6 caractères minimum, au moins 1 lettre Majuscule)" className="form-control" onChange={e => handleChange(e)}/>
-                                            <div className="form-group">
-                                            </div>
+                                                <div className="form-group">
+                                                    <input 
+                                                        type="password" 
+                                                        name="password" 
+                                                        placeholder="Mot-de-passe (6 caractères minimum, au moins 1 lettre Majuscule)" 
+                                                        className={"form-control ".concat(errors.password ? "is-invalid" : "")}
+                                                        onChange={e => handleChange(e)}
+                                                        ref={register({required: true})}/>
+                                                        <div className='invalid-feedback' style={{display: 'block'}}>
+                                                            {errors.password && 'Veuillez saisir un mot-de-passe'}
+                                                        </div>
+                                                </div>
 
-                                            <div className="form-group">
-                                                <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirmer mot-de-passe" className="form-control" onChange={e => handleChange(e)}/>
-                                            </div>
+                                                <div className="form-group">
+                                                    <input 
+                                                        type="password" 
+                                                        name="confirm_password" 
+                                                        placeholder="Confirmer mot-de-passe" 
+                                                        className={"form-control ".concat(errors.confirm_password ? "is-invalid" : "")} 
+                                                        onChange={e => handleChange(e)}
+                                                        ref={register({required: true})}/>
+                                                        <div className='invalid-feedback' style={{display: 'block'}}>
+                                                            {errors.confirm_password && 'Veuillez saisir le mot-de-passe a nouveau'}
+                                                        </div>
+                                                </div>
 
                                             <h4>Informations personnelles</h4>
                                             <div className="form-group">
