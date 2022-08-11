@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Webcam from "../../components/Utils/Webcam";
+//import Webcam from "../../components/Utils/Webcam";
 import { useRouter } from 'next/router';
 import Link from 'next/link'
 import SelectComponent from 'react-select';
@@ -44,7 +44,6 @@ const SignUp = ({provinces, occupations}) => {
 
         if(confirm){
             if(userData.id_with_photo && userData.id_with_address){
-                console.log('userdata',userData)
                 let result = registerUser(userData);
                 let { error } = await result;
 
@@ -276,7 +275,7 @@ const SignUp = ({provinces, occupations}) => {
                                                                 <p><a href="#" onClick={() => setPicWithPhoto(null)}><i style={{display:'inline-block'}} class="far fa-edit fa-xl"></i></a></p>
                                                             </>
                                                             :
-                                                                <Webcam picWithPhoto={addPicWithPhoto}/>
+                                                               '' // <Webcam picWithPhoto={addPicWithPhoto}/>
                                                             }
                                                     </div>
                                                     <div>
