@@ -211,23 +211,54 @@ const SignUp = ({provinces, occupations}) => {
                                                         </div>
                                                 </div>
                                                 
-                                                {/* <div className="form-group" style={{textAlign:'left'}}>
+                                                <div className="form-group" style={{textAlign:'left'}}>
                                                     <SelectComponent 
                                                         name="province"
                                                         placeholder="Selectionnez votre province" 
                                                         value={provinces.find(obj => obj.value === province)}
                                                         options={provinces}
-                                                        onChange={handleProvinceChange}
-                                                        ref={register({required:true})}/>
+                                                        onChange={handleProvinceChange}/>
                                                         <div className='invalid-feedback' style={{display: 'block'}}>
                                                             {errors.province && 'Veuillez saisir la province'}
                                                         </div>
-                                                </div> */}
+                                                </div>
                                                 <div>
                                                     <button name="gotoPage1" type="submit" className="btn btn-primary mt-5 ml-2 mb-5" style={{zIndex:0,width:'40%',float:'right'}}>Continuer</button>
                                                 </div>
                                             </>                                               
-                                                :''
+                                            : nextPage == 1?
+                                                ''
+                                                :nextPage == 2?
+                                                    <div className="mt-5">
+                                                        <h4>Pièce d'identité avec votre adresse</h4>
+                                                        <p> Placez une pièce d'identité avec votre adresse devant la caméra avant de prendre la photo (ex. Carte d'assurance maladie, permis de travail...) </p>
+
+                                                        <div className="form-group">
+                                                            {picWithAddress?
+                                                                <>
+                                                                    <img height="300px" src={picWithAddress} />
+                                                                    <p><a href="#" onClick={() => setPicWithAddress(null)}><i style={{display:'inline-block'}} class="far fa-edit fa-xl"></i></a></p>
+
+                                                                </>
+                                                            :
+                                                                <Webcam picWithAddress={addPicWithAddress}/>
+                                                            }
+                                                        </div>
+                                                        <div>
+                                                            {idError?
+                                                            <div className="alert alert-danger">Les 2 pièces d'identités sont obligatoires</div>
+                                                            :''
+                                                            }
+
+                                                            {error?
+                                                            <div className="alert alert-danger">{error}</div>
+                                                            :''
+                                                            }
+                                                            <button name="gotoPage1" type="button" className="btn btn-primary mt-5 mr-2 mb-5" style={{zIndex:0,width:'40%',float:'left'}} onClick={()=> {setNextPage(1)}}>Retour</button>
+                                                            <button name="sendForm" type="submit" className="btn btn-primary mt-5 ml-2 mb-5" style={{zIndex:0,width:'40%',float:'right'}} onClick={()=>setConfirm(true)}>Envoyer</button>
+                                                        </div>
+                                                    </div>
+                                                    :''
                                             }
                                         </form>
                                     </div>
