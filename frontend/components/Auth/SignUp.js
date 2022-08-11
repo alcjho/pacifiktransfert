@@ -1,5 +1,5 @@
-import React, { useState, useId } from 'react';
-import Webcam from "../../components/Utils/Webcam";
+import React, { useState } from 'react';
+//import Webcam from "../../components/Utils/Webcam";
 import { useRouter } from 'next/router';
 import Link from 'next/link'
 import SelectComponent from 'react-select';
@@ -30,17 +30,42 @@ const SignUp = ({provinces, occupations}) => {
     const [hasError, setHasError] = useState(false);
     const { register, handleSubmit, errors, control } = useForm();
     const router = useRouter();
-    
+
     const onSubmit = async (e) => {
-        e.preventDefault();
-        console.log(userData)
-        try {
-            let res = await axios.post('/api/register', userData);
-            console.log('result', result)
-            //router.replace('/profile');
-        } catch (err) {
-            console.log(err.response.data);
+        
+        if(nextPage == 0){
+            setNextPage(1)
         }
+
+        if(confirm){
+            if(userData.id_with_photo && userData.id_with_address){
+                let result = registerUser(userData);
+                let { error } = await result;
+
+                if(error){
+                    console.log(error.message)
+                    setError(error.message)
+                }else{
+                    router.replace('/transactions?page=1&items=20');
+                }
+                router.replace('/transactions?page=1&items=20');
+            }else{
+                setIdError(true)
+            }
+        } 
+    }
+
+    const addPicWithAddress = (pic) => {
+        setIdError(false)
+        setPicWithAddress("<img src='"+pic+"' />")
+        setUserData({...userData, ['id_with_address']: pic });
+    }
+
+    const addPicWithPhoto = (pic) => {
+        setIdError(false)
+        setPicWithPhoto(pic)
+        setUserData({...userData, ['id_with_photo']: pic });
+        console.log('adding pic with photo', pic)
     }
 
     const handleProvinceChange = e => {
@@ -103,7 +128,7 @@ const SignUp = ({provinces, occupations}) => {
                                         <h3>Creer votre compte - c'est rapide!</h3>
 
                                         <p>Vous avez deja un compte? <Link href="/login"><a>Connexion</a></Link></p>
-
+                                        
                                         <form onSubmit={handleSubmit(onSubmit, onError)}>
                                             {nextPage == 0 ?
                                             <>
@@ -217,7 +242,8 @@ const SignUp = ({provinces, occupations}) => {
                                                         placeholder="Selectionnez votre province" 
                                                         value={provinces.find(obj => obj.value === province)}
                                                         options={provinces}
-                                                        onChange={handleProvinceChange}/>
+                                                        onChange={handleProvinceChange}
+                                                        />
                                                         <div className='invalid-feedback' style={{display: 'block'}}>
                                                             {errors.province && 'Veuillez saisir la province'}
                                                         </div>
@@ -227,7 +253,24 @@ const SignUp = ({provinces, occupations}) => {
                                                 </div>
                                             </>                                               
                                             : nextPage == 1?
-                                                ''
+                                                <div className="mt-5">
+                                                    <h4>Pièce d'identité avec votre photo</h4>
+                                                    <p> Placez une pièce d'identité avec votre photo devant la caméra avant de prendre la photo (ex. Permis de conduire, Carte de résidence...) </p>
+                                                    <div className="form-group">
+                                                        {picWithPhoto?
+                                                             <>
+                                                                <img height="300px" src={picWithPhoto} />
+                                                                <p><a href="#" onClick={() => setPicWithPhoto(null)}><i style={{display:'inline-block'}} class="far fa-edit fa-xl"></i></a></p>
+                                                            </>
+                                                            :
+                                                               '' // <Webcam picWithPhoto={addPicWithPhoto}/>
+                                                            }
+                                                    </div>
+                                                    <div>
+                                                        <button name="gotoPage0" type="button" className="btn btn-primary mt-5 mr-2 mb-5" style={{zIndex:0,width:'40%',float:'left'}} onClick={()=> {setNextPage(0)}}>Retour</button>
+                                                        <button name="gotoPage2" type="button" className="btn btn-primary mt-5 ml-2 mb-5" style={{zIndex:0,width:'40%',float:'right'}} onClick={()=> {setNextPage(2)}}>Continuer</button>
+                                                    </div>
+                                                </div>
                                                 :nextPage == 2?
                                                     <div className="mt-5">
                                                         <h4>Pièce d'identité avec votre adresse</h4>
@@ -261,6 +304,7 @@ const SignUp = ({provinces, occupations}) => {
                                                     :''
                                             }
                                         </form>
+                                        
                                     </div>
                                 </div>
                             </div>
