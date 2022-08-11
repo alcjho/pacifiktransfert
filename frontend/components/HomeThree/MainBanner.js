@@ -11,7 +11,7 @@ export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
   const [senderValue, setSenderValue] = useState('')
   const [receiverValue, setReceiverValue] = useState('')
   const [transfertType, setTransfertType] = useState('');
-  const [maxAmount, setMaxAmount] = useState(1000);
+  const [maxAmount, setMaxAmount] = useState();
   const [userData, setUserData] = useState({
     send: '',
     receive: ''
@@ -107,7 +107,7 @@ export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
                           name="send"
                           ref={register({ required: true, min: admconfig?.min_sender_money?admconfig.min_sender_money:10, max: maxAmount })}
                           className="form-control"
-                          placeholder={"Maximum "+maxAmount+" "+admconfig?.default_sender_currency}
+                          placeholder={maxAmount?"Maximum "+maxAmount+" "+admconfig?.default_sender_currency:''}
                           value={senderValue}
                           onChange={(e)=> handleChange(e)}
                         />
