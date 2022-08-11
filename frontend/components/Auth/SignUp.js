@@ -228,54 +228,9 @@ const SignUp = ({provinces, occupations}) => {
                                                 </div>
                                             </>                                               
                                             : nextPage == 1?
-                                                <div className="mt-5">
-                                                    <h4>Pièce d'identité avec votre photo</h4>
-                                                    <p> Placez une pièce d'identité avec votre photo devant la caméra avant de prendre la photo (ex. Permis de conduire, Carte de résidence...) </p>
-                                                    <div className="form-group">
-                                                        {picWithPhoto?
-                                                             <>
-                                                                <img height="300px" src={picWithPhoto} />
-                                                                <p><a href="#" onClick={() => setPicWithPhoto(null)}><i style={{display:'inline-block'}} class="far fa-edit fa-xl"></i></a></p>
-                                                            </>
-                                                            :
-                                                               '' // <Webcam picWithPhoto={addPicWithPhoto}/>
-                                                            }
-                                                    </div>
-                                                    <div>
-                                                        <button name="gotoPage0" type="button" className="btn btn-primary mt-5 mr-2 mb-5" style={{zIndex:0,width:'40%',float:'left'}} onClick={()=> {setNextPage(0)}}>Retour</button>
-                                                        <button name="gotoPage2" type="button" className="btn btn-primary mt-5 ml-2 mb-5" style={{zIndex:0,width:'40%',float:'right'}} onClick={()=> {setNextPage(2)}}>Continuer</button>
-                                                    </div>
-                                                </div>
+                                                ''
                                                 :nextPage == 2?
-                                                    <div className="mt-5">
-                                                        <h4>Pièce d'identité avec votre adresse</h4>
-                                                        <p> Placez une pièce d'identité avec votre adresse devant la caméra avant de prendre la photo (ex. Carte d'assurance maladie, permis de travail...) </p>
-
-                                                        <div className="form-group">
-                                                            {picWithAddress?
-                                                                <>
-                                                                    <img height="300px" src={picWithAddress} />
-                                                                    <p><a href="#" onClick={() => setPicWithAddress(null)}><i style={{display:'inline-block'}} class="far fa-edit fa-xl"></i></a></p>
-
-                                                                </>
-                                                            :
-                                                                <Webcam picWithAddress={addPicWithAddress}/>
-                                                            }
-                                                        </div>
-                                                        <div>
-                                                            {idError?
-                                                            <div className="alert alert-danger">Les 2 pièces d'identités sont obligatoires</div>
-                                                            :''
-                                                            }
-
-                                                            {error?
-                                                            <div className="alert alert-danger">{error}</div>
-                                                            :''
-                                                            }
-                                                            <button name="gotoPage1" type="button" className="btn btn-primary mt-5 mr-2 mb-5" style={{zIndex:0,width:'40%',float:'left'}} onClick={()=> {setNextPage(1)}}>Retour</button>
-                                                            <button name="sendForm" type="submit" className="btn btn-primary mt-5 ml-2 mb-5" style={{zIndex:0,width:'40%',float:'right'}} onClick={()=>setConfirm(true)}>Envoyer</button>
-                                                        </div>
-                                                    </div>
+                                                    ''
                                                     :''
                                             }
                                         </form>
