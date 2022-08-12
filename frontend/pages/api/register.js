@@ -11,9 +11,9 @@ export default async (userdata) => {
             maxAge: 24 * 60 * 60,
             path: '/',
         });
-
         return response.data;
-    } catch (e) {
-        return e.response.data
+    } catch (error) {
+        console.log(error)
+        return error.response.data
     }
 }

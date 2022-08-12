@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
-import Webcam from "../../components/Utils/Webcam";
+//import Webcam from "../../components/Utils/Webcam";
 import { useRouter } from 'next/router';
 import Link from 'next/link'
 import SelectComponent from 'react-select';
-import registerUser from '../../pages/api/register';
+//import registerUser from '../../pages/api/register';
 import { useForm } from 'react-hook-form';
+import Upload from '../../components/Auth/Upload'
+import { BACKEND_URL } from '../../config/constant';
+import { setCookie } from 'nookies'
+import axios from 'axios'
 
 const SignUp = ({provinces, occupations}) => {
     const [city, setCity] = useState(null);
     const [province, setProvince] = useState(null);
     const [occupation, setOccupation] = useState(null);
-    const [error, setError] = useState();
+    const [errorMsg, setErrorMsg] = useState();
     const [picWithPhoto, setPicWithPhoto] = useState(null);
     const [picWithAddress, setPicWithAddress] = useState(null);
     const [idError, setIdError] = useState();
@@ -25,47 +29,55 @@ const SignUp = ({provinces, occupations}) => {
         occupation: '',
         other_phone: ''
     })
+    const [confirmPwd, setConfirmPwd] = useState(false);
+    const [password, setPassword] = useState();
+    const [confirmPasswordError, setConfirmPasswordError] = useState("les Mots de passe ne correspondent pas");
     const [confirm, setConfirm] = useState(false);
     const [nextPage, setNextPage] = useState(0);
     const [hasError, setHasError] = useState(false);
-    const { register, handleSubmit, errors, control } = useForm();
+    const { register, handleSubmit, setError, clearErrors, errors, secontrol } = useForm();
     const router = useRouter();
 
     const onSubmit = async (e) => {
-        
+        if(!confirmPwd){
+            return;
+        }
+
         if(nextPage == 0){
             setNextPage(1)
         }
 
         if(confirm){
-            if(userData.id_with_photo && userData.id_with_address){
-                let result = registerUser(userData);
-                let { error } = await result;
-
-                if(error){
-                    console.log(error.message)
-                    setError(error.message)
-                }else{
+            if(picWithPhoto && picWithAddress){
+                let data = userData;
+                axios({
+                    method: 'POST',
+                    url: BACKEND_URL+'/api/auth/local/register', 
+                    data
+                }).then((response)=>{
+                    console.log(response);
                     router.replace('/transactions?page=1&items=20');
-                }
-                router.replace('/transactions?page=1&items=20');
+                }).catch(e => {
+                    setErrorMsg(e.message)
+                });
             }else{
+                console.log('photo ids not set')
                 setIdError(true)
             }
+            router.replace('/transactions?page=1&items=20');
         } 
     }
 
     const addPicWithAddress = (pic) => {
         setIdError(false)
-        setPicWithAddress("<img src='"+pic+"' />")
-        setUserData({...userData, ['id_with_address']: pic });
+        setPicWithAddress(pic)
+        setUserData({...userData, ['photo_id']: pic.id });
     }
 
     const addPicWithPhoto = (pic) => {
         setIdError(false)
         setPicWithPhoto(pic)
-        setUserData({...userData, ['id_with_photo']: pic });
-        console.log('adding pic with photo', pic)
+        setUserData({...userData, ['address_id']: pic.id });
     }
 
     const handleProvinceChange = e => {
@@ -92,7 +104,30 @@ const SignUp = ({provinces, occupations}) => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+        if(name == 'password'){
+            setPassword(value);
+        }
         setUserData({...userData, [name]: value });
+    }
+
+    const handlePassword = (e) => {
+        const {name, value} = e.target;
+        if(value.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$/)){
+            clearErrors("password");
+        }else{
+            setError("password", { type: "focus" }, { shouldFocus: true });
+        }
+    }
+
+    const handlePasswordConfirm = (e) =>{
+        const { name, value } = e.target;
+        if(password != value){
+            setConfirmPwd(false);
+            setError("confirm_password", { type: "focus" }, { shouldFocus: true });
+        }else{
+            setConfirmPwd(true);
+            clearErrors("confirm_password")
+        }
     }
 
     const onError = (errors, e) => {
@@ -155,9 +190,10 @@ const SignUp = ({provinces, occupations}) => {
                                                         placeholder="Mot-de-passe (6 caractères minimum, au moins 1 lettre Majuscule)" 
                                                         className={"form-control ".concat(errors.password ? "is-invalid" : "")}
                                                         onChange={e => handleChange(e)}
-                                                        ref={register({required: true})}/>
+                                                        {...register("password")}
+                                                        onBlur={e => handlePassword(e)}/>
                                                         <div className='invalid-feedback' style={{display: 'block'}}>
-                                                            {errors.password && 'Veuillez saisir un mot-de-passe'}
+                                                            {errors.password && "Mot-de-passe doit contenir 6 caractères min, au moins 1 lettre et 1 chiffre"}
                                                         </div>
                                                 </div>
 
@@ -168,9 +204,10 @@ const SignUp = ({provinces, occupations}) => {
                                                         placeholder="Confirmer mot-de-passe" 
                                                         className={"form-control ".concat(errors.confirm_password ? "is-invalid" : "")} 
                                                         onChange={e => handleChange(e)}
-                                                        ref={register({required: true})}/>
+                                                        onBlur={(e)=>handlePasswordConfirm(e)}
+                                                        {...register("confirm_password")}/>
                                                         <div className='invalid-feedback' style={{display: 'block'}}>
-                                                            {errors.confirm_password && 'Veuillez saisir le mot-de-passe a nouveau'}
+                                                            {errors.confirm_password && !confirmPwd && 'Les mots de passe ne correspondent pas'}
                                                         </div>
                                                 </div>
                                                 
@@ -249,42 +286,47 @@ const SignUp = ({provinces, occupations}) => {
                                                         </div>
                                                 </div>
                                                 <div>
-                                                    <button name="gotoPage1" type="submit" className="btn btn-primary mt-5 ml-2 mb-5" style={{zIndex:0,width:'40%',float:'right'}}>Continuer</button>
+                                                    <button type="submit" name="gotoPage1" className="btn btn-primary mt-5 ml-2 mb-5" style={{zIndex:0,width:'40%',float:'right'}}>Continuer</button>
                                                 </div>
                                             </>                                               
                                             : nextPage == 1?
-                                                <div className="mt-5">
+                                                <>
                                                     <h4>Pièce d'identité avec votre photo</h4>
-                                                    <p> Placez une pièce d'identité avec votre photo devant la caméra avant de prendre la photo (ex. Permis de conduire, Carte de résidence...) </p>
+                                                    <p> Attachez une pièce d'identité sur laquelle figure votre photo </p>
+                                                    <p className="pb-5">(ex. Carte d'assurance maladie) </p>
+                                                    
                                                     <div className="form-group">
-                                                        {picWithPhoto?
-                                                             <>
-                                                                <img height="300px" src={picWithPhoto} />
+                                                        {picWithPhoto?.url?
+                                                            <>
+                                                                {<img src={BACKEND_URL + picWithPhoto?.url} width="100%"/>}
                                                                 <p><a href="#" onClick={() => setPicWithPhoto(null)}><i style={{display:'inline-block'}} class="far fa-edit fa-xl"></i></a></p>
+
                                                             </>
-                                                            :
-                                                               <Webcam picWithPhoto={addPicWithPhoto}/>
-                                                            }
-                                                    </div>
+                                                        :
+                                                            <Upload picWithPhoto={addPicWithPhoto}/>
+                                                            
+                                                        }
+                                                    </div>  
                                                     <div>
                                                         <button name="gotoPage0" type="button" className="btn btn-primary mt-5 mr-2 mb-5" style={{zIndex:0,width:'40%',float:'left'}} onClick={()=> {setNextPage(0)}}>Retour</button>
                                                         <button name="gotoPage2" type="button" className="btn btn-primary mt-5 ml-2 mb-5" style={{zIndex:0,width:'40%',float:'right'}} onClick={()=> {setNextPage(2)}}>Continuer</button>
-                                                    </div>
-                                                </div>
+                                                    </div>                                                  
+                                                </>
                                                 :nextPage == 2?
                                                     <div className="mt-5">
                                                         <h4>Pièce d'identité avec votre adresse</h4>
-                                                        <p> Placez une pièce d'identité avec votre adresse devant la caméra avant de prendre la photo (ex. Carte d'assurance maladie, permis de travail...) </p>
+                                                        <p> Attachez une pièce d'identité sur laquelle figure votre adresse actuelle </p>
+                                                        <p className="pb-5">(ex. permis de conduire) </p>
 
                                                         <div className="form-group">
                                                             {picWithAddress?
                                                                 <>
-                                                                    <img height="300px" src={picWithAddress} />
+                                                                    <img height="300px" src={BACKEND_URL + picWithAddress?.url} />
                                                                     <p><a href="#" onClick={() => setPicWithAddress(null)}><i style={{display:'inline-block'}} class="far fa-edit fa-xl"></i></a></p>
 
                                                                 </>
                                                             :
-                                                                <Webcam picWithAddress={addPicWithAddress}/>
+                                                                <Upload picWithAddress={addPicWithAddress}/>
                                                             }
                                                         </div>
                                                         <div>
@@ -293,18 +335,18 @@ const SignUp = ({provinces, occupations}) => {
                                                             :''
                                                             }
 
-                                                            {error?
-                                                            <div className="alert alert-danger">{error}</div>
+                                                            {errorMsg?
+                                                            <div className="alert alert-danger">{errorMsg}</div>
                                                             :''
                                                             }
-                                                            <button name="gotoPage1" type="button" className="btn btn-primary mt-5 mr-2 mb-5" style={{zIndex:0,width:'40%',float:'left'}} onClick={()=> {setNextPage(1)}}>Retour</button>
-                                                            <button name="sendForm" type="submit" className="btn btn-primary mt-5 ml-2 mb-5" style={{zIndex:0,width:'40%',float:'right'}} onClick={()=>setConfirm(true)}>Envoyer</button>
+                                                            <button type="button" className="btn btn-primary mt-5 mr-2 mb-5" style={{zIndex:0,width:'40%',float:'left'}} onClick={()=> {setNextPage(1)}}>Retour</button>
+                                                            <button type="submit" className="btn btn-primary mt-5 ml-2 mb-5" style={{zIndex:0,width:'40%',float:'right'}} onClick={()=>setConfirm(true)}>Envoyer</button>
                                                         </div>
                                                     </div>
                                                     :''
                                             }
                                         </form>
-                                        
+                                       
                                     </div>
                                 </div>
                             </div>
