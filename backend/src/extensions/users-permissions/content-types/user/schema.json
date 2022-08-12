@@ -112,11 +112,27 @@
         "F"
       ]
     },
-    "id_with_photo": {
-      "type": "richtext"
+    "photo_id": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
     },
-    "id_with_address": {
-      "type": "richtext"
+    "address_id": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
     }
   }
 }

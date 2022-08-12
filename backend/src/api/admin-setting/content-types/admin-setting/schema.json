@@ -41,6 +41,9 @@
     },
     "min_sender_money": {
       "type": "decimal"
+    },
+    "max_mobile_sender_money": {
+      "type": "decimal"
     }
   }
 }
