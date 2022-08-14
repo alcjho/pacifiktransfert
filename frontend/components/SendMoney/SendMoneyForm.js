@@ -160,7 +160,7 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
                     <SelectComponent 
                         name="transfert_bank"
                         placeholder="Selectionnez une banque" 
-                        value={bankOptions.find((bk) => bk.value == bank)}
+                        value={bankOptions? bankOptions.find((bk) => bk.value == bank): ''}
                         options={ bankOptions } 
                         onChange={selectedOption => {handleBankChange(selectedOption);}}
                     />
