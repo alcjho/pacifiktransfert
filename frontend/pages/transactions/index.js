@@ -21,7 +21,7 @@ export default function transaction({user, transactions, pagination}) {
 
     return (
         <>
-            <Navbar />
+            <Navbar pagination={pagination} />
             <PageBannerContent 
                 pageTitle={transactionPage.page_title} 
                 pageCaption={transactionPage.page_caption}

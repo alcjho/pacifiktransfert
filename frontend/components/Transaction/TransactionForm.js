@@ -22,7 +22,10 @@ export default function Transaction({ userInfo, banks, recipient, admconfig, gen
     const [mobileNumber, setMobileNumber] = useState(recipient?.mobile_money_number);
     const [bankOptions, setBankOptions] = useState();    
     const [selectedBank, setSelectedBank] = useState();
-    
+    const [maxAmount, setMaxAmount] = useState(recipient?.attributes.transfert_type.data?.id == 1?admconfig?.max_sender_money:admconfig?.max_mobile_sender_money);
+    const [minAmount, setMinAmount] = useState(recipient?.attributes.transfert_type.data?.id == 1?admconfig?.min_sender_money:admconfig?.min_mobile_sender_money)
+
+    console.log(maxAmount, minAmount);
     const onError = (errors, e) => {
         if (orangeDisabled === null) {
             setSelectTypeError(true)
@@ -311,13 +314,13 @@ export default function Transaction({ userInfo, banks, recipient, admconfig, gen
                                                                 className={"form-control ".concat(errors.amount_to_send ? "is-invalid" : "")} 
                                                                 value={infos?.amount_to_send}
                                                                 onChange={(e)=>handleChange(e)}
-                                                                ref={register({ required: true, max: 1000, min: 10 })}
+                                                                ref={register({ required: true, max: maxAmount, min: minAmount })}
                                                                 onBlur={(e)=> updateAmount(e)}
                                                             />
                                                             <div className='invalid-feedback' style={{display: 'block'}}>
                                                                 {errors.amount_to_send && errors.amount_to_send.type === "required"  && 'entrer le montant à envoyer'}
-                                                                {errors.amount_to_send && errors.amount_to_send.type === "max" && 'maximum 1000$'}
-                                                                {errors.amount_to_send && errors.amount_to_send.type === "min" && 'min 10$'}
+                                                                {errors.amount_to_send && errors.amount_to_send.type === "max" && 'maximum '+maxAmount}
+                                                                {errors.amount_to_send && errors.amount_to_send.type === "min" && 'minimum '+minAmount}
                                                             </div>
                                                         </div>
                                                     </td>
@@ -460,19 +463,14 @@ export default function Transaction({ userInfo, banks, recipient, admconfig, gen
                                                     </th>
                                                     <td>
                                                         <div className="form-group">
-                                                            <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
                                                             <input 
                                                                 type="email" 
                                                                 name="to_email" 
                                                                 placeholder={"Courriel du destinataire"}  
-                                                                className={"form-control ".concat(errors.to_email ? "is-invalid" : "")}
+                                                                className={"form-control"}
                                                                 value={infos?.to_email}
                                                                 onChange={(e)=>handleChange(e)}
-                                                                ref={register({ required: true })}
                                                             />
-                                                            <div className='invalid-feedback' style={{display: 'block'}}>
-                                                                {errors.to_email && 'entrer le courriel du destinataire'}
-                                                            </div>
                                                         </div>
                                                     </td>
                                                 </tr>

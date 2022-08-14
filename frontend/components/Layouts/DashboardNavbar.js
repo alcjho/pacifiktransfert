@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 
 import axios from 'axios';
 
-export default function Navbar() {
+export default function Navbar({ pagination }) {
     const router = useRouter();
     const [display, setDisplay] = useState(false)
     const [collapsed, setCollapsed] = useState(false)
@@ -79,7 +79,7 @@ export default function Navbar() {
                                         </li>
 
                                         <li className="nav-item">
-                                            <Link href="/transactions" activeClassName="active">
+                                            <Link href={"/transactions?page=1&items=20"} activeClassName="active">
                                                 <a className="nav-link">Mes transactions</a>
                                             </Link>
                                         </li>
