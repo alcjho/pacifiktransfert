@@ -11,7 +11,8 @@ export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
   const [senderValue, setSenderValue] = useState('')
   const [receiverValue, setReceiverValue] = useState('')
   const [transfertType, setTransfertType] = useState('');
-  const [maxAmount, setMaxAmount] = useState();
+  const [maxAmount, setMaxAmount] = useState(0);
+  const [minAmount, setMinAmout] = useState(0);
   const [userData, setUserData] = useState({
     send: '',
     receive: ''
@@ -50,8 +51,10 @@ export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
     const { name, value } = e.target;
     if(name == 'transfert_type' && value == 2){
       setMaxAmount(admconfig.max_mobile_sender_money);
+      setMinAmout(admconfig.min_mobile_sender_money);
     }else{
       setMaxAmount(admconfig.max_sender_money);
+      setMinAmout(admconfig.min_sender_money);
     }
 
     setUserData({...userData, [name]: [value] });
@@ -105,7 +108,7 @@ export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
                         <input
                           type="number"
                           name="send"
-                          ref={register({ required: true, min: admconfig?.min_sender_money?admconfig.min_sender_money:10, max: maxAmount })}
+                          ref={register({ required: true, min: minAmount, max: maxAmount })}
                           className="form-control"
                           placeholder={maxAmount?"Maximum "+maxAmount+" "+admconfig?.default_sender_currency:''}
                           value={senderValue}
@@ -123,7 +126,7 @@ export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
                     <div className='invalid-feedback' style={{display: 'block'}}>
                         {errors.send && errors.send.type === "required"  && 'entrer le montant à envoyer'}
                         {errors.send && errors.send.type === "max" && `maximum ${maxAmount} CAD`}
-                        {errors.send && errors.send.type === "min" && `minimum  ${admconfig?.min_sender_money?admconfig.min_sender_money:10} CAD`}
+                        {errors.send && errors.send.type === "min" && `minimum  ${minAmount} CAD`}
                     </div>
 
                     <div className="currency-info">

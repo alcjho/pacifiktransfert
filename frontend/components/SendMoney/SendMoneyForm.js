@@ -36,6 +36,7 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
     const [receiveAmount, setReceiveAmout] = useState();
     const [sendAmount, setSendAmount] = useState(deposit?.send);
     const [maxAmount, setMaxAmount] = useState(deposit?.trxtype == 1?admconfig?.max_sender_money:admconfig?.max_mobile_sender_money);
+    const [minAmount, setMinAmount] = useState(deposit?.trxtype == 1?admconfig?.min_sender_money:admconfig?.min_mobile_sender_money)
     const [myTransfertOptions, setMyTransfertOptions] = useState();
     const [receiver, setReceiver] = useState({});
     const [receiverOption, setReceiverOption] = useState();
@@ -65,6 +66,7 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
         delete myreceiver.reception_proof;
         setTransfertType([myreceiver?.transfert_type.data?.id]);
         setMaxAmount(myreceiver?.transfert_type.data?.id == 2? admconfig.max_mobile_sender_money:admconfig.max__sender_money)
+        setMinAmount(myreceiver?.transfert_type.data?.id == 2? admconfig.min_mobile_sender_money:admconfig.min__sender_money)
         setBank([myreceiver?.transfert_bank.data?.id])
         setReceiveAmout(calculateFees(myreceiver?.amount_to_send, admconfig?.exchange_rate))
         setReceiver(myreceiver)
@@ -264,7 +266,7 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
                                     className={"form-control ".concat(errors.amount_to_send ? "is-invalid" : "") + " w-25" } 
                                     value={sendAmount}
                                     onChange={(e)=>{handleChange(e)}}
-                                    ref={register({ required: true, min: admconfig?.min_sender_money?admconfig.min_sender_money:10, max: maxAmount})}
+                                    ref={register({ required: true, min: minAmount, max: maxAmount})}
                                 />
                                 <label for="amount_to_send">
                                     <p className="pt-3 h5 text-warning">&nbsp; : {admconfig.default_sender_currency}  ( maximum ${maxAmount})</p>
@@ -273,7 +275,7 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
                             <div className='invalid-feedback' style={{display: 'block'}}>
                                 {errors.amount_to_send  && 'Veuillez entrer le montant à envoyer. '}
                                 {errors.amount_to_send && errors.amount_to_send.type === "max" && `Maximum ${maxAmount} CAD`}
-                                {errors.amount_to_send && errors.amount_to_send.type === "min" && `Minimum ${admconfig?.min_sender_money?admconfig.min_sender_money:1000}`}
+                                {errors.amount_to_send && errors.amount_to_send.type === "min" && `Minimum ${minAmount}`}
                             </div>
 
                             <div className="form-group mt-2" style={{display:'flex'}}>
