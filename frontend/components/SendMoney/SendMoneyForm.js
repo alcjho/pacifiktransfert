@@ -40,7 +40,7 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
     const [myTransfertOptions, setMyTransfertOptions] = useState();
     const [receiver, setReceiver] = useState({});
     const [receiverOption, setReceiverOption] = useState();
-    const [transfertType, setTransfertType] = useState([]);
+    const [transfertType, setTransfertType] = useState([deposit?.trxtype]);
     const [bank, setBank] = useState([]);
 
     const handleChange = e => {
