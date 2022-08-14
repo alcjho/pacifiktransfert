@@ -21,7 +21,7 @@ const INITIAL_STATE = {
     to_other_phone: "",
     amount_to_send: "",
     amount_to_receive: "",
-    transfert_type: ""
+    transfert_type: "",
 };
 
 const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencode }) => {
@@ -36,6 +36,7 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
     const [receiveAmount, setReceiveAmout] = useState();
     const [sendAmount, setSendAmount] = useState(deposit?.send);
     const [maxAmount, setMaxAmount] = useState(deposit?.trxtype == 1?admconfig?.max_sender_money:admconfig?.max_mobile_sender_money);
+    const [minAmount, setMinAmount] = useState(deposit?.trxtype == 1?admconfig?.min_sender_money:admconfig?.min_mobile_sender_money)
     const [myTransfertOptions, setMyTransfertOptions] = useState();
     const [receiver, setReceiver] = useState({});
     const [receiverOption, setReceiverOption] = useState();
@@ -60,14 +61,18 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
 
     const handleReceiverChange = selectedOption => {    
         let myreceiver = mytransferts.find((trf) => trf.id == selectedOption.value);
+        console.log('my receiver', myreceiver)
         myreceiver = _.pick(myreceiver, 'attributes');
         myreceiver = _.values(myreceiver)[0];
         delete myreceiver.reception_proof;
         setTransfertType([myreceiver?.transfert_type.data?.id]);
         setMaxAmount(myreceiver?.transfert_type.data?.id == 2? admconfig.max_mobile_sender_money:admconfig.max__sender_money)
+        setMinAmount(myreceiver?.transfert_type.data?.id == 2? admconfig.min_mobile_sender_money:admconfig.min__sender_money)
         setBank([myreceiver?.transfert_bank.data?.id])
+        setSendAmount(myreceiver?.amount_to_send);
         setReceiveAmout(calculateFees(myreceiver?.amount_to_send, admconfig?.exchange_rate))
         setReceiver(myreceiver)
+        
     }
 
     const handleBankChange = selectedOption => {
@@ -101,13 +106,15 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
     const onSubmit = async (e) => {
         setConfirm(true)
         receiver.transfert_type = transfertType;
-        receiver.transfert_bank = bank
+        receiver.status = "En traitement";
+        receiver.transfert_bank = bank;
         receiver.user = [userInfo.id];
         receiver.code = gencode;
-        receiver.amount_to_receive = calculateFees(receiver?.amount_to_send.replace( /^\D+/g, ''), admconfig?.exchange_rate);
-        receiver.amount_to_send = receiver?.amount_to_send.replace( /^\D+/g, '');
+        receiver.amount_to_receive = receiveAmount;
+        receiver.amount_to_send = sendAmount;
 
         if (confirm) {
+            console.log('receiver', receiver)
             axios
                 .post(BACKEND_URL+'/api/user-transferts', {data: receiver}, {
                     headers: {
@@ -153,6 +160,7 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
                     <SelectComponent 
                         name="transfert_bank"
                         placeholder="Selectionnez une banque" 
+                        value={bankOptions.find((bk) => bk.value == bank)}
                         options={ bankOptions } 
                         onChange={selectedOption => {handleBankChange(selectedOption);}}
                     />
@@ -233,7 +241,6 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
                 </div>
                 <div className='invalid-feedback' style={{display: 'block'}}>
                     {errors.mobile_money_number && 'Veuillez entrer le numéro de téléphone Mobile money'}
-                    {/* {errors.to_phone && errors.mobile_money_number.type === "pattern" && 'entrer un numéro de téléphone valide'} */}
                 </div>
             </>
         )
@@ -264,16 +271,16 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
                                     className={"form-control ".concat(errors.amount_to_send ? "is-invalid" : "") + " w-25" } 
                                     value={sendAmount}
                                     onChange={(e)=>{handleChange(e)}}
-                                    ref={register({ required: true, min: admconfig?.min_sender_money?admconfig.min_sender_money:10, max: maxAmount})}
+                                    ref={register({ required: true, min: minAmount, max: maxAmount})}
                                 />
                                 <label for="amount_to_send">
-                                    <p className="pt-3 h5 text-warning">&nbsp; : {admconfig.default_sender_currency}  ( maximum ${maxAmount})</p>
+                                    <p className="pt-3 h5 text-warning">&nbsp; : {admconfig.default_sender_currency}</p>
                                 </label>
                             </div>
                             <div className='invalid-feedback' style={{display: 'block'}}>
                                 {errors.amount_to_send  && 'Veuillez entrer le montant à envoyer. '}
                                 {errors.amount_to_send && errors.amount_to_send.type === "max" && `Maximum ${maxAmount} CAD`}
-                                {errors.amount_to_send && errors.amount_to_send.type === "min" && `Minimum ${admconfig?.min_sender_money?admconfig.min_sender_money:1000}`}
+                                {errors.amount_to_send && errors.amount_to_send.type === "min" && `Minimum ${minAmount}`}
                             </div>
 
                             <div className="form-group mt-2" style={{display:'flex'}}>
@@ -324,25 +331,6 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
                                     {errors.to_name && 'Veuillez entrer le nom du destinataire'}
                                 </div>
                             </div>
-                            {/* <div className="form-group">
-                                <div className='d-flex'>
-                                    <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
-                                    <h6 className='me-2 mb-0 align-self-center'>+237</h6>
-                                    <input 
-                                        type="text" 
-                                        name="to_phone" 
-                                        placeholder={"Numéro de téléphone"}  
-                                        className={"form-control ".concat(errors.to_phone ? "is-invalid" : "")}
-                                        value={receiver?receiver?.to_phone:''}
-                                        onChange={(e)=>handleChange(e)}
-                                        ref={register}
-                                    />
-                                </div>
-                                <div className='invalid-feedback' style={{display: 'block'}}>
-                                    {errors.to_phone && errors.to_phone.type === "required" && 'Veuillez entrer le numéro de téléphone'}
-                                    {errors.to_phone && errors.to_phone.type === "pattern" && 'Veuillez entrer un numéro de téléphone valide'}
-                                </div>
-                            </div> */}
                             <div className="form-group">
                                 <input 
                                     type="email" 
@@ -419,7 +407,7 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
                         : 
                         
                         <div className='confirm'>
-                            <p className="alert alert-warning mb-5 display4">Afin de traiter votre transfert de <bold>{receiver?.amount_to_send} {admconfig.default_sender_currency}</bold> au plus vite, envoyez-nous votre interac à <b style={{color:'red'}}>{admconfig?.interac_email}</b>  utilisant le code à 6 chiffres <b style={{color:'red'}}>{gencode}</b></p>
+                            <p className="alert alert-warning mb-5 display4">Afin de traiter votre transfert de <strong><strong className="text-success">{receiver?.amount_to_send} {admconfig.default_sender_currency}</strong></strong> au plus vite, envoyez-nous votre interac à <b style={{color:'red'}}>{admconfig?.interac_email}</b>  utilisant le code à 6 chiffres <b style={{color:'red'}}>{gencode}</b></p>
                             <div className="form-group">
                                 <label 
                                     className='fw-bold mb-1'
@@ -427,7 +415,7 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
                                     {"Montant initial"}
                                 </label>
                                 <div>
-                                    {receiver?.amount_to_send}
+                                    {receiver?.amount_to_send} {admconfig.default_sender_currency}
                                 </div>
                             </div>
                             <div className="form-group">
@@ -437,20 +425,10 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
                                     {"Montant à recevoir"}
                                 </label>
                                 <div>
-                                    {receiver?.amount_to_receive ? receiver?.amount_to_receive: receiveAmount}
+                                    {receiver?.amount_to_receive ? receiver?.amount_to_receive: receiveAmount} {admconfig.default_receiver_currency}
                                 </div>
                             </div>
-                            <div className="form-group">
-                                <label 
-                                    htmlFor="to_firstname" 
-                                    className='fw-bold mb-1'
-                                >
-                                    {"Prénom"}
-                                </label>
-                                <div>
-                                    {receiver?.to_firstname}
-                                </div>
-                            </div>
+                            
                             <div className="form-group">
                                 <label 
                                     htmlFor="to_name" 
@@ -459,18 +437,7 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
                                     {"Nom"}
                                 </label>
                                 <div>
-                                    {receiver?.to_name}
-                                </div>
-                            </div>
-                            <div className="form-group">
-                                <label 
-                                    htmlFor="city" 
-                                    className='fw-bold mb-1'
-                                >
-                                    {"ville"}
-                                </label>
-                                <div>
-                                    {receiver.to_city}
+                                    {receiver?.to_firstname + ' ' + receiver?.to_name}
                                 </div>
                             </div>
                             <div className="form-group">
@@ -482,17 +449,6 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
                                 </label>
                                 <div>
                                     {receiver.to_address}
-                                </div>
-                            </div>
-                            <div className="form-group">
-                                <label 
-                                    htmlFor="reason" 
-                                    className='fw-bold mb-1'
-                                >
-                                    {"Raison de l'envoie"}
-                                </label>
-                                <div>
-                                    {receiver?.reason}
                                 </div>
                             </div>
                             {transfertType == 1?
@@ -517,39 +473,6 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
                                     </label>
                                     <div>
                                         {receiver?.account_number}
-                                    </div>
-                                </div>
-                                <div className="form-group">
-                                    <label 
-                                        htmlFor="bank_branch" 
-                                        className='fw-bold mb-1'
-                                    >
-                                        {"Nom de la branche"}
-                                    </label>
-                                    <div>
-                                        {receiver?.bank_branch}
-                                    </div>
-                                </div>
-                                <div className="form-group">
-                                    <label 
-                                        htmlFor="agency_code" 
-                                        className='fw-bold mb-1'
-                                    >
-                                        {"Code agence"}
-                                    </label>
-                                    <div>
-                                        {receiver?.agency_code}
-                                    </div>
-                                </div>
-                                <div className="form-group">
-                                    <label 
-                                        htmlFor="agency_key" 
-                                        className='fw-bold mb-1'
-                                    >
-                                        {"Code agence"}
-                                    </label>
-                                    <div>
-                                        {receiver?.agency_key}
                                     </div>
                                 </div>
                                 </>
@@ -588,7 +511,7 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
                     <h4 className='fw-bold text-success'>{confirmationMessage}</h4>
                     <img src='/images/payment-successful.png' style={{width: '500px', textAlign: 'center'}} />
                     <div>
-                        <Link href="/transactions" className="btn btn-primary">{"retour à l'acceuil"}</Link>
+                        <Link href="/transactions?page=1&items=20" className="btn btn-primary">{"retour à l'acceuil"}</Link>
                     </div>
                 </div>
             }

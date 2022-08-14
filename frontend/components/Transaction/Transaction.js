@@ -37,6 +37,7 @@ export default function Transaction({ user, transactions, pagination }) {
     useEffect(() => {
         getAllPages();
         setTransactionHistory(transactions)
+        console.log('transactions', transactions)
     }, [])
 
 
@@ -78,7 +79,7 @@ export default function Transaction({ user, transactions, pagination }) {
                                                     <p className="fw-bold mb-1">{moment(transaction.attributes?.createdAt).format('YYYY-MM-DD HH:mm:ss')}</p>
                                                 </td>
                                                 <td>
-                                                    <p className="fw-normal mb-1">{transaction.attributes?.to_email}</p>
+                                                    <p className="fw-normal mb-1">{transaction.attributes?.to_firstname + ' ' +transaction.attributes?.to_name}</p>
                                                 </td>
                                                 <td>
                                                     <p className="fw-normal mb-1">{transaction.attributes?.amount_to_send}</p>
@@ -90,7 +91,7 @@ export default function Transaction({ user, transactions, pagination }) {
                                                 <td>
                                                     {
                                                         (transaction.attributes?.status == "Action requise")?
-                                                            <a href={"/transactions/edit?trx="+transaction.id+"&send=&trxtype="+transaction.attributes.transfert_type.data?.id}>{transaction.attributes?.status}</a>
+                                                            <a style={{color: 'red',fontStyle:'bold'}} href={"/transactions/edit?trx="+transaction.id+"&send=&trxtype="+transaction.attributes.transfert_type.data?.id}>{transaction.attributes?.status}</a>
                                                         : transaction.attributes?.status
                                                         
                                                     }
