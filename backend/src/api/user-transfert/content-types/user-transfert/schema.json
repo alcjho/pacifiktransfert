@@ -35,7 +35,8 @@
     },
     "to_email": {
       "type": "email",
-      "required": false
+      "required": false,
+      "unique": false
     },
     "reception_proof": {
       "type": "media",
