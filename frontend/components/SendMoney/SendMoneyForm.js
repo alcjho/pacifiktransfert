@@ -114,7 +114,6 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
         receiver.amount_to_send = sendAmount;
 
         if (confirm) {
-            console.log('receiver', receiver)
             axios
                 .post(BACKEND_URL+'/api/user-transferts', {data: receiver}, {
                     headers: {
@@ -269,17 +268,18 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
                             </div> 
                             <div className="form-group" style={{display: 'flex'}}>
                                 <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
+                                <label style={{display:'flex', alignItems:'center'}} for="amount_to_send">
                                 <input 
                                     type="number" 
                                     name="amount_to_send" 
                                     placeholder={"Montant initial"}  
-                                    className={"form-control ".concat(errors.amount_to_send ? "is-invalid" : "") + " w-25" } 
+                                    className={"form-control ".concat(errors.amount_to_send ? "is-invalid" : "") } 
                                     value={sendAmount}
                                     onChange={(e)=>{handleChange(e)}}
                                     ref={register({ required: true, min: minAmount, max: maxAmount})}
                                 />
-                                <label for="amount_to_send">
-                                    <p className="pt-3 h5 text-warning">&nbsp; : {admconfig.default_sender_currency}</p>
+                                
+                                    <p className="pb-1 h5 text-warning">&nbsp;:&nbsp;{admconfig.default_sender_currency}</p>
                                 </label>
                             </div>
                             <div className='invalid-feedback' style={{display: 'block'}}>
@@ -289,18 +289,19 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
                             </div>
 
                             <div className="form-group mt-2" style={{display:'flex'}}>
+                                <label style={{display:'flex',alignItems:'center'}} for="amount_to_receive">
                                 <input 
                                     type="number" 
                                     name="amount_to_receive" 
                                     placeholder={"Montant à recevoir"}  
-                                    className={"form-control ".concat(errors.amount_to_receive ? "is-invalid" : "") + " w-25"} 
+                                    className={"form-control ".concat(errors.amount_to_receive ? "is-invalid" : "")} 
                                     value={receiveAmount}
                                     onChange={(e)=>handleChange(e)}
                                     ref={register({ required: true })}
                                     disabled={true}
                                 />
-                                <label for="amount_to_receive pt-2">
-                                    <p className="pt-3 h5 text-warning">&nbsp; : {admconfig.default_receiver_currency}</p>
+                                
+                                <p className="pb-1 h5 text-warning">&nbsp;:&nbsp;{admconfig.default_receiver_currency}</p>
                                 </label>
                             </div>
                             <div className='invalid-feedback' style={{display: 'block'}}>

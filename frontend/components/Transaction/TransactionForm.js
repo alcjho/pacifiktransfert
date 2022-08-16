@@ -9,6 +9,7 @@ import Link from 'next/link';
 import Modal from "../Utils/Modal";
 import transaction from '../../pages/transactions';
 import SelectComponent from 'react-select';
+import calculateFees from '../../components/Rates/calculate';
 
 export default function Transaction({ userInfo, banks, recipient, admconfig, gencode}) {
 
@@ -20,12 +21,13 @@ export default function Transaction({ userInfo, banks, recipient, admconfig, gen
     const [ infos, setInfos] = useState(recipient?.attributes);
     const [successSent, setSuccessSent] = useState(false);
     const [mobileNumber, setMobileNumber] = useState(recipient?.mobile_money_number);
+    const [receiveAmount, setReceiveAmout] = useState(recipient?.attributes.amount_to_receive);
+    const [sendAmount, setSendAmount] = useState(recipient?.attributes.amount_to_send);
     const [bankOptions, setBankOptions] = useState();    
     const [selectedBank, setSelectedBank] = useState();
     const [maxAmount, setMaxAmount] = useState(recipient?.attributes.transfert_type.data?.id == 1?admconfig?.max_sender_money:admconfig?.max_mobile_sender_money);
     const [minAmount, setMinAmount] = useState(recipient?.attributes.transfert_type.data?.id == 1?admconfig?.min_sender_money:admconfig?.min_mobile_sender_money)
 
-    console.log(maxAmount, minAmount);
     const onError = (errors, e) => {
         if (orangeDisabled === null) {
             setSelectTypeError(true)
@@ -34,15 +36,17 @@ export default function Transaction({ userInfo, banks, recipient, admconfig, gen
 
     const handleChange = e => {
         const { name, value } = e.target;
+        if(name == 'amount_to_send'){
+            setSendAmount(value)
+            let total = calculateFees(value, admconfig?.exchange_rate);
+            setReceiveAmout(isNaN(total)?0:total);
+        }
+        if(name == 'amount_to_receive'){
+            setReceiveAmout(value)
+            let total = calculateFees(value, admconfig?.exchange_rate, true);
+            setSendAmount(isNaN(total)?0:total);
+        }
         setInfos({...infos, [name]: value });
-    }
-
-    const updateFormByAmout = () => {
-        setInfos({...infos, ["amount_to_send"]: infos?.send, ["amount_to_receive"]: infos?.receive})
-    }
-
-    const updateAmount = (e) => {
-        setInfos({...infos, ["amount_to_receive"]: Number(e.target.value) * Number(admconfig.exchange_rate)})
     }
 
     const handleStatusChange = e => {
@@ -78,27 +82,15 @@ export default function Transaction({ userInfo, banks, recipient, admconfig, gen
         setBankOptions(BanksWithOptions)  
     }
 
-    const handleTrxTypeChange = e => {
-        if(e.value == 1){
-            setOrangeDisabled(true);
-        }else{
-            setOrangeDisabled(false);
-        }
-
-        const { name, value } = {name: 'transfert_type', value: [e.value]}
-        setInfos({...infos, [name]: value });
-    }
-
     const onSubmit = async (e) => {
         infos['user'] = [userInfo?.id];
         infos['code'] = gencode;
-        infos['amount_to_send'] = infos.amount_to_send? infos.amount_to_send: recipient?.attributes.amount_to_send;
-        infos['amount_to_receive'] = infos.amount_to_receive? infos.amount_to_receive: recipient?.attributes.amount_to_receive;
+        infos['amount_to_send'] = sendAmount
+        infos['amount_to_receive'] = calculateFees(sendAmount, admconfig?.exchange_rate);;
         infos['status'] = 'En traitement';
         delete infos.reception_proof;
         infos['transfert_type'] = [infos['transfert_type'].data?.id];
         infos['transfert_bank'] = selectedBank? [selectedBank.value]: [infos['transfert_bank'].data?.id];
-        console.log(infos)
         axios
             .put(BACKEND_URL+'/api/user-transferts/'+recipient?.id, {data: infos}, {
                 headers: {
@@ -113,7 +105,6 @@ export default function Transaction({ userInfo, banks, recipient, admconfig, gen
 
     useEffect(() => {
         getTrxTypes();
-        updateFormByAmout();
     }, [])
 
     useEffect(() => {
@@ -311,16 +302,19 @@ export default function Transaction({ userInfo, banks, recipient, admconfig, gen
                                                     <td>  
                                                         <div className="form-group">
                                                             <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
+                                                            <label style={{display: 'flex', alignItems:'center'}}>
                                                             <input 
                                                                 type="text" 
                                                                 name="amount_to_send" 
                                                                 placeholder={"Montant initial"}  
                                                                 className={"form-control ".concat(errors.amount_to_send ? "is-invalid" : "")} 
-                                                                value={infos?.amount_to_send}
+                                                                value={sendAmount}
                                                                 onChange={(e)=>handleChange(e)}
                                                                 ref={register({ required: true, max: maxAmount, min: minAmount })}
-                                                                onBlur={(e)=> updateAmount(e)}
+                                                                //onBlur={(e)=> updateAmount(e)}
                                                             />
+                                                            <p className="pb-1 h5 text-warning">&nbsp;:&nbsp;{admconfig.default_sender_currency}</p>
+                                                            </label>
                                                             <div className='invalid-feedback' style={{display: 'block'}}>
                                                                 {errors.amount_to_send && errors.amount_to_send.type === "required"  && 'entrer le montant à envoyer'}
                                                                 {errors.amount_to_send && errors.amount_to_send.type === "max" && 'maximum '+maxAmount}
@@ -336,16 +330,18 @@ export default function Transaction({ userInfo, banks, recipient, admconfig, gen
                                                     <td>
                                                         <div className="form-group">
                                                             <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
+                                                            <label style={{display:'flex',alignItems:'center'}}>
                                                             <input 
                                                                 type="text" 
                                                                 name="amount_to_receive" 
                                                                 placeholder={"Montant a recevoir"}  
                                                                 className={"form-control ".concat(errors.amount_to_receive ? "is-invalid" : "")} 
-                                                                value={infos?.amount_to_receive}
+                                                                value={receiveAmount}
                                                                 onChange={(e)=>handleChange(e)}
                                                                 ref={register({ required: true })}
-                                                                disabled={true}
                                                             />
+                                                            <p className="pb-1 h5 text-warning">&nbsp;:&nbsp;{admconfig.default_receiver_currency}</p>
+                                                            </label>
                                                             <div className='invalid-feedback' style={{display: 'block'}}>
                                                                 {errors.amount_to_receive && 'Veuillez saisir le montant à recevoir'}
                                                             </div>
