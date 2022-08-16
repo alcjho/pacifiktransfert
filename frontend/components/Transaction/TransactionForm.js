@@ -156,15 +156,15 @@ export default function Transaction({ userInfo, banks, recipient, admconfig, gen
                                 type="number" 
                                 name="account_number" 
                                 placeholder={"Numéro de compte"}  
-                                className={"form-control ".concat(errors.amount_to_receive ? "is-invalid" : "")} 
+                                className={"form-control ".concat(errors.account_number ? "is-invalid" : "")} 
                                 value={infos.account_number}
-                                req={register({required: true, minLength: 11, maxLength: 11})}
+                                ref={register({required: true, minLength: 11, maxLength: 11})}
                                 onChange={(e)=>handleChange(e)}
                             />
                             <div className='invalid-feedback' style={{display: 'block'}}>
                                 {errors.account_number && 'Numéro de compte obligatoire. '}
-                                {errors.account_number && errors.account_number == 'minLength' && 'Veuillez saisir un numéro de compte valide'}
-                                {errors.account_number && errors.account_number == 'maxLength' && 'Veuillez saisir un numéro de compte valide'}
+                                {errors.account_number && errors.account_number.type === 'minLength' && 'Veuillez saisir un numéro de compte valide'}
+                                {errors.account_number && errors.account_number.type === 'maxLength' && 'Veuillez saisir un numéro de compte valide'}
                             </div>
                         </div>
                     </td>
@@ -184,7 +184,7 @@ export default function Transaction({ userInfo, banks, recipient, admconfig, gen
                                 onChange={(e)=>handleChange(e)}
                             />
                             <div className='invalid-feedback' style={{display: 'block'}}>
-                                {errors.bank_branch && 'Veuillez entrer le nom de la branche'}
+                                {errors.bank_branch && 'Veuillez saisir le nom de la branche'}
                             </div>
                         </div>
                     </td>
@@ -255,9 +255,9 @@ export default function Transaction({ userInfo, banks, recipient, admconfig, gen
                             />
                         </div>
                         <div className='invalid-feedback' style={{display: 'block'}}>
-                            {errors.to_phone && 'Numéro de téléphone obligatoire. '}
-                            {errors.to_phone && errors.mobile_money_number.type === "required" && 'Veuillez entrer le numéro de téléphone Mobile money'}
-                            {errors.to_phone && errors.mobile_money_number.type === "minLength" && 'Veuillez entrer un numéro de téléphone valide'}
+                            {errors.mobile_money_number && 'Numéro de téléphone obligatoire. '}
+                            {errors.mobile_money_number && errors.mobile_money_number.type === "maxLength" && 'Veuillez saisir un numéro de téléphone valide'}
+                            {errors.mobile_money_number && errors.mobile_money_number.type === "minLength" && 'Veuillez saisir un numéro de téléphone valide'}
                         </div>
                     </td>
                 </tr>
@@ -347,7 +347,7 @@ export default function Transaction({ userInfo, banks, recipient, admconfig, gen
                                                                 disabled={true}
                                                             />
                                                             <div className='invalid-feedback' style={{display: 'block'}}>
-                                                                {errors.amount_to_receive && 'Veuillez entrer le montant à recevoir'}
+                                                                {errors.amount_to_receive && 'Veuillez saisir le montant à recevoir'}
                                                             </div>
                                                         </div>
                                                     </td>
@@ -389,7 +389,7 @@ export default function Transaction({ userInfo, banks, recipient, admconfig, gen
                                                                 ref={register({ required: true })}
                                                             />
                                                             <div className='invalid-feedback' style={{display: 'block'}}>
-                                                                {errors.to_firstname && 'Veuillez entrer le prenom'}
+                                                                {errors.to_firstname && 'Veuillez saisir le prénom'}
                                                             </div>
                                                         </div>
                                                     </td>
@@ -450,7 +450,7 @@ export default function Transaction({ userInfo, banks, recipient, admconfig, gen
                                                                 ref={register({ required: true })}
                                                             />
                                                             <div className='invalid-feedback' style={{display: 'block'}}>
-                                                                {errors.to_city && 'entrer la ville'}
+                                                                {errors.to_city && 'Veuillez saisir une ville'}
                                                             </div>
                                                         </div>
                                                     </td>
@@ -472,7 +472,7 @@ export default function Transaction({ userInfo, banks, recipient, admconfig, gen
                                                                 ref={register({ required: true })}
                                                             />
                                                             <div className='invalid-feedback' style={{display: 'block'}}>
-                                                                {errors.to_address && "entrer l'adresse de destinataire"  }
+                                                                {errors.to_address && "Veuillez saisir l'adresse du destinataire"  }
                                                             </div>
                                                         </div>
                                                     </td>
@@ -494,7 +494,7 @@ export default function Transaction({ userInfo, banks, recipient, admconfig, gen
                                                                 ref={register({ required: true })}
                                                             />
                                                             <div className='invalid-feedback' style={{display: 'block'}}>
-                                                                {errors.reason && 'entrer votre raison'}
+                                                                {errors.reason && 'Veuillez saisir la raison du transfert'}
                                                             </div>
                                                         </div>
                                                     </td>
