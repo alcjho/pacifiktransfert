@@ -153,15 +153,18 @@ export default function Transaction({ userInfo, banks, recipient, admconfig, gen
                         <div className="form-group">
                             <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
                             <input 
-                                type="text" 
+                                type="number" 
                                 name="account_number" 
-                                placeholder={"Numero de compte"}  
+                                placeholder={"Numéro de compte"}  
                                 className={"form-control ".concat(errors.amount_to_receive ? "is-invalid" : "")} 
                                 value={infos.account_number}
+                                req={register({required: true, minLength: 11, maxLength: 11})}
                                 onChange={(e)=>handleChange(e)}
                             />
                             <div className='invalid-feedback' style={{display: 'block'}}>
-                                {errors.account_number && 'Veuillez entrer le numero de compte'}
+                                {errors.account_number && 'Numéro de compte obligatoire. '}
+                                {errors.account_number && errors.account_number == 'minLength' && 'Veuillez saisir un numéro de compte valide'}
+                                {errors.account_number && errors.account_number == 'maxLength' && 'Veuillez saisir un numéro de compte valide'}
                             </div>
                         </div>
                     </td>
@@ -242,18 +245,19 @@ export default function Transaction({ userInfo, banks, recipient, admconfig, gen
                             <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
                             <h6 className='me-2 mb-0 align-self-center'>+237</h6>
                             <input 
-                                type="text" 
+                                type="number" 
                                 name="mobile_money_number" 
-                                placeholder={"numero de telephone"}  
+                                placeholder={"Numéro de téléphone"}  
                                 className={"form-control ".concat(errors.mobile_money_number ? "is-invalid" : "")}
                                 value={infos.mobile_money_number}
                                 onChange={(e)=>{handleChange(e);setMobileNumber(e.target.value)}}
-                                ref={register}
+                                ref={register({required: true, minLength: 9, maxLength: 9})}
                             />
                         </div>
                         <div className='invalid-feedback' style={{display: 'block'}}>
+                            {errors.to_phone && 'Numéro de téléphone obligatoire. '}
                             {errors.to_phone && errors.mobile_money_number.type === "required" && 'Veuillez entrer le numéro de téléphone Mobile money'}
-                            {/* {errors.to_phone && errors.mobile_money_number.type === "pattern" && 'entrer un numéro de téléphone valide'} */}
+                            {errors.to_phone && errors.mobile_money_number.type === "minLength" && 'Veuillez entrer un numéro de téléphone valide'}
                         </div>
                     </td>
                 </tr>
@@ -408,51 +412,6 @@ export default function Transaction({ userInfo, banks, recipient, admconfig, gen
                                                             />
                                                             <div className='invalid-feedback' style={{display: 'block'}}>
                                                                 {errors.to_name && 'Veuilez entrer le nom'}
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <th>
-                                                        Surnom du destinataire
-                                                    </th>
-                                                    <td>
-                                                        <div className="form-group">
-                                                            <input 
-                                                                type="text" 
-                                                                placeholder={"deuxième nom"}  
-                                                                name="to_middle_name" 
-                                                                className="form-control" 
-                                                                value={infos?.to_middle_name}
-                                                                onChange={(e)=>handleChange(e)}
-                                                                ref={register}
-                                                            />
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <th>
-                                                        Téléphone du destinataire :
-                                                    </th>
-                                                    <td>
-                                                        <div className="form-group">
-                                                            <div className='d-flex'>
-                                                                <h6 className='me-2 mb-0 align-self-center'>+237</h6>
-                                                                <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
-                                                                <input 
-                                                                    type="text" 
-                                                                    name="to_phone" 
-                                                                    placeholder={"numéro de téléphone"}  
-                                                                    className={"form-control ".concat(errors.to_phone ? "is-invalid" : "")}
-                                                                    value={infos?.to_phone}
-                                                                    onChange={(e)=>handleChange(e)}
-                                                                    ref={register}
-                                                                    //ref={register({ required: true, pattern: /(\+?237)?(23|6[6578])\d{7}/ })}
-                                                                />
-                                                            </div>
-                                                            <div className='invalid-feedback' style={{display: 'block'}}>
-                                                                {errors.to_phone && errors.to_phone.type === "required" && 'entrer le numéro de téléphone'}
-                                                                {errors.to_phone && errors.to_phone.type === "pattern" && 'entrer un numéro de téléphone valide'}
                                                             </div>
                                                         </div>
                                                     </td>

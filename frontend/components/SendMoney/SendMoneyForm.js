@@ -172,15 +172,18 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
                 <div className="form-group">
                     <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
                     <input 
-                        type="text" 
+                        type="number" 
                         name="account_number" 
-                        placeholder={"Numero de compte"}  
+                        placeholder={"Numéro de compte"}  
                         className={"form-control ".concat(errors.account_number ? "is-invalid" : "")} 
                         value={receiver? receiver?.account_number:''}
+                        ref={register({required: true, minLength: 11, maxLength: 11})}
                         onChange={(e)=>handleChange(e)}
                     />
                     <div className='invalid-feedback' style={{display: 'block'}}>
-                        {errors.account_number && 'Veuillez entrer le numero de compte'}
+                        {errors.account_number && 'Numéro de compte obligatoire. '}
+                        {errors.account_number && errors.account_number.type === "minLength" && 'Veuillez saisir un numéro de compte valide'}
+                        {errors.account_number && errors.account_number.type === "maxLength" && 'Veuillez saisir un numéro de compte valide'}
                     </div>
                 </div>
                 <div className="form-group">
@@ -230,17 +233,19 @@ const ContactForm = ({ banks, userInfo, admconfig, deposit, mytransferts, gencod
                     <span style={{position: 'absolute', zIndex:2, color:'red'}}>*</span>
                     <h6 className='me-2 mb-0 align-self-center'>+237</h6>
                     <input 
-                        type="text" 
+                        type="number" 
                         name="mobile_money_number" 
                         placeholder={"Numéro mobile money"}  
                         className={"form-control ".concat(errors.mobile_money_number ? "is-invalid" : "")}
                         value={receiver?receiver?.mobile_money_number:''}
                         onChange={(e)=>handleChange(e)}
-                        ref={register({required: true})}
+                        ref={register({required: true, minLength: 9, maxLength: 9})}
                     />
                 </div>
                 <div className='invalid-feedback' style={{display: 'block'}}>
-                    {errors.mobile_money_number && 'Veuillez entrer le numéro de téléphone Mobile money'}
+                    {errors.mobile_money_number && 'Numéro de téléphone obligatoire. '}
+                    {errors.mobile_money_number && errors.mobile_money_number.type === "minLength" && "Veuillez saisir un numéro de téléphone valide"}
+                    {errors.mobile_money_number && errors.mobile_money_number.type === "maxLength" && "Veuillez saisir un numéro de téléphone valide"}
                 </div>
             </>
         )
