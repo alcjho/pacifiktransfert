@@ -34,7 +34,7 @@ export default class MyApp extends App {
             <>
                 <Head>
                     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-                    <title>Haiper - Online Banking & Payment Solutions React Next Template</title>
+                    <title>Pacifik Transfert - La solution pour envoyer l'argent en toute sécurité</title>
                 </Head>
 
                 <Component {...pageProps} />

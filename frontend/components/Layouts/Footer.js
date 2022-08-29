@@ -42,7 +42,7 @@ import { BACKEND_URL } from '../../config/constant';
                             <div className="single-footer-widget">
                                 <div className="logo">
                                     <Link href="/">
-                                        <a><img src="/images/logo.png" alt="logo" /></a>
+                                        <a><img src="/images/logo/logo.png" alt="logo" /></a>
                                     </Link>
                                     <p><div dangerouslySetInnerHTML={{__html: aboutUs.about_us_content_desc?.substring(0,200)+"..."}}/></p>
                                 </div>

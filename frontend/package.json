@@ -1,7 +1,7 @@
 {
-    "name": "haiper",
+    "name": "pacifik",
     "version": "2.2.0",
-    "description": "Haiper - Online Banking & Payment Solutions React Next Template",
+    "description": "Pacifik Transfert - La solution pour envoyer l'argent en toute sécurit",
     "main": "index.js",
     "scripts": {
         "dev": "next dev",
