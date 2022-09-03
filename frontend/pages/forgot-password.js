@@ -21,7 +21,7 @@ class ForgotPassword extends Component {
                                             <div className="logo">
                                                 <Link href="/">
                                                     <a>
-                                                        <img src="/images/black-logo.png" alt="image" />
+                                                        <img src="/images/logo/black-logo.png" alt="image" />
                                                     </a>
                                                 </Link>
                                             </div>

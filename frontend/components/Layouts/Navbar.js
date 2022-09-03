@@ -36,8 +36,8 @@ export default function Navbar() {
                             <nav className="navbar navbar-expand-md navbar-light">
                                 <Link href="/">
                                     <a className="navbar-brand">
-                                        <img src="/images/logo.png" alt="logo" />
-                                        <img src="/images/black-logo.png" alt="logo" />
+                                        <img src="/images/logo/logo.png" alt="logo" />
+                                        <img src="/images/logo/black-logo.png" alt="logo" />
                                     </a>
                                 </Link>
 

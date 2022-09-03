@@ -42,7 +42,7 @@ class NavbarTwo extends Component {
                             <nav className="navbar navbar-expand-md navbar-light">
                                 <Link href="/">
                                     <a className="navbar-brand">
-                                        <img src="/images/black-logo.png" alt="logo" />
+                                        <img src="/images/logo/black-logo.png" alt="logo" />
                                     </a>
                                 </Link>
 
