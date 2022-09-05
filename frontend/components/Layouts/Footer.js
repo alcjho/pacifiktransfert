@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
 import { BACKEND_URL } from '../../config/constant';
+import Image from 'next/image'
 
     export default function Footer() {
         let currentYear = new Date().getFullYear();
@@ -42,7 +43,15 @@ import { BACKEND_URL } from '../../config/constant';
                             <div className="single-footer-widget">
                                 <div className="logo">
                                     <Link href="/">
-                                        <a><img src="/images/logo/logo.png" alt="logo" /></a>
+                                        <a>
+                                            {/* <img src="/images/logo/logo.png" alt="logo" /> */}
+                                            <Image
+                                                src="/images/logo/pacifik.svg"
+                                                alt="PacifikTransfert"
+                                                width={'113px'}
+                                                height={'44px'}
+                                            />
+                                        </a>
                                     </Link>
                                     <p><div dangerouslySetInnerHTML={{__html: aboutUs.about_us_content_desc?.substring(0,200)+"..."}}/></p>
                                 </div>

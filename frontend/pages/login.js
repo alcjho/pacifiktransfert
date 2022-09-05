@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import axios from 'axios';
+import Image from 'next/image'
 
 function Login( pageProps) {
     const router = useRouter();
@@ -61,7 +62,13 @@ function Login( pageProps) {
                                         <div className="logo">
                                             <Link href="/">
                                                 <a>
-                                                    <img src="/images/logo/black-logo.png" alt="image" />
+                                                    {/* <img src="/images/logo/black-logo.png" alt="image" /> */}
+                                                    <Image
+                                                        src="/images/logo/pacifik.svg"
+                                                        alt="PacifikTransfert"
+                                                        width={'113px'}
+                                                        height={'44px'}
+                                                    />
                                                 </a>
                                             </Link>
                                         </div>
