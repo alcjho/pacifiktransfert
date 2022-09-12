@@ -13,8 +13,8 @@ import { BACKEND_URL } from '../../config/constant';
                             <div className="faq-content">
                                 <h2>{faq.faq_content_title}</h2>
                                 <div className="bar"></div>
-                                <p>{faq.faq_content}</p>
-
+                                
+                                <p dangerouslySetInnerHTML={{ __html: faq.faq_content }}></p>
                                 <div className="faq-image">
                                     <img src={ BACKEND_URL + faq.faq_content_image?.data.attributes.url} alt="image" />
                                 </div>
