@@ -9,6 +9,7 @@ import Upload from '../../components/Auth/Upload'
 import { BACKEND_URL } from '../../config/constant';
 import { setCookie } from 'nookies'
 import axios from 'axios'
+import Image from 'next/image'
 
 const SignUp = ({provinces, occupations}) => {
     const [city, setCity] = useState(null);
@@ -156,7 +157,13 @@ const SignUp = ({provinces, occupations}) => {
                                         <div className="logo">
                                             <Link href="/">
                                                 <a>
-                                                    <img src="/images/logo/black-logo.png" alt="image" />
+                                                    {/* <img src="/images/logo/black-logo.png" alt="image" /> */}
+                                                    <Image
+                                                        src="/images/logo/pacifik.svg"
+                                                        alt="PacifikTransfert"
+                                                        width={'113px'}
+                                                        height={'44px'}
+                                                    />
                                                 </a>
                                             </Link>
                                         </div>

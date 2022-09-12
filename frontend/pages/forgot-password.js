@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Link from 'next/link';
+import Image from 'next/image'
 
 class ForgotPassword extends Component {
     render() {
@@ -21,7 +22,13 @@ class ForgotPassword extends Component {
                                             <div className="logo">
                                                 <Link href="/">
                                                     <a>
-                                                        <img src="/images/logo/black-logo.png" alt="image" />
+                                                        {/* <img src="/images/logo/black-logo.png" alt="image" /> */}
+                                                        <Image
+                                                            src="/images/logo/pacifik.svg"
+                                                            alt="PacifikTransfert"
+                                                            width={'113px'}
+                                                            height={'44px'}
+                                                        />
                                                     </a>
                                                 </Link>
                                             </div>

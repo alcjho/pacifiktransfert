@@ -3,6 +3,8 @@ import Link from '../../utils/ActiveLink';
 import { useRouter } from 'next/router';
 
 import axios from 'axios';
+import Image from 'next/image'
+
 
 export default function Navbar({ pagination }) {
     const router = useRouter();
@@ -48,8 +50,12 @@ export default function Navbar({ pagination }) {
                             <nav className="navbar navbar-expand-md navbar-light">
                                 <Link href="/">
                                     <a className="navbar-brand">
-                                        <img src="/images/logo/logo.png" alt="logo" />
-                                        <img src="/images/logo/black-logo.png" alt="logo" />
+                                        <Image
+                                            src="/images/logo/pacifik.svg"
+                                            alt="PacifikTransfert"
+                                            width={'113px'}
+                                            height={'44px'}
+                                        />
                                     </a>
                                 </Link>
 
