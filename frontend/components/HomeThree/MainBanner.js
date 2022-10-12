@@ -4,6 +4,8 @@ import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/router'
 import { BACKEND_URL } from '../../config/constant';
 import calculateFees from '../../components/Rates/calculate';
+import Image from 'next/image'
+import { useMediaQuery } from 'react-responsive';
 
 export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
   const { register, handleSubmit, errors } = useForm();
@@ -60,13 +62,15 @@ export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
     setUserData({...userData, [name]: [value] });
   }
 
+  let isMobile = useMediaQuery({ query: `(max-width: 550px)` });
+
   return (
-    <div className="main-banner-section" style={{backgroundImage: `url(` + BACKEND_URL + homeInfo.Carousel?.data[0]?.attributes?.url + `)`}}>
+    <div className="main-banner-section" style={{backgroundImage: !isMobile ? `url(` + BACKEND_URL + homeInfo.Carousel?.data[0]?.attributes?.url + `)` : ''}}>
       <div className="d-table">
         <div className="d-table-cell">
           <div className="container">
             <div className="row align-items-center">
-              <div className="col-lg-7 col-md-12">
+              <div className="col-lg-7 col-md-12 landing-page">
                 <div className="banner-content">
                   <h1>
                     {homeInfo?.title}
@@ -76,7 +80,7 @@ export default function MainBanner({ homeInfo, admconfig, trxTypes}) {
                   </p>
                 </div>
               </div>
-
+              
               <div className="col-lg-5 col-md-12">
                 <div className="money-transfer-form">
                   <form onSubmit={handleSubmit(onSubmit)}>
